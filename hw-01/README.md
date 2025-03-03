@@ -2,23 +2,23 @@
 
 Цель домашнего задания: научиться обновлять ядро в ОС Linux.
 
+Выполнение домашнего задания:
 
-
-Команда uname - выдает имя текущей системы, с ключем -r выдает информацию о релизе ядра операционной системы.
+1) Команда uname - выдает имя текущей системы, с ключем -r выдает информацию о релизе ядра операционной системы.
 
 ```console
 tanin@ubuntu24:~$ uname -r
 6.8.0-54-generic
 ```
 
-С помощью команд mkdir создадим каталог kernel, с помощью команды cp переместимся в каталог ~/kernel (при вводе команды используется оператор AND (&&), который выполнит вторую команду (cp) при условии успешного выполнения первой команды (mrdir))
+2) С помощью команд mkdir создадим каталог kernel, с помощью команды cp переместимся в каталог ~/kernel (при вводе команды используется оператор AND (&&), который выполнит вторую команду (cp) при условии успешного выполнения первой команды (mrdir))
 
 ```console
 tanin@ubuntu24:~$ mkdir ./kernel && cd ./kernel
 tanin@ubuntu24:~/kernel$
 ```
 
-С помощью утилиты wget скачаем необходимые пакеты свежей версии ядра ОС. 
+3) С помощью утилиты wget скачаем необходимые пакеты свежей версии ядра ОС. 
 
 ```console
 tanin@ubuntu24:~/kernel$ wget https://kernel.ubuntu.com/mainline/v6.13/amd64/linux-headers-6.13.0-061300-generic_6.13.0-061300.202501302155_amd64.deb https://kernel.ubuntu.com/mainline/v6.13/amd64/linux-headers-6.13.0-061300_6.13.0-061300.202501302155_all.deb https://kernel.ubuntu.com/mainline/v6.13/amd64/linux-image-unsigned-6.13.0-061300-generic_6.13.0-061300.202501302155_amd64.deb https://kernel.ubuntu.com/mainline/v6.13/amd64/linux-modules-6.13.0-061300-generic_6.13.0-061300.202501302155_amd64.deb
@@ -68,19 +68,78 @@ Total wall clock time: 8.0s
 Downloaded: 4 files, 215M in 7.4s (29.0 MB/s)
 ```
 
-С помощью команды ls установим перечень скачанных пакетов.
+4) От имени администратора запустим менеджер пакетов dpkg с ключем -i (--install) для их установки (используется маска поиска *.deb, т.е.все файлы с расширением deb).
 
 ```console
+tanin@ubuntu24:~/kernel$ sudo dpkg -i *.deb
+(Reading database ... 146111 files and directories currently installed.)
+Preparing to unpack linux-headers-6.13.0-061300_6.13.0-061300.202501302155_all.deb ...
+Unpacking linux-headers-6.13.0-061300 (6.13.0-061300.202501302155) over (6.13.0-061300.202501302155) ...
+Preparing to unpack linux-headers-6.13.0-061300-generic_6.13.0-061300.202501302155_amd64.deb ...
+Unpacking linux-headers-6.13.0-061300-generic (6.13.0-061300.202501302155) over (6.13.0-061300.202501302155) ...
+Preparing to unpack linux-image-unsigned-6.13.0-061300-generic_6.13.0-061300.202501302155_amd64.deb ...
+Unpacking linux-image-unsigned-6.13.0-061300-generic (6.13.0-061300.202501302155) over (6.13.0-061300.202501302155) ...
+Preparing to unpack linux-modules-6.13.0-061300-generic_6.13.0-061300.202501302155_amd64.deb ...
+Unpacking linux-modules-6.13.0-061300-generic (6.13.0-061300.202501302155) over (6.13.0-061300.202501302155) ...
+Setting up linux-headers-6.13.0-061300 (6.13.0-061300.202501302155) ...
+Setting up linux-headers-6.13.0-061300-generic (6.13.0-061300.202501302155) ...
+Setting up linux-modules-6.13.0-061300-generic (6.13.0-061300.202501302155) ...
+Setting up linux-image-unsigned-6.13.0-061300-generic (6.13.0-061300.202501302155) ...
+Processing triggers for linux-image-unsigned-6.13.0-061300-generic (6.13.0-061300.202501302155) ...
+/etc/kernel/postinst.d/initramfs-tools:
+update-initramfs: Generating /boot/initrd.img-6.13.0-061300-generic
+/etc/kernel/postinst.d/zz-update-grub:
+Sourcing file `/etc/default/grub'
+Generating grub configuration file ...
+Found linux image: /boot/vmlinuz-6.13.0-061300-generic
+Found initrd image: /boot/initrd.img-6.13.0-061300-generic
+Found linux image: /boot/vmlinuz-6.8.0-54-generic
+Found initrd image: /boot/initrd.img-6.8.0-54-generic
+Warning: os-prober will not be executed to detect other bootable partitions.
+Systems on them will not be added to the GRUB boot configuration.
+Check GRUB_DISABLE_OS_PROBER documentation entry.
+Adding boot menu entry for UEFI Firmware Settings ...
+done
+```
+
+5) Проверяем, что новая версия (v6.13) ядра имеется в /boot. 
+
+```console
+tanin@ubuntu24:~/kernel$ ls -ls /boot/ | grep 6.13
+  308 -rw-r--r-- 1 root root   311399 Jan 30 21:55 config-6.13.0-061300-generic
+    0 lrwxrwxrwx 1 root root       32 Mar  3 17:23 initrd.img -> initrd.img-6.13.0-061300-generic
+76876 -rw-r--r-- 1 root root 78719615 Mar  3 21:33 initrd.img-6.13.0-061300-generic
+ 9828 -rw------- 1 root root 10059981 Jan 30 21:55 System.map-6.13.0-061300-generic
+    0 lrwxrwxrwx 1 root root       29 Mar  3 17:23 vmlinuz -> vmlinuz-6.13.0-061300-generic
+15464 -rw------- 1 root root 15831552 Jan 30 21:55 vmlinuz-6.13.0-061300-generic
+```
+
+6) От имени администратора обновим конфигурацию загрузчика grub: 
+
+```console
+tanin@ubuntu24:~/kernel$ sudo update-grub
+Sourcing file `/etc/default/grub'
+Generating grub configuration file ...
+Found linux image: /boot/vmlinuz-6.13.0-061300-generic
+Found initrd image: /boot/initrd.img-6.13.0-061300-generic
+Found linux image: /boot/vmlinuz-6.8.0-54-generic
+Found initrd image: /boot/initrd.img-6.8.0-54-generic
+Warning: os-prober will not be executed to detect other bootable partitions.
+Systems on them will not be added to the GRUB boot configuration.
+Check GRUB_DISABLE_OS_PROBER documentation entry.
+Adding boot menu entry for UEFI Firmware Settings ...
+done
+```
+
+7) От имени администратора выбрать загрузку нового ядра по-умолчанию: 
+
+```console
+tanin@ubuntu24:~/kernel$ sudo grub-set-default 0
+```
 
 
 
-
-
-
-
-
-
-
+Домашнее задание выполнено.
 
 br/>
 
