@@ -1,15 +1,10 @@
 ## Домашнее задание № 1 — «С чего начинается Linux»
 
-#В каталоге находится [Vagrantfile](Vagrantfile) для разворачивания образа с Centos 7 и обновлённым ядром:
-
+Команда "uname" - выдает имя текущей системы, с ключем -r выдает информацию о релизе ядра операционной системы.
 ```console
-#[vagrant@kernel-update ~]$ uname -r
-#5.3.9-1.el7.elrepo.x86_64
 tanin@ubuntu24:~$ uname -r
 6.8.0-54-generic
 ```
-
-#Ссылка на сам образ в Vagrant Cloud: https://app.vagrantup.com/rustsh/boxes/centos-7-5
 
 <br/>
 
