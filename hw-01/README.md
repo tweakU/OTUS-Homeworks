@@ -1,5 +1,49 @@
 ## Домашнее задание № 1 — «С чего начинается Linux»
 
+Обновление ядра
+Подключаемся по ssh к созданной виртуальной машины.
+Перед работами проверим текущую версию ядра:
+[db@server ~]$ uname -r
+6.8.0-49-generic
+
+Далее зайдём браузеров в репозиторий, где найдём свежую версию ядра для нашей архитектуры https://kernel.ubuntu.com/mainline .
+На момент составления документа нам подходит версия 6.13.2: https://kernel.ubuntu.com/mainline/v6.13.2/ 
+Архитектура системы для процессоров типа x86_64 (uname -p) требуется amd64.
+Находим актуальную ссылку и качаем пакеты на виртуальную машину:
+[db@server ~]$ mkdir kernel && cd kernel
+[db@server ~]$ wget https://kernel.ubuntu.com/mainline/v6.13.2/amd64/linux-headers-6.13.2-061302-generic_6.13.2-061302.202502081010_amd64.deb
+[db@server ~]$ wget https://kernel.ubuntu.com/mainline/v6.13.2/amd64/linux-headers-6.13.2-061302_6.13.2-061302.202502081010_all.deb
+[db@server ~]$ wget https://kernel.ubuntu.com/mainline/v6.13.2/amd64/linux-image-unsigned-6.13.2-061302-generic_6.13.2-061302.202502081010_amd64.deb
+[db@server ~]$ wget https://kernel.ubuntu.com/mainline/v6.13.2/amd64/linux-modules-6.13.2-061302-generic_6.13.2-061302.202502081010_amd64.deb
+
+Устанавливаем все пакеты сразу:
+[db@server ~]$ sudo dpkg -i *.deb 
+
+Проверяем, что ядро появилось в /boot.
+[db@server ~]$ ls -al /boot
+…
+lrwxrwxrwx  1 root root       29 Feb 20 09:54 vmlinuz -> vmlinuz-6.13.2-061302-generic
+-rw-------  1 root root 15647232 Feb  8 10:10 vmlinuz-6.13.2-061302-generic
+-rw-------  1 root root 14948744 Aug  2  2024 vmlinuz-6.8.0-41-generic
+-rw-------  1 root root 14956936 Nov  1 11:41 vmlinuz-6.8.0-49-generic
+lrwxrwxrwx  1 root root       24 Feb 20 09:54 vmlinuz.old -> vmlinuz-6.8.0-49-generic
+… 
+
+Уже на этом этапе можно перезагрузить нашу виртуальную машину и выбрать новое ядро при загрузке ОС. 
+Если требуется, можно назначить новое ядро по умолчанию вручную:
+1) Обновить конфигурацию загрузчика:
+[db@server ~]$ sudo update-grub
+2) Выбрать загрузку нового ядра по-умолчанию:
+   	[db@server ~]$ sudo grub-set-default 0
+
+Далее перезагружаем нашу виртуальную машину с помощью команды sudo reboot
+
+После перезагрузки снова проверяем версию ядра (версия должна стать новее):
+[db@server ~]$ uname -r 
+6.13.2-061302-generic
+На этом обновление ядра закончено.
+
+
 Команда uname - выдает имя текущей системы, с ключем -r выдает информацию о релизе ядра операционной системы.
 
 ```console
@@ -67,59 +111,6 @@ Downloaded: 4 files, 215M in 7.4s (29.0 MB/s)
 С помощью команды ls установим перечень скачанных пакетов.
 
 ```console
-tanin@ubuntu24:~/kernel$ ls -l
-total 220124
--rw-rw-r-- 1 tanin tanin  13868606 Feb  8 09:32 linux-headers-6.13.0-061300_6.13.0-061300.202501302155_all.deb
--rw-rw-r-- 1 tanin tanin   3812282 Feb  8 09:32 linux-headers-6.13.0-061300-generic_6.13.0-061300.202501302155_amd64.deb
--rw-rw-r-- 1 tanin tanin  15861952 Feb  8 09:32 linux-image-unsigned-6.13.0-061300-generic_6.13.0-061300.202501302155_amd64.deb
--rw-rw-r-- 1 tanin tanin 191856832 Feb  8 09:32 linux-modules-6.13.0-061300-generic_6.13.0-061300.202501302155_amd64.deb
-```
-
-ОПЦИОНАЛЬНО скачаем файл содержащий контрольные суммы и проверим их. 
-
-```console
-tanin@ubuntu24:~/kernel$ wget https://kernel.ubuntu.com/mainline/v6.13/amd64/CHECKSUMS
---2025-03-03 21:10:39--  https://kernel.ubuntu.com/mainline/v6.13/amd64/CHECKSUMS
-Resolving kernel.ubuntu.com (kernel.ubuntu.com)... 185.125.189.74, 185.125.189.76, 185.125.189.75
-Connecting to kernel.ubuntu.com (kernel.ubuntu.com)|185.125.189.74|:443... connected.
-HTTP request sent, awaiting response... 200 OK
-Length: 1121 (1.1K)
-Saving to: ‘CHECKSUMS’
-
-CHECKSUMS                                            100%[===================================================================================================================>]   1.09K  --.-KB/s    in 0s
-
-2025-03-03 21:10:40 (587 MB/s) - ‘CHECKSUMS’ saved [1121/1121]
-```
-
-```console
-tanin@ubuntu24:~/kernel$ shasum -c CHECKSUMS
-linux-headers-6.13.0-061300-generic_6.13.0-061300.202501302155_amd64.deb: OK
-linux-headers-6.13.0-061300_6.13.0-061300.202501302155_all.deb: OK
-linux-image-unsigned-6.13.0-061300-generic_6.13.0-061300.202501302155_amd64.deb: OK
-linux-modules-6.13.0-061300-generic_6.13.0-061300.202501302155_amd64.deb: OK
-linux-headers-6.13.0-061300-generic_6.13.0-061300.202501302155_amd64.deb: OK
-linux-headers-6.13.0-061300_6.13.0-061300.202501302155_all.deb: OK
-linux-image-unsigned-6.13.0-061300-generic_6.13.0-061300.202501302155_amd64.deb: OK
-linux-modules-6.13.0-061300-generic_6.13.0-061300.202501302155_amd64.deb: OK
-```
-
-```console
-tanin@ubuntu24:~/kernel$ cat CHECKSUMS
-# Checksums, check with the command below:
-#     shasum -c CHECKSUMS
-#
-# Checksums-Sha1:
-ac4ce3e74c61227c71e3654959aa35d9393a5e08  linux-headers-6.13.0-061300-generic_6.13.0-061300.202501302155_amd64.deb
-1b9281268ec2741f0f0648c5eed8a2670fbbc2c1  linux-headers-6.13.0-061300_6.13.0-061300.202501302155_all.deb
-53ab2cbc69fdc165ecbb7f2329ed30152596c848  linux-image-unsigned-6.13.0-061300-generic_6.13.0-061300.202501302155_amd64.deb
-c85aae557cc4802def43c3621b1a028594bab05d  linux-modules-6.13.0-061300-generic_6.13.0-061300.202501302155_amd64.deb
-#
-# Checksums-Sha256:
-298da8f03ed5e05fb6d9fef63ab40f0796e005bdd3ce5df123cdd7c01fa7bbf1  linux-headers-6.13.0-061300-generic_6.13.0-061300.202501302155_amd64.deb
-11019230e7b7ab93db36f292d69d372704b77e592a7cc347c725501a4fdfa4a0  linux-headers-6.13.0-061300_6.13.0-061300.202501302155_all.deb
-cc174bc57b858f996855cf8c4d6e71c353ded3ed32cd55c26780b62435778806  linux-image-unsigned-6.13.0-061300-generic_6.13.0-061300.202501302155_amd64.deb
-d04414b6b38e4a26c806180bcd7ee7799caafccdd538deb5ce3cc5bcf97bdd42  linux-modules-6.13.0-061300-generic_6.13.0-061300.202501302155_amd64.deb
-```
 
 
 
@@ -131,10 +122,6 @@ d04414b6b38e4a26c806180bcd7ee7799caafccdd538deb5ce3cc5bcf97bdd42  linux-modules-
 
 
 
-
-
-
-
-<br/>
+br/>
 
 [Вернуться к списку всех ДЗ](../README.md)
