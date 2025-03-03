@@ -4,21 +4,21 @@
 
 Выполнение домашнего задания:
 
-1) Команда uname - выдает имя текущей системы, с ключем -r выдает информацию о релизе ядра операционной системы.
+1) команда uname - выдает имя текущей системы, с ключем -r выдает информацию о релизе ядра операционной системы: 
 
 ```console
 tanin@ubuntu24:~$ uname -r
 6.8.0-54-generic
 ```
 
-2) С помощью команд mkdir создадим каталог kernel, с помощью команды cp переместимся в каталог ~/kernel (при вводе команды используется оператор AND (&&), который выполнит вторую команду (cp) при условии успешного выполнения первой команды (mrdir))
+2) с помощью команд mkdir создадим каталог kernel, с помощью команды cp переместимся в каталог ~/kernel (при вводе команды используется оператор AND (&&), который выполнит вторую команду (cp) при условии успешного выполнения первой команды (mrdir)): 
 
 ```console
 tanin@ubuntu24:~$ mkdir ./kernel && cd ./kernel
 tanin@ubuntu24:~/kernel$
 ```
 
-3) С помощью утилиты wget скачаем необходимые пакеты свежей версии ядра ОС. 
+3) с помощью утилиты wget скачаем необходимые пакеты свежей версии ядра ОС: 
 
 ```console
 tanin@ubuntu24:~/kernel$ wget https://kernel.ubuntu.com/mainline/v6.13/amd64/linux-headers-6.13.0-061300-generic_6.13.0-061300.202501302155_amd64.deb https://kernel.ubuntu.com/mainline/v6.13/amd64/linux-headers-6.13.0-061300_6.13.0-061300.202501302155_all.deb https://kernel.ubuntu.com/mainline/v6.13/amd64/linux-image-unsigned-6.13.0-061300-generic_6.13.0-061300.202501302155_amd64.deb https://kernel.ubuntu.com/mainline/v6.13/amd64/linux-modules-6.13.0-061300-generic_6.13.0-061300.202501302155_amd64.deb
@@ -68,7 +68,7 @@ Total wall clock time: 8.0s
 Downloaded: 4 files, 215M in 7.4s (29.0 MB/s)
 ```
 
-4) От имени администратора запустим менеджер пакетов dpkg с ключем -i (--install) для их установки (используется маска поиска *.deb, т.е.все файлы с расширением deb).
+4) от имени администратора запустим менеджер пакетов dpkg с ключем -i (--install) для их установки (используется маска поиска *.deb, т.е.все файлы с расширением deb): 
 
 ```console
 tanin@ubuntu24:~/kernel$ sudo dpkg -i *.deb
@@ -102,7 +102,7 @@ Adding boot menu entry for UEFI Firmware Settings ...
 done
 ```
 
-5) Проверяем, что новая версия (v6.13) ядра имеется в /boot. 
+5) проверяем, что новая версия (v6.13) ядра имеется в /boot: 
 
 ```console
 tanin@ubuntu24:~/kernel$ ls -ls /boot/ | grep 6.13
@@ -114,7 +114,7 @@ tanin@ubuntu24:~/kernel$ ls -ls /boot/ | grep 6.13
 15464 -rw------- 1 root root 15831552 Jan 30 21:55 vmlinuz-6.13.0-061300-generic
 ```
 
-6) От имени администратора обновим конфигурацию загрузчика grub: 
+6) от имени администратора обновим конфигурацию загрузчика grub: 
 
 ```console
 tanin@ubuntu24:~/kernel$ sudo update-grub
@@ -141,6 +141,6 @@ tanin@ubuntu24:~/kernel$ sudo grub-set-default 0
 
 Домашнее задание выполнено.
 
-br/>
+<br/>
 
 [Вернуться к списку всех ДЗ](../README.md)
