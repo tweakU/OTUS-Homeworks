@@ -135,28 +135,117 @@ Consistency Policy : resync
 ```
 Вывод команд указывается на успешное выполнение задачи.
 
-4) от 
+4) далее: "сломаем" RAID-массив:
 
 ```console
+tanin@ubuntu24:~$ sudo mdadm /dev/md0 --fail /dev/sdb
+mdadm: set /dev/sdb faulty in /dev/md0
 ```
 
-5) проверяем
+5) посмотрим что изменилось:
 
 ```console
+tanin@ubuntu24:~$ cat /proc/mdstat 
+Personalities : [raid0] [raid1] [raid6] [raid5] [raid4] [raid10] 
+md0 : active raid10 sde[3] sdd[2] sdc[1] sdb[0](F)
+      2093056 blocks super 1.2 512K chunks 2 near-copies [4/3] [_UUU]
+      
+unused devices: <none>
+
+tanin@ubuntu24:~$ sudo mdadm -D /dev/md0 
+/dev/md0:
+           Version : 1.2
+     Creation Time : Fri Mar 14 00:38:20 2025
+        Raid Level : raid10
+        Array Size : 2093056 (2044.00 MiB 2143.29 MB)
+     Used Dev Size : 1046528 (1022.00 MiB 1071.64 MB)
+      Raid Devices : 4
+     Total Devices : 4
+       Persistence : Superblock is persistent
+
+       Update Time : Fri Mar 14 01:00:24 2025
+             State : clean, degraded 
+    Active Devices : 3
+   Working Devices : 3
+    Failed Devices : 1
+     Spare Devices : 0
+
+            Layout : near=2
+        Chunk Size : 512K
+
+Consistency Policy : resync
+
+              Name : ubuntu24:0  (local to host ubuntu24)
+              UUID : d3f77766:7d5edc7b:f8b9267d:50cb7c28
+            Events : 19
+
+    Number   Major   Minor   RaidDevice State
+       -       0        0        0      removed
+       1       8       32        1      active sync set-B   /dev/sdc
+       2       8       48        2      active sync set-A   /dev/sdd
+       3       8       64        3      active sync set-B   /dev/sde
+
+       0       8       16        -      faulty   /dev/sdb
 ```
 
-6) от 
+6) удалим "сломанный" диск из RAID-массива: 
 ```console
+tanin@ubuntu24:~$ sudo mdadm /dev/md0 --remove /dev/sdb
+mdadm: hot removed /dev/sdb from /dev/md0
 ```
 
-7) от 
+7) представим, что дежурный сисадмин провёл замену неисправного диска) добавим "новый" диск:
 
 ```console
+tanin@ubuntu24:~$ sudo mdadm /dev/md0 --add /dev/sdb
+mdadm: added /dev/sdb
 ```
 
-8) от 
+8) проверим состояние RAID-массива после замены "неисправного" диска, выводе команд можем видеть процесс его перестроения:
 
 ```console
+tanin@ubuntu24:~$ sudo mdadm -D /dev/md0 
+/dev/md0:
+           Version : 1.2
+     Creation Time : Fri Mar 14 00:38:20 2025
+        Raid Level : raid10
+        Array Size : 2093056 (2044.00 MiB 2143.29 MB)
+     Used Dev Size : 1046528 (1022.00 MiB 1071.64 MB)
+      Raid Devices : 4
+     Total Devices : 4
+       Persistence : Superblock is persistent
+
+       Update Time : Fri Mar 14 01:13:20 2025
+             State : clean, degraded, recovering 
+    Active Devices : 3
+   Working Devices : 4
+    Failed Devices : 0
+     Spare Devices : 1
+
+            Layout : near=2
+        Chunk Size : 512K
+
+Consistency Policy : resync
+
+    Rebuild Status : 41% complete
+
+              Name : ubuntu24:0  (local to host ubuntu24)
+              UUID : d3f77766:7d5edc7b:f8b9267d:50cb7c28
+            Events : 50
+
+    Number   Major   Minor   RaidDevice State
+       4       8       16        0      spare rebuilding   /dev/sdb
+       1       8       32        1      active sync set-B   /dev/sdc
+       2       8       48        2      active sync set-A   /dev/sdd
+       3       8       64        3      active sync set-B   /dev/sde
+
+tanin@ubuntu24:~$ cat /proc/mdstat 
+Personalities : [raid0] [raid1] [raid6] [raid5] [raid4] [raid10] 
+md0 : active raid10 sdb[4] sde[3] sdd[2] sdc[1]
+      2093056 blocks super 1.2 512K chunks 2 near-copies [4/3] [_UUU]
+      [===================>.]  recovery = 98.5% (1032320/1046528) finish=0.0min speed=258080K/sec
+      
+unused devices: <none>
 ```
 
 9) повторно 
