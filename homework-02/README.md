@@ -133,6 +133,7 @@ Consistency Policy : resync
        2       8       48        2      active sync set-A   /dev/sdd
        3       8       64        3      active sync set-B   /dev/sde
 ```
+
 Вывод команд указывается на успешное выполнение задачи.
 
 4) далее: "сломаем" RAID-массив:
@@ -196,6 +197,7 @@ Consistency Policy : resync
 ```
 
 6) удалим "сломанный" диск из RAID-массива: 
+
 ```console
 tanin@ubuntu24:~$ sudo mdadm /dev/md0 --remove /dev/sdb
 mdadm: hot removed /dev/sdb from /dev/md0
@@ -255,12 +257,150 @@ md0 : active raid10 sdb[4] sde[3] sdd[2] sdc[1]
 unused devices: <none>
 ```
 
-9) повторно 
+9) далее: создадим Globally Unique Identifier Partition Table (GPT) или таблицу разделов GUID, четыре раздела и смонтируем их:
+
+Создадим раздел GPT внутри RAID-массива:
 
 ```console
+tanin@ubuntu24:~$ sudo parted -s /dev/md0 mklabel gpt
 ```
 
-Ядро ОС GNU/Linux обновлено. Домашнее задание выполнено.
+Создадим разделы:
+
+```console
+tanin@ubuntu24:~$ sudo parted /dev/md0 mkpart primary ext4 0% 25%
+Information: You may need to update /etc/fstab.
+
+tanin@ubuntu24:~$ sudo parted /dev/md0 mkpart primary ext4 25% 50%        
+Information: You may need to update /etc/fstab.
+
+tanin@ubuntu24:~$ sudo parted /dev/md0 mkpart primary ext4 50% 75%       
+Information: You may need to update /etc/fstab.
+
+tanin@ubuntu24:~$ sudo parted /dev/md0 mkpart primary ext4 75% 100%     
+Information: You may need to update /etc/fstab.
+```
+
+Создадим файловую систему ext4 только что созданных разделов, используя цикл for i in:
+
+```console
+tanin@ubuntu24:~$ for i in $(seq 1 4); do sudo mkfs.ext4 /dev/md0p$i; done
+mke2fs 1.47.0 (5-Feb-2023)
+Creating filesystem with 130560 4k blocks and 130560 inodes
+Filesystem UUID: 0091f311-d114-4583-b4fe-e5b29b0a72f0
+Superblock backups stored on blocks: 
+	32768, 98304
+
+Allocating group tables: done                            
+Writing inode tables: done                            
+Creating journal (4096 blocks): done
+Writing superblocks and filesystem accounting information: done
+
+mke2fs 1.47.0 (5-Feb-2023)
+Creating filesystem with 130816 4k blocks and 130816 inodes
+Filesystem UUID: d23581ac-6859-4a21-8ec1-6b422755b52c
+Superblock backups stored on blocks: 
+	32768, 98304
+
+Allocating group tables: done                            
+Writing inode tables: done                            
+Creating journal (4096 blocks): done
+Writing superblocks and filesystem accounting information: done
+
+mke2fs 1.47.0 (5-Feb-2023)
+Creating filesystem with 130816 4k blocks and 130816 inodes
+Filesystem UUID: a16c9a9f-3a32-4f50-ab1b-93dfb3078ba5
+Superblock backups stored on blocks: 
+	32768, 98304
+
+Allocating group tables: done                            
+Writing inode tables: done                            
+Creating journal (4096 blocks): done
+Writing superblocks and filesystem accounting information: done
+
+mke2fs 1.47.0 (5-Feb-2023)
+Creating filesystem with 130560 4k blocks and 130560 inodes
+Filesystem UUID: 6a830df9-80ee-4ac7-ad1a-039b2bf555ec
+Superblock backups stored on blocks: 
+	32768, 98304
+
+Allocating group tables: done                            
+Writing inode tables: done                            
+Creating journal (4096 blocks): done
+Writing superblocks and filesystem accounting information: done
+```
+
+Смонитируем их (разделы) по директориям, используя регулярные выражения и цикл for i in:
+
+```console
+tanin@ubuntu24:~$ sudo mkdir -p /raid/part{1,2,3,4}
+tanin@ubuntu24:~$ ls -l /raid/
+total 16
+drwxr-xr-x 2 root root 4096 Mar 14 01:45 part1
+drwxr-xr-x 2 root root 4096 Mar 14 01:45 part2
+drwxr-xr-x 2 root root 4096 Mar 14 01:45 part3
+drwxr-xr-x 2 root root 4096 Mar 14 01:45 part4
+
+tanin@ubuntu24:~$ for i in $(seq 1 4); do sudo mount /dev/md0p$i /raid/part$i; done
+```
+
+Проверим содеянное):
+
+```console
+tanin@ubuntu24:~$ cat /proc/mdstat 
+Personalities : [raid0] [raid1] [raid6] [raid5] [raid4] [raid10] 
+md0 : active raid10 sdb[4] sde[3] sdd[2] sdc[1]
+      2093056 blocks super 1.2 512K chunks 2 near-copies [4/4] [UUUU]
+      
+unused devices: <none>
+
+tanin@ubuntu24:~$ sudo mdadm -D /dev/md0 | grep /dev/sd
+       4       8       16        0      active sync set-A   /dev/sdb
+       1       8       32        1      active sync set-B   /dev/sdc
+       2       8       48        2      active sync set-A   /dev/sdd
+       3       8       64        3      active sync set-B   /dev/sde
+
+tanin@ubuntu24:~$ df -h
+Filesystem      Size  Used Avail Use% Mounted on
+tmpfs           196M  1.2M  195M   1% /run
+efivarfs        256K   47K  210K  19% /sys/firmware/efi/efivars
+/dev/sda2        24G  4.0G   19G  18% /
+tmpfs           978M     0  978M   0% /dev/shm
+tmpfs           5.0M     0  5.0M   0% /run/lock
+/dev/sda1       1.1G  6.4M  1.1G   1% /boot/efi
+tmpfs           196M   12K  196M   1% /run/user/1000
+/dev/md0p1      462M   24K  426M   1% /raid/part1
+/dev/md0p2      463M   24K  427M   1% /raid/part2
+/dev/md0p3      463M   24K  427M   1% /raid/part3
+/dev/md0p4      462M   24K  426M   1% /raid/part4
+
+tanin@ubuntu24:~$ sudo cp -r /var/log/* /raid/part3/
+
+tanin@ubuntu24:~$ ls /raid/part3/
+alternatives.log    auth.log.2.gz  boot.log.5             dist-upgrade  dmesg.4.gz  kern.log       private      unattended-upgrades
+alternatives.log.1  boot.log       bootstrap.log          dmesg         dpkg.log    kern.log.1     README       vboxpostinstall.log
+apport.log          boot.log.1     btmp                   dmesg.0       dpkg.log.1  kern.log.2.gz  syslog       wtmp
+apt                 boot.log.2     btmp.1                 dmesg.1.gz    faillog     landscape      syslog.1
+auth.log            boot.log.3     cloud-init.log         dmesg.2.gz    installer   lastlog        syslog.2.gz
+auth.log.1          boot.log.4     cloud-init-output.log  dmesg.3.gz    journal     lost+found     sysstat
+
+tanin@ubuntu24:~$ df -h
+Filesystem      Size  Used Avail Use% Mounted on
+tmpfs           196M  1.2M  195M   1% /run
+efivarfs        256K   47K  210K  19% /sys/firmware/efi/efivars
+/dev/sda2        24G  4.0G   19G  18% /
+tmpfs           978M     0  978M   0% /dev/shm
+tmpfs           5.0M     0  5.0M   0% /run/lock
+/dev/sda1       1.1G  6.4M  1.1G   1% /boot/efi
+tmpfs           196M   12K  196M   1% /run/user/1000
+/dev/md0p1      462M  8.0K  426M   1% /raid/part1
+/dev/md0p2      463M  8.0K  427M   1% /raid/part2
+/dev/md0p3      463M  404M   23M  95% /raid/part3
+/dev/md0p4      462M  8.0K  426M   1% /raid/part4
+```
+
+RAID-массив 10 уровня создан, разделы нарезаны, файловая система создана, рандомное копирование проведено. 
+Домашнее задание выполнено.
 
 <br/>
 
