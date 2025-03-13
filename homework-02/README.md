@@ -151,7 +151,12 @@ md0 : active raid10 sde[3] sdd[2] sdc[1] sdb[0](F)
       2093056 blocks super 1.2 512K chunks 2 near-copies [4/3] [_UUU]
       
 unused devices: <none>
+```
 
+Диск /dev/sdb получил префикс F.
+На выводе комнады ниже также видим неисправность данного диска.
+
+```console
 tanin@ubuntu24:~$ sudo mdadm -D /dev/md0 
 /dev/md0:
            Version : 1.2
