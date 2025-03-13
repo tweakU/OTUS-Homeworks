@@ -100,6 +100,7 @@ md0 : active raid10 sde[3] sdd[2] sdc[1] sdb[0]
       2093056 blocks super 1.2 512K chunks 2 near-copies [4/4] [UUUU]
       
 unused devices: <none>
+
 tanin@ubuntu24:~$ sudo mdadm -D /dev/md0 
 /dev/md0:
            Version : 1.2
@@ -134,7 +135,7 @@ Consistency Policy : resync
        3       8       64        3      active sync set-B   /dev/sde
 ```
 
-Вывод команд указывается на успешное выполнение задачи.
+Вывод команд указывает на успешное выполнение задачи.
 
 4) далее: "сломаем" RAID-массив:
 
