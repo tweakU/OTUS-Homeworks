@@ -518,7 +518,33 @@ root@ubuntu24-lvm:~# pvremove /dev/sdb
 10) /home - сделать том для снапшотов.
 
 ```console
+root@ubuntu24-lvm:~# lvcreate -n LogVol_Home -L 2G /dev/ubuntu-vg
+  Logical volume "LogVol_Home" created.
 
+root@ubuntu24-lvm:~# mkfs.ext4 /dev/ubuntu-vg/LogVol_Home
+mke2fs 1.47.0 (5-Feb-2023)
+Creating filesystem with 524288 4k blocks and 131072 inodes
+Filesystem UUID: eb73cb94-f14a-4977-8e00-03094375fa10
+Superblock backups stored on blocks: 
+	32768, 98304, 163840, 229376, 294912
+
+Allocating group tables: done                            
+Writing inode tables: done                            
+Creating journal (16384 blocks): done
+Writing superblocks and filesystem accounting information: done 
+
+root@ubuntu24-lvm:~# mount /dev/ubuntu-vg/LogVol_Home /mnt/
+
+root@ubuntu24-lvm:~# cp -aR /home/* /mnt/
+
+root@ubuntu24-lvm:~# rm -rf /home/*
+
+root@ubuntu24-lvm:~# umount /mnt 
+
+root@ubuntu24-lvm:~# mount /dev/ubuntu-vg/LogVol_Home /home/
+
+root@ubuntu24-lvm:~# echo "`blkid | grep Home | awk '{print $2}'` \
+ /home xfs defaults 0 0" >> /etc/fstab
 ```
 
 11) Прописать монтирование в fstab. Попробовать с разными опциями и разными файловыми системами (на выбор).
