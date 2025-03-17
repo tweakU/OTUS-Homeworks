@@ -143,7 +143,7 @@ Writing inode tables: done
 Creating journal (16384 blocks): done
 Writing superblocks and filesystem accounting information: done
 
-Создадим каталог:
+#Создадим каталог:
 
 root@ubuntu24-lvm:~# mkdir /data
 
