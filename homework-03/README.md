@@ -142,9 +142,13 @@ Allocating group tables: done
 Writing inode tables: done                            
 Creating journal (16384 blocks): done
 Writing superblocks and filesystem accounting information: done
+```
 
-#Создадим каталог:
+Создадим каталог и смонитируем LV в /data:
 
+	Создадим каталог и смонитируем LV в /data:
+
+```console
 root@ubuntu24-lvm:~# mkdir /data
 
 root@ubuntu24-lvm:~# mount /dev/otus/test /data
