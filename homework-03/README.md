@@ -146,8 +146,6 @@ Writing superblocks and filesystem accounting information: done
 
 Создадим каталог и смонитируем LV в /data:
 
-	Создадим каталог и смонитируем LV в /data:
-
 ```console
 root@ubuntu24-lvm:~# mkdir /data
 
@@ -198,36 +196,348 @@ root@ubuntu24-lvm:~# mount | grep /data
 /dev/mapper/otus-test on /data type ext4 (rw,relatime)
 ```
 
+```console
+root@ubuntu24-lvm:~# dd if=/dev/zero of=/data/test.log bs=1M  count=8000 status=progress
+6351224832 bytes (6,4 GB, 5,9 GiB) copied, 2 s, 3,2 GB/s
+dd: error writing '/data/test.log': No space left on device
+7944+0 records in
+7943+0 records out
+8329297920 bytes (8,3 GB, 7,8 GiB) copied, 2,52268 s, 3,3 GB/s
 
+root@ubuntu24-lvm:~# df -Th /data/
+Filesystem            Type  Size  Used Avail Use% Mounted on
+/dev/mapper/otus-test ext4  7,8G  7,8G     0 100% /data
+```
 
+```console
+root@ubuntu24-lvm:~# lvextend -l+80%FREE /dev/otus/test
+  Size of logical volume otus/test changed from <8,00 GiB (2047 extents) to <11,12 GiB (2846 extents).
+  Logical volume otus/test successfully resized.
 
+root@ubuntu24-lvm:~# lvs /dev/otus/test 
+  LV   VG   Attr       LSize   Pool Origin Data%  Meta%  Move Log Cpy%Sync Convert
+  test otus -wi-ao---- <11,12g                                                    
 
-
-
+root@ubuntu24-lvm:~# df -Th /data/
+Filesystem            Type  Size  Used Avail Use% Mounted on
+/dev/mapper/otus-test ext4  7,8G  7,8G     0 100% /data
+```
 
 5) Выполнить resize: 
 
 ```console
+root@ubuntu24-lvm:~# resize2fs /dev/otus/test 
+resize2fs 1.47.0 (5-Feb-2023)
+Filesystem at /dev/otus/test is mounted on /data; on-line resizing required
+old_desc_blocks = 1, new_desc_blocks = 2
+The filesystem on /dev/otus/test is now 2914304 (4k) blocks long.
 
+root@ubuntu24-lvm:~# df -Th /data/
+Filesystem            Type  Size  Used Avail Use% Mounted on
+/dev/mapper/otus-test ext4   11G  7,8G  2,6G  76% /data
+
+root@ubuntu24-lvm:~# umount /data 
+
+root@ubuntu24-lvm:~# e2fsck -fy /dev/otus/test 
+e2fsck 1.47.0 (5-Feb-2023)
+Pass 1: Checking inodes, blocks, and sizes
+Pass 2: Checking directory structure
+Pass 3: Checking directory connectivity
+Pass 4: Checking reference counts
+Pass 5: Checking group summary information
+/dev/otus/test: 12/729088 files (0.0% non-contiguous), 2105907/2914304 blocks
+
+root@ubuntu24-lvm:~# resize2fs /dev/otus/test 10G
+resize2fs 1.47.0 (5-Feb-2023)
+Resizing the filesystem on /dev/otus/test to 2621440 (4k) blocks.
+The filesystem on /dev/otus/test is now 2621440 (4k) blocks long.
+
+root@ubuntu24-lvm:~# lvreduce /dev/otus/test -L 10G
+  WARNING: Reducing active logical volume to 10,00 GiB.
+  THIS MAY DESTROY YOUR DATA (filesystem etc.)
+Do you really want to reduce otus/test? [y/n]: y
+  Size of logical volume otus/test changed from <11,12 GiB (2846 extents) to 10,00 GiB (2560 extents).
+  Logical volume otus/test successfully resized.
+
+root@ubuntu24-lvm:~# mount /dev/otus/test /data/
 ```
 
 6) Проверить корректность работы:
 
 ```console
+root@ubuntu24-lvm:~# df -Th /data/
+Filesystem            Type  Size  Used Avail Use% Mounted on
+/dev/mapper/otus-test ext4  9,8G  7,8G  1,6G  84% /data
 
+root@ubuntu24-lvm:~# lvs /dev/otus/test
+  LV   VG   Attr       LSize  Pool Origin Data%  Meta%  Move Log Cpy%Sync Convert
+  test otus -wi-ao---- 10,00g
 ```
 
 
 
 
 
+7) Уменьшить том под / до 8G.
+
+```console
+root@ubuntu24-lvm:~# vgcreate vg_root /dev/sdb
+  Physical volume "/dev/sdb" successfully created.
+  Volume group "vg_root" successfully created
+
+root@ubuntu24-lvm:~# lvcreate -n lv_root -l +100%FREE /dev/vg_root
+WARNING: ext4 signature detected on /dev/vg_root/lv_root at offset 1080. Wipe it? [y/n]: y
+  Wiping ext4 signature on /dev/vg_root/lv_root.
+  Logical volume "lv_root" created.
+
+root@ubuntu24-lvm:~# mkfs.ext4 /dev/vg_root/lv_root
+mke2fs 1.47.0 (5-Feb-2023)
+Creating filesystem with 2620416 4k blocks and 655360 inodes
+Filesystem UUID: 41293be5-9266-42e6-870b-3822bb01ad18
+Superblock backups stored on blocks: 
+	32768, 98304, 163840, 229376, 294912, 819200, 884736, 1605632
+
+Allocating group tables: done                            
+Writing inode tables: done                            
+Creating journal (16384 blocks): done
+Writing superblocks and filesystem accounting information: done 
+
+root@ubuntu24-lvm:~# mount /dev/vg_root/lv_root /mnt
+
+root@ubuntu24-lvm:~# ls -l /mnt/
+total 16
+drwx------ 2 root root 16384 мар 17 20:48 lost+found
+
+root@ubuntu24-lvm:~# rsync -aqvxHAX --progress / /mnt/
+
+root@ubuntu24-lvm:~# ls -l /mnt/
+total 2097256
+lrwxrwxrwx   1 root root          7 апр 22  2024 bin -> usr/bin
+drwxr-xr-x   2 root root       4096 фев 26  2024 bin.usr-is-merged
+drwxr-xr-x   2 root root       4096 мар 16 20:26 boot
+dr-xr-xr-x   2 root root       4096 авг 27  2024 cdrom
+drwxr-xr-x   2 root root       4096 мар 17 19:52 data
+drwxr-xr-x   2 root root       4096 мар 17 20:48 dev
+drwxr-xr-x 106 root root       4096 мар 16 20:27 etc
+drwxr-xr-x   3 root root       4096 мар 16 20:27 home
+lrwxrwxrwx   1 root root          7 апр 22  2024 lib -> usr/lib
+drwxr-xr-x   2 root root       4096 фев 26  2024 lib.usr-is-merged
+drwx------   2 root root      16384 мар 16 20:18 lost+found
+drwxr-xr-x   2 root root       4096 авг 27  2024 media
+drwxr-xr-x   2 root root       4096 мар 17 20:48 mnt
+drwxr-xr-x   2 root root       4096 авг 27  2024 opt
+dr-xr-xr-x   2 root root       4096 мар 17 16:57 proc
+drwx------   3 root root       4096 мар 17 20:24 root
+drwxr-xr-x   2 root root       4096 мар 17 19:32 run
+lrwxrwxrwx   1 root root          8 апр 22  2024 sbin -> usr/sbin
+drwxr-xr-x   2 root root       4096 мар 31  2024 sbin.usr-is-merged
+drwxr-xr-x   2 root root       4096 мар 16 20:27 snap
+drwxr-xr-x   2 root root       4096 авг 27  2024 srv
+-rw-------   1 root root 2147483648 мар 16 20:26 swap.img
+dr-xr-xr-x   2 root root       4096 мар 17 16:57 sys
+drwxrwxrwt  12 root root       4096 мар 17 20:48 tmp
+drwxr-xr-x  11 root root       4096 авг 27  2024 usr
+drwxr-xr-x  13 root root       4096 мар 16 20:27 var
+
+root@ubuntu24-lvm:~# for i in /proc/ /sys/ /dev/ /run/ /boot/; \
+ do mount --bind $i /mnt/$i; done
+
+root@ubuntu24-lvm:~# chroot /mnt/
+
+root@ubuntu24-lvm:/# grub-mkconfig -o /boot/grub/grub.cfg
+Sourcing file `/etc/default/grub'
+Generating grub configuration file ...
+Found linux image: /boot/vmlinuz-6.8.0-55-generic
+Found initrd image: /boot/initrd.img-6.8.0-55-generic
+Warning: os-prober will not be executed to detect other bootable partitions.
+Systems on them will not be added to the GRUB boot configuration.
+Check GRUB_DISABLE_OS_PROBER documentation entry.
+Adding boot menu entry for UEFI Firmware Settings ...
+done
+
+root@ubuntu24-lvm:/# update-initramfs -u
+update-initramfs: Generating /boot/initrd.img-6.8.0-55-generic
+
+root@ubuntu24-lvm:/# exit
+exit
+
+root@ubuntu24-lvm:~# reboot
+
+root@ubuntu24-lvm:~# lsblk 
+NAME                      MAJ:MIN RM  SIZE RO TYPE MOUNTPOINTS
+sda                         8:0    0   64G  0 disk 
+├─sda1                      8:1    0    1G  0 part /boot/efi
+├─sda2                      8:2    0    2G  0 part /boot
+└─sda3                      8:3    0 60,9G  0 part 
+  └─ubuntu--vg-ubuntu--lv 252:1    0 30,5G  0 lvm  
+sdb                         8:16   0   10G  0 disk 
+└─vg_root-lv_root         252:0    0   10G  0 lvm  /
+sdc                         8:32   0    2G  0 disk 
+sdd                         8:48   0    1G  0 disk 
+sde                         8:64   0    1G  0 disk 
+sr0                        11:0    1 1024M  0 rom
+
+root@ubuntu24-lvm:~# lvremove /dev/ubuntu-vg/ubuntu-lv
+Do you really want to remove and DISCARD active logical volume ubuntu-vg/ubuntu-lv? [y/n]: y
+  Logical volume "ubuntu-lv" successfully removed.
+
+root@ubuntu24-lvm:~# lvcreate -n ubuntu-vg/ubuntu-lv -L 8G /dev/ubuntu-vg
+WARNING: ext4 signature detected on /dev/ubuntu-vg/ubuntu-lv at offset 1080. Wipe it? [y/n]: y
+  Wiping ext4 signature on /dev/ubuntu-vg/ubuntu-lv.
+  Logical volume "ubuntu-lv" created.
+
+root@ubuntu24-lvm:~# mkfs.ext4 /dev/ubuntu-vg/ubuntu-lv
+mke2fs 1.47.0 (5-Feb-2023)
+Creating filesystem with 2097152 4k blocks and 524288 inodes
+Filesystem UUID: d5377723-5e4f-4997-a76e-45a481508b3a
+Superblock backups stored on blocks: 
+	32768, 98304, 163840, 229376, 294912, 819200, 884736, 1605632
+
+Allocating group tables: done                            
+Writing inode tables: done                            
+Creating journal (16384 blocks): done
+Writing superblocks and filesystem accounting information: done 
+
+root@ubuntu24-lvm:~# mount /dev/ubuntu-vg/ubuntu-lv /mnt/
+
+root@ubuntu24-lvm:~# ls -l /mnt/
+total 16
+drwx------ 2 root root 16384 мар 17 20:54 lost+found
+
+root@ubuntu24-lvm:~# rsync -aqvxHAX --progress / /mnt/
+
+root@ubuntu24-lvm:~# ls -l /mnt/
+total 2097256
+lrwxrwxrwx   1 root root          7 апр 22  2024 bin -> usr/bin
+drwxr-xr-x   2 root root       4096 фев 26  2024 bin.usr-is-merged
+drwxr-xr-x   2 root root       4096 мар 17 20:51 boot
+dr-xr-xr-x   2 root root       4096 авг 27  2024 cdrom
+drwxr-xr-x   2 root root       4096 мар 17 19:52 data
+drwxr-xr-x   2 root root       4096 мар 17 20:54 dev
+drwxr-xr-x 106 root root       4096 мар 16 20:27 etc
+drwxr-xr-x   3 root root       4096 мар 16 20:27 home
+lrwxrwxrwx   1 root root          7 апр 22  2024 lib -> usr/lib
+drwxr-xr-x   2 root root       4096 фев 26  2024 lib.usr-is-merged
+drwx------   2 root root      16384 мар 16 20:18 lost+found
+drwxr-xr-x   2 root root       4096 авг 27  2024 media
+drwxr-xr-x   2 root root       4096 мар 17 20:54 mnt
+drwxr-xr-x   2 root root       4096 авг 27  2024 opt
+dr-xr-xr-x   2 root root       4096 мар 17 20:52 proc
+drwx------   3 root root       4096 мар 17 20:24 root
+drwxr-xr-x   2 root root       4096 мар 17 20:52 run
+lrwxrwxrwx   1 root root          8 апр 22  2024 sbin -> usr/sbin
+drwxr-xr-x   2 root root       4096 мар 31  2024 sbin.usr-is-merged
+drwxr-xr-x   2 root root       4096 мар 16 20:27 snap
+drwxr-xr-x   2 root root       4096 авг 27  2024 srv
+-rw-------   1 root root 2147483648 мар 16 20:26 swap.img
+dr-xr-xr-x   2 root root       4096 мар 17 20:52 sys
+drwxrwxrwt  12 root root       4096 мар 17 20:53 tmp
+drwxr-xr-x  11 root root       4096 авг 27  2024 usr
+drwxr-xr-x  13 root root       4096 мар 16 20:27 var
+
+root@ubuntu24-lvm:~# for i in /proc/ /sys/ /dev/ /run/ /boot/; \
+ do mount --bind $i /mnt/$i; done
+
+root@ubuntu24-lvm:~# chroot /mnt/
+
+root@ubuntu24-lvm:/# grub-mkconfig -o /boot/grub/grub.cfg
+Sourcing file `/etc/default/grub'
+Generating grub configuration file ...
+Found linux image: /boot/vmlinuz-6.8.0-55-generic
+Found initrd image: /boot/initrd.img-6.8.0-55-generic
+Warning: os-prober will not be executed to detect other bootable partitions.
+Systems on them will not be added to the GRUB boot configuration.
+Check GRUB_DISABLE_OS_PROBER documentation entry.
+Adding boot menu entry for UEFI Firmware Settings ...
+done
+
+root@ubuntu24-lvm:/# update-initramfs -u
+update-initramfs: Generating /boot/initrd.img-6.8.0-55-generic
+W: Couldn't identify type of root file system for fsck hook
+```
+
+8) Выделить том под /home.
+
+```console
+
+```
+
+9) Выделить том под /var - сделать в mirror.
+
+```console
+root@ubuntu24-lvm:/# vgcreate vg_var /dev/sdc /dev/sdd
+  Physical volume "/dev/sdc" successfully created.
+  Physical volume "/dev/sdd" successfully created.
+  Volume group "vg_var" successfully created
+
+root@ubuntu24-lvm:/# lvcreate -L 950M -m1 -n lv_var vg_var
+  Rounding up size to full physical extent 952,00 MiB
+  Logical volume "lv_var" created.
+
+root@ubuntu24-lvm:/# mkfs.ext4 /dev/vg_var/lv_var
+mke2fs 1.47.0 (5-Feb-2023)
+Creating filesystem with 243712 4k blocks and 60928 inodes
+Filesystem UUID: ad604876-7596-45ec-90ce-fdbaa4f52430
+Superblock backups stored on blocks: 
+	32768, 98304, 163840, 229376
+
+Allocating group tables: done                            
+Writing inode tables: done                            
+Creating journal (4096 blocks): done
+Writing superblocks and filesystem accounting information: done
+
+root@ubuntu24-lvm:/# mount /dev/vg_var/lv_var /mnt/
+
+root@ubuntu24-lvm:/# cp -aR /var/* /mnt/
+
+root@ubuntu24-lvm:/# mkdir /tmp/oldvar && mv /var/* /tmp/oldvar
+
+root@ubuntu24-lvm:/# umount /mnt/
+
+root@ubuntu24-lvm:/# mount /dev/vg_var/lv_var /var
+
+root@ubuntu24-lvm:/# echo "`blkid | grep var: | awk '{print $2}'` \
+ /var ext4 defaults 0 0" >> /etc/fstab
+
+root@ubuntu24-lvm:/# exit 
+exit
+
+root@ubuntu24-lvm:~# reboot
+
+root@ubuntu24-lvm:~# lvremove /dev/vg_root/lv_root
+Do you really want to remove and DISCARD active logical volume vg_root/lv_root? [y/n]: y
+  Logical volume "lv_root" successfully removed.
+
+root@ubuntu24-lvm:~# vgremove /dev/vg_root
+  Volume group "vg_root" successfully removed
+
+root@ubuntu24-lvm:~# pvremove /dev/sdb
+  Labels on physical volume "/dev/sdb" successfully wiped.
+```
+
+10) /home - сделать том для снапшотов.
+
+```console
+
+```
+
+11) Прописать монтирование в fstab. Попробовать с разными опциями и разными файловыми системами (на выбор).
+
+```console
+
+```
+
+12) Работа со снапшотами:
+	сгенерить файлы в /home/;
+	снять снапшот;
+	удалить часть файлов;
+	восстановится со снапшота.
 
 
 
 
 
 
-RAID-массив 10 уровня создан, разделы нарезаны, файловая система создана, рандомное копирование проведено. 
 Домашнее задание выполнено.
 
 <br/>
