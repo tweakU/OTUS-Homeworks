@@ -56,20 +56,150 @@ root@ubuntu24-lvm:~# lvs
   ubuntu-lv ubuntu-vg -wi-ao---- 30,47g
 ```
 
+```console
+root@ubuntu24-lvm:~# vgdisplay otus
+  --- Volume group ---
+  VG Name               otus
+  System ID             
+  Format                lvm2
+  Metadata Areas        1
+  Metadata Sequence No  2
+  VG Access             read/write
+  VG Status             resizable
+  MAX LV                0
+  Cur LV                1
+  Open LV               0
+  Max PV                0
+  Cur PV                1
+  Act PV                1
+  VG Size               <10,00 GiB
+  PE Size               4,00 MiB
+  Total PE              2559
+  Alloc PE / Size       2047 / <8,00 GiB
+  Free  PE / Size       512 / 2,00 GiB
+  VG UUID               UY5zz7-pzZt-3lKD-45rn-SSyw-ZkI3-fX0NXP
+```
 
+```console
+root@ubuntu24-lvm:~# vgdisplay -v otus | grep 'PV Name'
+  PV Name               /dev/sdb
+```
 
+```console
+root@ubuntu24-lvm:~# lvdisplay /dev/otus/test
+  --- Logical volume ---
+  LV Path                /dev/otus/test
+  LV Name                test
+  VG Name                otus
+  LV UUID                jrfnM3-RBBy-VBmU-VMEa-HfHV-uZ6I-zwlPNK
+  LV Write Access        read/write
+  LV Creation host, time ubuntu24-lvm, 2025-03-17 17:07:11 +0000
+  LV Status              available
+  # open                 0
+  LV Size                <8,00 GiB
+  Current LE             2047
+  Segments               1
+  Allocation             inherit
+  Read ahead sectors     auto
+  - currently set to     256
+  Block device           252:0
+```
+
+```console
+root@ubuntu24-lvm:~# vgs
+  VG        #PV #LV #SN Attr   VSize   VFree 
+  otus        1   1   0 wz--n- <10,00g  2,00g
+  ubuntu-vg   1   1   0 wz--n- <60,95g 30,47g
+
+root@ubuntu24-lvm:~# lvs
+  LV        VG        Attr       LSize  Pool Origin Data%  Meta%  Move Log Cpy%Sync Convert
+  test      otus      -wi-a----- <8,00g                                                    
+  ubuntu-lv ubuntu-vg -wi-ao---- 30,47g
+```
+
+```console
+root@ubuntu24-lvm:~# lvcreate -L100M -n small otus
+  Logical volume "small" created.
+
+root@ubuntu24-lvm:~# lvs
+  LV        VG        Attr       LSize   Pool Origin Data%  Meta%  Move Log Cpy%Sync Convert
+  small     otus      -wi-a----- 100,00m                                                    
+  test      otus      -wi-a-----  <8,00g                                                    
+  ubuntu-lv ubuntu-vg -wi-ao----  30,47g
+```
 
 3) Отформатировать и смонтировать файловую систему:
 
 ```console
+root@ubuntu24-lvm:~# mkfs.ext4 /dev/otus/test
+mke2fs 1.47.0 (5-Feb-2023)
+Creating filesystem with 2096128 4k blocks and 524288 inodes
+Filesystem UUID: f1ed528c-1fb2-44d0-8208-aac5a2cf46b5
+Superblock backups stored on blocks: 
+	32768, 98304, 163840, 229376, 294912, 819200, 884736, 1605632
 
+Allocating group tables: done                            
+Writing inode tables: done                            
+Creating journal (16384 blocks): done
+Writing superblocks and filesystem accounting information: done
+
+Создадим каталог:
+
+root@ubuntu24-lvm:~# mkdir /data
+
+root@ubuntu24-lvm:~# mount /dev/otus/test /data
+
+root@ubuntu24-lvm:~# mount | grep /data
+/dev/mapper/otus-test on /data type ext4 (rw,relatime)
 ```
 
 4) Расширить файловую систему за счёт нового диска:
 
 ```console
+root@ubuntu24-lvm:~# pvs
+  PV         VG        Fmt  Attr PSize   PFree 
+  /dev/sda3  ubuntu-vg lvm2 a--  <60,95g 30,47g
+  /dev/sdb   otus      lvm2 a--  <10,00g  1,90g
 
+root@ubuntu24-lvm:~# pvcreate /dev/sdc
+  Physical volume "/dev/sdc" successfully created.
+
+root@ubuntu24-lvm:~# pvs
+  PV         VG        Fmt  Attr PSize   PFree 
+  /dev/sda3  ubuntu-vg lvm2 a--  <60,95g 30,47g
+  /dev/sdb   otus      lvm2 a--  <10,00g  1,90g
+  /dev/sdc             lvm2 ---    2,00g  2,00g
 ```
+
+```console
+root@ubuntu24-lvm:~# vgextend otus /dev/sdc
+  Volume group "otus" successfully extended
+
+root@ubuntu24-lvm:~# vgdisplay -v otus | grep 'PV Name'
+  PV Name               /dev/sdb     
+  PV Name               /dev/sdc     
+
+root@ubuntu24-lvm:~# vgs
+  VG        #PV #LV #SN Attr   VSize   VFree 
+  otus        2   2   0 wz--n-  11,99g <3,90g
+  ubuntu-vg   1   1   0 wz--n- <60,95g 30,47g
+```
+
+```console
+root@ubuntu24-lvm:~# mkdir /data
+
+root@ubuntu24-lvm:~# mount /dev/otus/test /data
+
+root@ubuntu24-lvm:~# mount | grep /data
+/dev/mapper/otus-test on /data type ext4 (rw,relatime)
+```
+
+
+
+
+
+
+
 
 5) Выполнить resize: 
 
