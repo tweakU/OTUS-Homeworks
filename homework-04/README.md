@@ -209,25 +209,8 @@ otus4  compressratio         1.00x                  -
 
 
 
-
-
-
-
-
-
-```console
-
-```
-
-
-
-```console
-```
-
 2) Определить настройки пула.
-
 С помощью команды zfs import собрать pool ZFS.
-
 Командами zfs определить настройки:
 
 - размер хранилища;
@@ -236,7 +219,13 @@ otus4  compressratio         1.00x                  -
 - какое сжатие используется;
 - какая контрольная сумма используется.
 
+Скачиваем архив в домашний каталог: 
 ```console
+root@ubuntu2404:~# wget -O archive.tar.gz --no-check-certificate 'https://drive.usercontent.google.com/download?id=1MvrcEp-WgAQe57aDEzxSRalPAwbNN1Bb&export=download'
+
+root@ubuntu2404:~# ls -l
+total 7108
+-rw-r--r-- 1 root root 7275140 Dec  6  2023 archive.tar.gz
 ```
 
 3) Работа со снапшотами:
