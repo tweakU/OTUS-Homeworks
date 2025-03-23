@@ -9,6 +9,7 @@
 - Определить какие алгоритмы сжатия поддерживает zfs (gzip, zle, lzjb, lz4);
 
 Смотрим список всех дисков, которые есть в виртуальной машине: 
+
 ```console
 root@ubuntu2404:~# lsblk
 NAME   MAJ:MIN RM  SIZE RO TYPE MOUNTPOINTS
@@ -27,11 +28,13 @@ sr0     11:0    1 1024M  0 rom
 ```
 
 Установим пакет утилит для ZFS:
+
 ```console
 root@ubuntu2404:~# apt install zfsutils-linux -y
 ```
 
 Создадим четыре пула из двух дисков в режиме RAID 1:
+
 ```console
 root@ubuntu2404:~# zpool create otus1 mirror /dev/sdb /dev/sdc
 root@ubuntu2404:~# zpool create otus2 mirror /dev/sdd /dev/sde
@@ -40,7 +43,9 @@ root@ubuntu2404:~# zpool create otus4 mirror /dev/sdh /dev/sdi
 ```
 
 Посмотрим  информацию о пулах zfs: 
+
 Команда zpool list показывает информацию о размере пула, количеству занятого и свободного места, дедупликации и т.д.
+
 ```console
 root@ubuntu2404:~# zpool list
 NAME    SIZE  ALLOC   FREE  CKPOINT  EXPANDSZ   FRAG    CAP  DEDUP    HEALTH  ALTROOT
@@ -51,6 +56,7 @@ otus4   480M   114K   480M        -         -     0%     0%  1.00x    ONLINE  -
 ```
 
 Команда zpool status показывает информацию о каждом диске, состоянии сканирования и об ошибках чтения, записи и совпадения хэш-сумм.
+
 ```console
 root@ubuntu2404:~# zpool status
   pool: otus1
@@ -105,27 +111,35 @@ errors: No known data errors
 Добавим разные алгоритмы сжатия в каждую файловую систему:
 
 Алгоритм lzjb:
+
 ```console
 root@ubuntu2404:~# zfs set compression=lzjb otus1
 ```
+
 Алгоритм lz4:
+
 ```console
 root@ubuntu2404:~# zfs set compression=lz4 otus2
 ```
 
 Алгоритм gzip:
+
 ```console
 root@ubuntu2404:~# zfs set compression=gzip-9 otus3
 ```
 
 Алгоритм zle:
+
 ```console
 root@ubuntu2404:~# zfs set compression=zle otus4
 ```
 
 Проверим, что все файловые системы имеют разные методы сжатия:
+
 Команда zfs get all выведет полную информацию о пулах. 
+
 Перенаправим stdout в grep для получения интересующей нас информации.
+
 ```console
 root@ubuntu2404:~# zfs get all | grep compression
 otus1  compression           lzjb                   local
@@ -135,14 +149,17 @@ otus4  compression           zle                    local
 ```
 
 !! Сжатие файлов будет работать только с файлами, которые были добавлены после включение настройки сжатия.
+
 Скачаем один и тот же текстовый файл во все пулы: 
 
 Используем регулярные выражения и цикл for i in. 
+
 ```console
 root@ubuntu2404:~# for i in {1..4}; do wget -P /otus$i https://gutenberg.org/cache/epub/2600/pg2600.converter.log; done
 ```
 
 Проверим, что файл был скачан во все пулы:
+
 ```console
 root@ubuntu2404:~# ls -l /otus*
 /otus1:
@@ -165,6 +182,7 @@ total 40195
 Уже на этом этапе видно, что самый оптимальный метод сжатия у нас используется в пуле otus3.
 
 Проверим, сколько места занимает один и тот же файл в разных пулах и проверим степень сжатия файлов:
+
 ```console
 root@ubuntu2404:~# zfs list
 NAME    USED  AVAIL  REFER  MOUNTPOINT
@@ -175,6 +193,7 @@ otus4  39.4M   313M  39.3M  /otus4
 ```
 
 Дважды "grep`ним" stdout команды zfs get all, ключ -v выдает все строки, за исключением содержащих образец.
+
 ```console
 root@ubuntu2404:~# zfs get all | grep compressratio | grep -v ref
 otus1  compressratio         1.81x                  -
@@ -182,6 +201,7 @@ otus2  compressratio         2.23x                  -
 otus3  compressratio         3.65x                  -
 otus4  compressratio         1.00x                  -
 ```
+
 Таким образом, у нас получается, что алгоритм gzip-9 самый эффективный по сжатию. 
 
 
