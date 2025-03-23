@@ -103,6 +103,7 @@ errors: No known data errors
 ```
 
 Добавим разные алгоритмы сжатия в каждую файловую систему:
+
 Алгоритм lzjb:
 ```console
 root@ubuntu2404:~# zfs set compression=lzjb otus1
