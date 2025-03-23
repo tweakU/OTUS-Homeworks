@@ -221,12 +221,247 @@ otus4  compressratio         1.00x                  -
 
 Скачиваем архив в домашний каталог: 
 ```console
+root@ubuntu2404:~# pwd
+/root
+
 root@ubuntu2404:~# wget -O archive.tar.gz --no-check-certificate 'https://drive.usercontent.google.com/download?id=1MvrcEp-WgAQe57aDEzxSRalPAwbNN1Bb&export=download'
 
 root@ubuntu2404:~# ls -l
 total 7108
 -rw-r--r-- 1 root root 7275140 Dec  6  2023 archive.tar.gz
 ```
+
+Разархивируем его:
+
+```console
+root@ubuntu2404:~# tar -xzvf archive.tar.gz
+zpoolexport/
+zpoolexport/filea
+zpoolexport/fileb
+```
+
+Проверим, возможно ли импортировать данный каталог в пул:
+
+```console
+root@ubuntu2404:~# zpool import -d zpoolexport/
+   pool: otus
+     id: 6554193320433390805
+  state: ONLINE
+status: Some supported features are not enabled on the pool.
+        (Note that they may be intentionally disabled if the
+        'compatibility' property is set.)
+ action: The pool can be imported using its name or numeric identifier, though
+        some features will not be available without an explicit 'zpool upgrade'.
+ config:
+
+        otus                         ONLINE
+          mirror-0                   ONLINE
+            /root/zpoolexport/filea  ONLINE
+            /root/zpoolexport/fileb  ONLINE
+```
+
+Данный вывод показывает нам имя пула, тип raid и его состав. 
+
+Сделаем импорт данного пула:
+
+```console
+root@ubuntu2404:~# zpool import -d zpoolexport/ otus
+
+root@ubuntu2404:~# zpool status
+  pool: otus
+ state: ONLINE
+status: Some supported and requested features are not enabled on the pool.
+        The pool can still be used, but some features are unavailable.
+action: Enable all features using 'zpool upgrade'. Once this is done,
+        the pool may no longer be accessible by software that does not support
+        the features. See zpool-features(7) for details.
+config:
+
+        NAME                         STATE     READ WRITE CKSUM
+        otus                         ONLINE       0     0     0
+          mirror-0                   ONLINE       0     0     0
+            /root/zpoolexport/filea  ONLINE       0     0     0
+            /root/zpoolexport/fileb  ONLINE       0     0     0
+
+errors: No known data errors
+
+  pool: otus1
+ state: ONLINE
+config:
+
+        NAME        STATE     READ WRITE CKSUM
+        otus1       ONLINE       0     0     0
+          mirror-0  ONLINE       0     0     0
+            sdb     ONLINE       0     0     0
+            sdc     ONLINE       0     0     0
+
+errors: No known data errors
+
+  pool: otus2
+ state: ONLINE
+config:
+
+        NAME        STATE     READ WRITE CKSUM
+        otus2       ONLINE       0     0     0
+          mirror-0  ONLINE       0     0     0
+            sdd     ONLINE       0     0     0
+            sde     ONLINE       0     0     0
+
+errors: No known data errors
+
+  pool: otus3
+ state: ONLINE
+config:
+
+        NAME        STATE     READ WRITE CKSUM
+        otus3       ONLINE       0     0     0
+          mirror-0  ONLINE       0     0     0
+            sdf     ONLINE       0     0     0
+            sdg     ONLINE       0     0     0
+
+errors: No known data errors
+
+  pool: otus4
+ state: ONLINE
+config:
+
+        NAME        STATE     READ WRITE CKSUM
+        otus4       ONLINE       0     0     0
+          mirror-0  ONLINE       0     0     0
+            sdh     ONLINE       0     0     0
+            sdi     ONLINE       0     0     0
+
+errors: No known data errors
+```
+
+Команда zpool status выдаст нам информацию о составе импортированного пула.
+
+Далее нам нужно определить настройки. Запрос сразу всех параметром файловой системы:
+
+```console
+root@ubuntu2404:~# zfs get all otus
+NAME  PROPERTY              VALUE                  SOURCE
+otus  type                  filesystem             -
+otus  creation              Fri May 15  4:00 2020  -
+otus  used                  2.05M                  -
+otus  available             350M                   -
+otus  referenced            24K                    -
+otus  compressratio         1.00x                  -
+otus  mounted               yes                    -
+otus  quota                 none                   default
+otus  reservation           none                   default
+otus  recordsize            128K                   local
+otus  mountpoint            /otus                  default
+otus  sharenfs              off                    default
+otus  checksum              sha256                 local
+otus  compression           zle                    local
+otus  atime                 on                     default
+otus  devices               on                     default
+otus  exec                  on                     default
+otus  setuid                on                     default
+otus  readonly              off                    default
+otus  zoned                 off                    default
+otus  snapdir               hidden                 default
+otus  aclmode               discard                default
+otus  aclinherit            restricted             default
+otus  createtxg             1                      -
+otus  canmount              on                     default
+otus  xattr                 on                     default
+otus  copies                1                      default
+otus  version               5                      -
+otus  utf8only              off                    -
+otus  normalization         none                   -
+otus  casesensitivity       sensitive              -
+otus  vscan                 off                    default
+otus  nbmand                off                    default
+otus  sharesmb              off                    default
+otus  refquota              none                   default
+otus  refreservation        none                   default
+otus  guid                  14592242904030363272   -
+otus  primarycache          all                    default
+otus  secondarycache        all                    default
+otus  usedbysnapshots       0B                     -
+otus  usedbydataset         24K                    -
+otus  usedbychildren        2.02M                  -
+otus  usedbyrefreservation  0B                     -
+otus  logbias               latency                default
+otus  objsetid              54                     -
+otus  dedup                 off                    default
+otus  mlslabel              none                   default
+otus  sync                  standard               default
+otus  dnodesize             legacy                 default
+otus  refcompressratio      1.00x                  -
+otus  written               24K                    -
+otus  logicalused           1M                     -
+otus  logicalreferenced     12K                    -
+otus  volmode               default                default
+otus  filesystem_limit      none                   default
+otus  snapshot_limit        none                   default
+otus  filesystem_count      none                   default
+otus  snapshot_count        none                   default
+otus  snapdev               hidden                 default
+otus  acltype               off                    default
+otus  context               none                   default
+otus  fscontext             none                   default
+otus  defcontext            none                   default
+otus  rootcontext           none                   default
+otus  relatime              on                     default
+otus  redundant_metadata    all                    default
+otus  overlay               on                     default
+otus  encryption            off                    default
+otus  keylocation           none                   default
+otus  keyformat             none                   default
+otus  pbkdf2iters           0                      default
+otus  special_small_blocks  0                      default
+```
+
+C помощью команды zfs get #аргумент можно уточнить конкретный параметр, например:
+
+```console
+root@ubuntu2404:~# zfs get available otus
+NAME  PROPERTY   VALUE  SOURCE
+otus  available  350M   -
+
+root@ubuntu2404:~# zfs get readonly otus
+NAME  PROPERTY  VALUE   SOURCE
+otus  readonly  off     default
+
+root@ubuntu2404:~# zfs get recordsize otus
+NAME  PROPERTY    VALUE    SOURCE
+otus  recordsize  128K     local
+
+root@ubuntu2404:~# zfs get compression otus
+NAME  PROPERTY     VALUE           SOURCE
+otus  compression  zle             local
+
+root@ubuntu2404:~# zfs get checksum otus
+NAME  PROPERTY  VALUE      SOURCE
+otus  checksum  sha256     local
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+```console
+
+```
+
+
+
+
+
+
+
 
 3) Работа со снапшотами:
 - скопировать файл из удаленной директории;
