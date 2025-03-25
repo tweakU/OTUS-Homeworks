@@ -415,7 +415,7 @@ otus  pbkdf2iters           0                      default
 otus  special_small_blocks  0                      default
 ```
 
-C помощью команды zfs get #аргумент можно уточнить конкретный параметр, например:
+C помощью команды zfs get #аргумент (!! в методичке ошибка, если в качестве команды написано grep) можно уточнить конкретный параметр, например:
 
 ```console
 root@ubuntu2404:~# zfs get available otus
@@ -442,12 +442,58 @@ otus  checksum  sha256     local
 
 3) Работа со снапшотами:
 - скопировать файл из удаленной директории;
-- восстановить файл локально. zfs receive;
+- восстановить файл локально, zfs receive;
 - найти зашифрованное сообщение в файле secret_message.
 
+Скачаем файл, указанный в задании:
+
 ```console
+root@ubuntu2404:~# wget -O otus_task2.file --no-check-certificate https://drive.usercontent.google.com/download?id=1wgxjih8YZ-cqLqaZVa0lA3h3Y029c3oI&export=download
+[1] 2851
+root@ubuntu2404:~#
+Redirecting output to ‘wget-log’.
+[1]+  Done
 ```
 
+(!!)Так и не понял почему wget проваливается в фон (background), man wget говорит, что для этого должен быть указан ключ -b, --background ... сразу после старта wget вторым окном запустил tail -f
+
+```console
+root@ubuntu2404:~# tail -f wget-log
+--2025-03-24 23:39:45--  https://drive.usercontent.google.com/download?id=1wgxjih8YZ-cqLqaZVa0lA3h3Y029c3oI
+Resolving drive.usercontent.google.com (drive.usercontent.google.com)... 142.250.203.97, 2a00:1450:400a:808::2001
+Connecting to drive.usercontent.google.com (drive.usercontent.google.com)|142.250.203.97|:443... connected.
+HTTP request sent, awaiting response... 200 OK
+Length: 5432736 (5.2M) [application/octet-stream]
+Saving to: ‘otus_task2.file’
+
+otus_task2.file                                      100%[===================================================================================================================>]   5.18M  10.2MB/s    in 0.5s
+
+2025-03-24 23:39:48 (10.2 MB/s) - ‘otus_task2.file’ saved [5432736/5432736]
+```
+Хмм, ничего интересного; файл скачан за 3 секунды. Что ж, поехали дальше.
+
+
+Восстановим файловую систему из снапшота: 
+Снэпшот - это версия файловой системы или тома, доступная только для чтения, в определенный момент времени. Указывается как filesystem@name или volume@name. 
+
+```console
+root@ubuntu2404:~# zfs receive otus/test@today < otus_task2.file
+```
+
+Далее, ищем в каталоге /otus/test файл с именем “secret_message”:
+
+```console
+root@ubuntu2404:~# find /otus/test/ -name "secret_message"
+/otus/test/task1/file_mess/secret_message
+```
+
+
+Посмотрим содержимое найденного файла:
+
+```console
+root@ubuntu2404:~# cat /otus/test/task1/file_mess/secret_message
+https://otus.ru/lessons/linux-hl/
+```
 
 
 Домашнее задание выполнено.
