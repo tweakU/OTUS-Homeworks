@@ -132,7 +132,6 @@ tanin@nfs-server:~$ ll /srv/share/upload/
 total 8
 drwsrwsrwx 2 nobody nogroup 4096 Apr  1 21:26 ./
 drwxr-xr-x 3 nobody nogroup 4096 Apr  1 19:07 ../
--rw-r--r-- 1 nobody nogroup    0 Apr  1 21:26 final_check
 -rw-r--r-- 1 nobody nogroup    0 Apr  1 21:22 nfs-client_file
 -rw-r--r-- 1 root   nogroup    0 Apr  1 21:22 nfs-server_file
 
