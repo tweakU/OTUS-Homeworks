@@ -111,49 +111,74 @@ root@nfs-client:~# systemctl daemon-reload
 root@nfs-client:~# systemctl restart remote-fs.target
 ```
 
-
+wtf?!
 ```console
 root@nfs-client:~# mount | grep mnt
 systemd-1 on /mnt type autofs (rw,relatime,fd=65,pgrp=1,timeout=0,minproto=5,maxproto=5,direct,pipe_ino=40464)
 192.168.1.15:/srv/share/ on /mnt type nfs (rw,relatime,vers=3,rsize=1048576,wsize=1048576,namlen=255,hard,proto=tcp,timeo=600,retrans=2,sec=sys,mountaddr=192.168.1.15,mountvers=3,mountport=60502,mountproto=udp,local_lock=none,addr=192.168.1.15)
 ```
 
-После ребута сервера проверим работоспособность:
+Проверяем сервер:
 ```console
-root@nfs-server:~# exportfs -s
+root@nfs-server:~# reboot
+Broadcast message from root@nfs-server on pts/1 (Tue 2025-04-01 21:44:13 UTC):
+The system will reboot now!
+root@nfs-server:~# Connection to 192.168.1.15 closed by remote host.
+
+tanin@nfs-server:~$ uptime -p
+up 0 minutes
+
+tanin@nfs-server:~$ ll /srv/share/upload/
+total 8
+drwsrwsrwx 2 nobody nogroup 4096 Apr  1 21:26 ./
+drwxr-xr-x 3 nobody nogroup 4096 Apr  1 19:07 ../
+-rw-r--r-- 1 nobody nogroup    0 Apr  1 21:26 final_check
+-rw-r--r-- 1 nobody nogroup    0 Apr  1 21:22 nfs-client_file
+-rw-r--r-- 1 root   nogroup    0 Apr  1 21:22 nfs-server_file
+
+tanin@nfs-server:~$ sudo exportfs -s
 /srv/share  192.168.1.16/24(sync,wdelay,hide,no_subtree_check,sec=sys,rw,secure,root_squash,no_all_squash)
 
-root@nfs-server:~# showmount -a 192.168.1.15
+tanin@nfs-server:~$ showmount -a 192.168.1.15
 All mount points on 192.168.1.15:
 192.168.1.16:/srv/share
 ```
 
-
+Проверяем клиента:
 ```console
+PS C:\Users\funt1k> ssh tanin@192.168.1.16
 
+tanin@nfs-client:~$ uptime -p
+up 0 minutes
+
+tanin@nfs-client:~$ showmount -a 192.168.1.15
+All mount points on 192.168.1.15:
+192.168.1.16:/srv/share
+
+tanin@nfs-client:~$ cd /mnt/upload/
+
+tanin@nfs-client:/mnt/upload$ mount | grep mnt
+systemd-1 on /mnt type autofs (rw,relatime,fd=64,pgrp=1,timeout=0,minproto=5,maxproto=5,direct,pipe_ino=4063)
+192.168.1.15:/srv/share/ on /mnt type nfs (rw,relatime,vers=3,rsize=1048576,wsize=1048576,namlen=255,hard,proto=tcp,timeo=600,retrans=2,sec=sys,mountaddr=192.168.1.15,mountvers=3,mountport=55098,mountproto=udp,local_lock=none,addr=192.168.1.15)
+
+tanin@nfs-client:/mnt/upload$ ll
+total 8
+drwsrwsrwx 2 nobody nogroup 4096 Apr  1 21:51 ./
+drwxr-xr-x 3 nobody nogroup 4096 Apr  1 19:07 ../
+-rw-r--r-- 1 nobody nogroup    0 Apr  1 21:22 nfs-client_file
+-rw-r--r-- 1 root   nogroup    0 Apr  1 21:22 nfs-server_file
+
+tanin@nfs-client:/mnt/upload$ touch ./final_check
+
+tanin@nfs-client:/mnt/upload$ ll
+total 8
+drwsrwsrwx 2 nobody nogroup 4096 Apr  1 21:51 ./
+drwxr-xr-x 3 nobody nogroup 4096 Apr  1 19:07 ../
+-rw-rw-r-- 1 tanin  nogroup    0 Apr  1 21:51 final_check
+-rw-r--r-- 1 nobody nogroup    0 Apr  1 21:22 nfs-client_file
+-rw-r--r-- 1 root   nogroup    0 Apr  1 21:22 nfs-server_file
 ```
 
-
-```console
-
-```
-
-
-```console
-
-```
-
-
-```console
-
-```
-
-
-
-
-```console
-
-```
 
 Домашнее задание выполнено.
 
