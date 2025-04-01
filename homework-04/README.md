@@ -1,1 +1,1 @@
-https://github.com/tweakU/OTUS-Homeworks/tree/main/homework-05
+Выполнение ДЗ по ZFS находится здесь [Занятие № 5 — NFS, FUSE](homework-05)
