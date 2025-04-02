@@ -1,7 +1,7 @@
 #!bin/bash
 
 # Устанавливаем пакет nfs-kernel-server
-#echo "Устанавливаем пакет nfs-kernel-server..."
+echo "Устанавливаем пакет nfs-kernel-server..."
 sudo apt-get update
 sudo apt-get install -y nfs-kernel-server
 
