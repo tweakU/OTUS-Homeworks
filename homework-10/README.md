@@ -8,10 +8,10 @@
 #!/bin/bash
 
 # Переменные
-LOCK_FILE="/tmp/script_lockfile"
-LOG_FILE="/var/log/apache2/access.log"  # Лог Apache на Ubuntu
-OUTPUT_EMAIL="taninaa@rambler.ru"  # Ваш адрес электронной почты
-FROM_EMAIL="taninaa@rambler.ru"  # Отправитель (ваш адрес)
+LOCK_FILE="/tmp/script_lockfile" 
+LOG_FILE="/var/log/apache2/access.log" 
+OUTPUT_EMAIL="taninaa@rambler.ru"  # адрес электронной почты, на который будут сыпаться отчеты 
+FROM_EMAIL="taninaa@rambler.ru"  # отправитель 
 TEMP_FILE="/tmp/report.txt"
 LAST_RUN_FILE="/tmp/last_run_time"
 
