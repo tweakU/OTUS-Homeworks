@@ -4,11 +4,23 @@
 
 Выполнение домашнего задания:
 
-1) Настроить LVM в Ubuntu 24.04 Server:
+1) Установить Ubuntu 24.04 Server с LVM по умолчанию:
 
 ```console
-root@ubuntu24-lvm:~# lsb_release -a | grep -i 'ubuntu 24'
-Description:	Ubuntu 24.04.1 LTS
+root@ubuntu24-lvm:~# cat /etc/os-release 
+PRETTY_NAME="Ubuntu 24.04.1 LTS"
+NAME="Ubuntu"
+VERSION_ID="24.04"
+VERSION="24.04.1 LTS (Noble Numbat)"
+VERSION_CODENAME=noble
+ID=ubuntu
+ID_LIKE=debian
+HOME_URL="https://www.ubuntu.com/"
+SUPPORT_URL="https://help.ubuntu.com/"
+BUG_REPORT_URL="https://bugs.launchpad.net/ubuntu/"
+PRIVACY_POLICY_URL="https://www.ubuntu.com/legal/terms-and-policies/privacy-policy"
+UBUNTU_CODENAME=noble
+LOGO=ubuntu-logo
 
 root@ubuntu24-lvm:~# lsblk 
 NAME                      MAJ:MIN RM  SIZE RO TYPE MOUNTPOINTS
@@ -39,8 +51,9 @@ root@ubuntu24-lvm:~# vgcreate otus /dev/sdb
   Volume group "otus" successfully created
 ```
 
-Командой lvcreate создадим логический том с именем 'test' внутри группы 'otus', ключ -l, --extents позволяет указать размер тома в % от объёма свободного пространства, ключ -n, --name позволяет задать имя логического тома:
+Командой lvcreate создадим логический том с именем 'test' внутри группы 'otus', ключ -l|--extents позволяет указать размер тома в % от объёма свободного пространства, ключ -n|--name позволяет задать имя логического тома:
 
+Команды pvs, vgs, lvs выводит информацию о физических томах, группе томов и логических томах соотвественно:
 ```console
 root@ubuntu24-lvm:~# vgs
   VG        #PV #LV #SN Attr   VSize   VFree  
@@ -56,6 +69,7 @@ root@ubuntu24-lvm:~# lvs
   ubuntu-lv ubuntu-vg -wi-ao---- 30,47g
 ```
 
+Команды pvdisplay, vgdisplay, lvdisplay выводят расширенную информацию о физических томах, группе томов и логических томах соотвественно:
 ```console
 root@ubuntu24-lvm:~# vgdisplay otus
   --- Volume group ---
@@ -80,10 +94,12 @@ root@ubuntu24-lvm:~# vgdisplay otus
   VG UUID               UY5zz7-pzZt-3lKD-45rn-SSyw-ZkI3-fX0NXP
 ```
 
+Ключ -v|--verbose команды vgdisplay увеличивает детализацию вывода информации о группе томов, перенаправляя stdout vgdisplay на stdin grep видим, что группа томов с именем "otus" расположена на блочном устройстве /dev/sdb:
 ```console
 root@ubuntu24-lvm:~# vgdisplay -v otus | grep 'PV Name'
   PV Name               /dev/sdb
 ```
+
 
 ```console
 root@ubuntu24-lvm:~# lvdisplay /dev/otus/test
