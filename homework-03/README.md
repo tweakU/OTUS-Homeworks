@@ -158,7 +158,7 @@ root@ubuntu24-lvm:~# lvs
 
 3) Отформатировать и смонтировать файловую систему:
 
-Создадим файловую систему ext4 на логическом томе "test" и смонтируем его:
+Командой mkfs.ext4 создадим файловую систему ext4 на логическом томе "test" и смонтируем его:
 
 ```console
 root@ubuntu24-lvm:~# mkfs.ext4 /dev/otus/test
@@ -205,7 +205,8 @@ root@ubuntu24-lvm:~# pvs
   /dev/sdc             lvm2 ---    2,00g  2,00g
 ```
 
-Командой vgextend
+Командой vgextend добавим физический том в существующую группу томов:
+Командой vgdisplay и vgs убедимся в том, что группа томов "otus" содержит два физических тома: 
 
 ```console
 root@ubuntu24-lvm:~# vgextend otus /dev/sdc
