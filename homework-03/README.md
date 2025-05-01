@@ -5,7 +5,6 @@
 Выполнение домашнего задания:
 
 1) Установить Ubuntu 24.04 Server с LVM по умолчанию:
-
 ```console
 root@ubuntu24-lvm:~# cat /etc/os-release 
 PRETTY_NAME="Ubuntu 24.04.1 LTS"
@@ -23,7 +22,8 @@ UBUNTU_CODENAME=noble
 LOGO=ubuntu-logo
 ```
 
-Добавим четыре вирутальных блочных устройства. Диски sdb, sdc будем использовать для базовых вещей и снапшотов; на sdd, sde создадим lvm mirror.
+Добавим четыре вирутальных блочных устройства. 
+Диски sdb, sdc будем использовать для базовых вещей и снапшотов; на sdd, sde создадим lvm mirror.
 ```console]
 root@ubuntu24-lvm:~# lsblk 
 NAME                      MAJ:MIN RM  SIZE RO TYPE MOUNTPOINTS
