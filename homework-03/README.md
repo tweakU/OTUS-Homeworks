@@ -205,8 +205,8 @@ root@ubuntu24-lvm:~# pvs
   /dev/sdc             lvm2 ---    2,00g  2,00g
 ```
 
-Командой vgextend добавим физический том в существующую группу томов:
-Командой vgdisplay и vgs убедимся в том, что группа томов "otus" содержит два физических тома: 
+Командой vgextend добавим (расширим существующую группу томов) физический том в существующую группу томов:
+Выводом команд vgdisplay и vgs убедимся в том, что группа томов "otus" содержит два физических тома и её объём увеличился: 
 
 ```console
 root@ubuntu24-lvm:~# vgextend otus /dev/sdc
@@ -222,14 +222,7 @@ root@ubuntu24-lvm:~# vgs
   ubuntu-vg   1   1   0 wz--n- <60,95g 30,47g
 ```
 
-```console
-root@ubuntu24-lvm:~# mkdir /data
-
-root@ubuntu24-lvm:~# mount /dev/otus/test /data
-
-root@ubuntu24-lvm:~# mount | grep /data
-/dev/mapper/otus-test on /data type ext4 (rw,relatime)
-```
+Командой dd сымитируем занятое место:
 
 ```console
 root@ubuntu24-lvm:~# dd if=/dev/zero of=/data/test.log bs=1M  count=8000 status=progress
@@ -243,6 +236,8 @@ root@ubuntu24-lvm:~# df -Th /data/
 Filesystem            Type  Size  Used Avail Use% Mounted on
 /dev/mapper/otus-test ext4  7,8G  7,8G     0 100% /data
 ```
+
+Командой lvextend увеличим размер логического тома "test" 
 
 ```console
 root@ubuntu24-lvm:~# lvextend -l+80%FREE /dev/otus/test
