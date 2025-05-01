@@ -21,7 +21,10 @@ BUG_REPORT_URL="https://bugs.launchpad.net/ubuntu/"
 PRIVACY_POLICY_URL="https://www.ubuntu.com/legal/terms-and-policies/privacy-policy"
 UBUNTU_CODENAME=noble
 LOGO=ubuntu-logo
+```
 
+Добавим четыре вирутальных блочных устройства. Диски sdb, sdc будем использовать для базовых вещей и снапшотов; на sdd, sde создадим lvm mirror.
+```console]
 root@ubuntu24-lvm:~# lsblk 
 NAME                      MAJ:MIN RM  SIZE RO TYPE MOUNTPOINTS
 sda                         8:0    0   64G  0 disk 
