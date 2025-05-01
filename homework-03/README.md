@@ -5,6 +5,7 @@
 Выполнение домашнего задания:
 
 1) Установить Ubuntu 24.04 Server с LVM по умолчанию:
+
 ```console
 root@ubuntu24-lvm:~# cat /etc/os-release 
 PRETTY_NAME="Ubuntu 24.04.1 LTS"
@@ -22,9 +23,9 @@ UBUNTU_CODENAME=noble
 LOGO=ubuntu-logo
 ```
 
-Добавим четыре вирутальных блочных устройства. 
-Диски sdb, sdc будем использовать для базовых вещей и снапшотов; на sdd, sde создадим lvm mirror.
-```console]
+Добавим четыре вирутальных блочных устройства. Диски sdb, sdc будем использовать для базовых вещей и снапшотов; на sdd, sde создадим LVM mirror.
+
+```console
 root@ubuntu24-lvm:~# lsblk 
 NAME                      MAJ:MIN RM  SIZE RO TYPE MOUNTPOINTS
 sda                         8:0    0   64G  0 disk 
@@ -46,7 +47,7 @@ LVM имеет три уровня абстракции:
 - VG, Volume group, группа томов — группа томов объединяет в себя физические тома и является следующим уровнем абстракции, представляя собой единое пространство хранения, которое может быть размечено на логические разделы — эквивалентно обычному диску в классической системе.
 - LV, Logical volume, логический том — логический раздел в группе томов, аналогичен обычном разделу, представляет из себя блочное устройство и может содержать файловую систему.
 
-Командой vgcreate создадим группу логических томов 'otus', при этом физический том будет создан автоматически на блочном устройстве /dev/sdb (таким образом использование команды pvcreate опускается)
+Командой vgcreate создадим группу логических томов 'otus', при этом физический том будет создан автоматически на блочном устройстве /dev/sdb (таким образом использование команды pvcreate опускается):
 
 ```console
 root@ubuntu24-lvm:~# vgcreate otus /dev/sdb
@@ -56,7 +57,8 @@ root@ubuntu24-lvm:~# vgcreate otus /dev/sdb
 
 Командой lvcreate создадим логический том с именем 'test' внутри группы 'otus', ключ -l|--extents позволяет указать размер тома в % от объёма свободного пространства, ключ -n|--name позволяет задать имя логического тома:
 
-Команды pvs, vgs, lvs выводит информацию о физических томах, группе томов и логических томах соотвественно:
+Команды pvs, vgs, lvs выводят информацию о физических томах, группе томов и логических томах соотвественно:
+
 ```console
 root@ubuntu24-lvm:~# vgs
   VG        #PV #LV #SN Attr   VSize   VFree  
@@ -73,6 +75,7 @@ root@ubuntu24-lvm:~# lvs
 ```
 
 Команды pvdisplay, vgdisplay, lvdisplay выводят расширенную информацию о физических томах, группе томов и логических томах соотвественно:
+
 ```console
 root@ubuntu24-lvm:~# vgdisplay otus
   --- Volume group ---
@@ -97,12 +100,14 @@ root@ubuntu24-lvm:~# vgdisplay otus
   VG UUID               UY5zz7-pzZt-3lKD-45rn-SSyw-ZkI3-fX0NXP
 ```
 
-Ключ -v|--verbose команды vgdisplay увеличивает детализацию вывода информации о группе томов, перенаправляя stdout vgdisplay на stdin grep видим, что группа томов с именем "otus" расположена на блочном устройстве /dev/sdb:
+Ключ -v|--verbose команды vgdisplay увеличивает детализацию вывода информации о группе томов, перенаправляя stdout vgdisplay на stdin grep видим какие блочные устройства входят в группу томов с именем "otus":
+
 ```console
 root@ubuntu24-lvm:~# vgdisplay -v otus | grep 'PV Name'
   PV Name               /dev/sdb
 ```
 
+Чтобы получить детальную информацию о логическом томе "test" введем комнаду lvdisplay с аргументом абсолютного пути:
 
 ```console
 root@ubuntu24-lvm:~# lvdisplay /dev/otus/test
@@ -124,6 +129,8 @@ root@ubuntu24-lvm:~# lvdisplay /dev/otus/test
   Block device           252:0
 ```
 
+Посмотрим краткую информацию о группе томов и логических томах:
+
 ```console
 root@ubuntu24-lvm:~# vgs
   VG        #PV #LV #SN Attr   VSize   VFree 
@@ -135,6 +142,8 @@ root@ubuntu24-lvm:~# lvs
   test      otus      -wi-a----- <8,00g                                                    
   ubuntu-lv ubuntu-vg -wi-ao---- 30,47g
 ```
+
+Создадим логичекий том с именем "small" внутри гурппы томов "otus" с указанием абсолютного размера в 100 Мегабайт: 
 
 ```console
 root@ubuntu24-lvm:~# lvcreate -L100M -n small otus
@@ -148,6 +157,8 @@ root@ubuntu24-lvm:~# lvs
 ```
 
 3) Отформатировать и смонтировать файловую систему:
+
+Создадим файловую систему ext4 на логическом томе "test" и смонтируем его:
 
 ```console
 root@ubuntu24-lvm:~# mkfs.ext4 /dev/otus/test
@@ -163,7 +174,7 @@ Creating journal (16384 blocks): done
 Writing superblocks and filesystem accounting information: done
 ```
 
-Создадим каталог и смонитируем LV в /data:
+Создадим каталог и смонитируем логический том "test" в /data:
 
 ```console
 root@ubuntu24-lvm:~# mkdir /data
@@ -175,6 +186,8 @@ root@ubuntu24-lvm:~# mount | grep /data
 ```
 
 4) Расширить файловую систему за счёт нового диска:
+
+Командой pvs выведем краткую информацию о физических томах; командой pvcreate создадим физический том на /dev/sdc:
 
 ```console
 root@ubuntu24-lvm:~# pvs
@@ -191,6 +204,8 @@ root@ubuntu24-lvm:~# pvs
   /dev/sdb   otus      lvm2 a--  <10,00g  1,90g
   /dev/sdc             lvm2 ---    2,00g  2,00g
 ```
+
+Командой vgextend
 
 ```console
 root@ubuntu24-lvm:~# vgextend otus /dev/sdc
