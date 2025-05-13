@@ -567,7 +567,9 @@ exit
 root@ubuntu24-lvm:~# reboot
 ```
 
+Посмотрим картину с дисками после перезагрузки:
 
+```console
 root@ubuntu24-lvm:~# lsblk 
 NAME                      MAJ:MIN RM  SIZE RO TYPE MOUNTPOINTS
 sda                         8:0    0   64G  0 disk 
@@ -582,6 +584,19 @@ sdd                         8:48   0    1G  0 disk
 sde                         8:64   0    1G  0 disk 
 sr0                        11:0    1 1024M  0 rom
 
+root@ubuntu2404-lvm:~# df -hT
+Filesystem                  Type   Size  Used Avail Use% Mounted on
+tmpfs                       tmpfs  197M  1.1M  196M   1% /run
+/dev/mapper/vg_root-lv_root ext4   9.8G  4.5G  4.8G  49% /
+tmpfs                       tmpfs  985M     0  985M   0% /dev/shm
+tmpfs                       tmpfs  5.0M     0  5.0M   0% /run/lock
+/dev/sda2                   ext4   2.0G   96M  1.7G   6% /boot
+tmpfs                       tmpfs  197M   12K  197M   1% /run/user/1000
+```
+
+Теперь нам нужно изменить размер старой VG и вернуть на него рут. Для этого удаляем старый LV размером в 40G и создаём новый на 8G:
+
+```console
 root@ubuntu24-lvm:~# lvremove /dev/ubuntu-vg/ubuntu-lv
 Do you really want to remove and DISCARD active logical volume ubuntu-vg/ubuntu-lv? [y/n]: y
   Logical volume "ubuntu-lv" successfully removed.
@@ -590,7 +605,11 @@ root@ubuntu24-lvm:~# lvcreate -n ubuntu-vg/ubuntu-lv -L 8G /dev/ubuntu-vg
 WARNING: ext4 signature detected on /dev/ubuntu-vg/ubuntu-lv at offset 1080. Wipe it? [y/n]: y
   Wiping ext4 signature on /dev/ubuntu-vg/ubuntu-lv.
   Logical volume "ubuntu-lv" created.
+```
 
+Проделываем на нем те же операции, что и в первый раз:
+
+```console
 root@ubuntu24-lvm:~# mkfs.ext4 /dev/ubuntu-vg/ubuntu-lv
 mke2fs 1.47.0 (5-Feb-2023)
 Creating filesystem with 2097152 4k blocks and 524288 inodes
@@ -610,6 +629,8 @@ total 16
 drwx------ 2 root root 16384 мар 17 20:54 lost+found
 
 root@ubuntu24-lvm:~# rsync -aqvxHAX --progress / /mnt/
+sent 4,619,659,742 bytes  received 1,576,517 bytes  111,355,090.58 bytes/sec
+total size is 4,616,936,539  speedup is 1.00
 
 root@ubuntu24-lvm:~# ls -l /mnt/
 total 2097256
