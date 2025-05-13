@@ -862,8 +862,48 @@ drwxr-xr-x 25 root  root   4096 May 13 21:58 ../
 -rw-r--r--  1 root  root      0 May 13 23:20 file9
 drwx------  2 root  root  16384 May 13 23:15 lost+found/
 drwxr-x---  4 tanin tanin  4096 Mar 23 20:10 tanin/
-
 ```
+
+Процесс восстановления из снапшота: 
+
+```console
+root@ubuntu2404-lvm:~# umount /home
+
+root@ubuntu2404-lvm:~# lvconvert --merge /dev/ubuntu-vg/home_snap
+  Merging of volume ubuntu-vg/home_snap started.
+  ubuntu-vg/LogVol_Home: Merged: 100.00%
+
+root@ubuntu2404-lvm:~# mount /dev/mapper/ubuntu--vg-LogVol_Home /home/
+mount: (hint) your fstab has been modified, but systemd still uses
+       the old version; use 'systemctl daemon-reload' to reload.
+root@ubuntu2404-lvm:~# ll /home/
+total 28
+drwxr-xr-x  4 root  root   4096 May 13 23:20 ./
+drwxr-xr-x 25 root  root   4096 May 13 21:58 ../
+-rw-r--r--  1 root  root      0 May 13 23:20 file1
+-rw-r--r--  1 root  root      0 May 13 23:20 file10
+-rw-r--r--  1 root  root      0 May 13 23:20 file11
+-rw-r--r--  1 root  root      0 May 13 23:20 file12
+-rw-r--r--  1 root  root      0 May 13 23:20 file13
+-rw-r--r--  1 root  root      0 May 13 23:20 file14
+-rw-r--r--  1 root  root      0 May 13 23:20 file15
+-rw-r--r--  1 root  root      0 May 13 23:20 file16
+-rw-r--r--  1 root  root      0 May 13 23:20 file17
+-rw-r--r--  1 root  root      0 May 13 23:20 file18
+-rw-r--r--  1 root  root      0 May 13 23:20 file19
+-rw-r--r--  1 root  root      0 May 13 23:20 file2
+-rw-r--r--  1 root  root      0 May 13 23:20 file20
+-rw-r--r--  1 root  root      0 May 13 23:20 file3
+-rw-r--r--  1 root  root      0 May 13 23:20 file4
+-rw-r--r--  1 root  root      0 May 13 23:20 file5
+-rw-r--r--  1 root  root      0 May 13 23:20 file6
+-rw-r--r--  1 root  root      0 May 13 23:20 file7
+-rw-r--r--  1 root  root      0 May 13 23:20 file8
+-rw-r--r--  1 root  root      0 May 13 23:20 file9
+drwx------  2 root  root  16384 May 13 23:15 lost+found/
+drwxr-x---  4 tanin tanin  4096 Mar 23 20:10 tanin/
+```
+
 
 Домашнее задание выполнено.
 
