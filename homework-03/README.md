@@ -2,7 +2,7 @@
 
 Цель домашнего задания: научиться создавать и управлять логическими томами в Logical Volume Manager (LVM) в операционной системе (ОС) GNU/Linux.
 
-ПРАКТИЧЕСКАЯ РАБОТА:
+ПРАКТИЧЕСКАЯ РАБОТА (ctrl+f "выполнение домашнего задания"):
 
 1) Установить Ubuntu 24.04 Server с LVM по умолчанию:
 
@@ -315,6 +315,125 @@ root@ubuntu24-lvm:~# lvs /dev/otus/test
   test otus -wi-ao---- 10,00g
 ```
 
+7) (работа со снапшотами) Создать снапшот командой lvcreate с флагом -s, который указывает на то, что это снимок:
+
+```console
+root@ubuntu2404-lvm:~# lvcreate -L 500M -s -n test-snap /dev/otus/test
+  Logical volume "test-snap" created.
+```
+
+Проверим с помощью vgs:
+
+```console
+root@ubuntu2404-lvm:~# vgs -o +lv_size,lv_name | grep test
+  otus        2   3   1 wz--n-  11.99g <1.41g  10.00g test
+  otus        2   3   1 wz--n-  11.99g <1.41g 500.00m test-snap
+```
+
+lsblk наглядно покажет, что произошло:
+
+```console
+root@ubuntu2404-lvm:~# lsblk
+NAME                      MAJ:MIN RM  SIZE RO TYPE MOUNTPOINTS
+sda                         8:0    0   64G  0 disk
+├─sda1                      8:1    0    1M  0 part
+├─sda2                      8:2    0    2G  0 part /boot
+└─sda3                      8:3    0   62G  0 part
+  └─ubuntu--vg-ubuntu--lv 252:0    0   31G  0 lvm  /
+sdb                         8:16   0   10G  0 disk
+├─otus-small              252:2    0  100M  0 lvm
+└─otus-test-real          252:3    0   10G  0 lvm
+  ├─otus-test             252:1    0   10G  0 lvm  /data
+  └─otus-test--snap       252:5    0   10G  0 lvm
+sdc                         8:32   0    2G  0 disk
+├─otus-test-real          252:3    0   10G  0 lvm
+│ ├─otus-test             252:1    0   10G  0 lvm  /data
+│ └─otus-test--snap       252:5    0   10G  0 lvm
+└─otus-test--snap-cow     252:4    0  500M  0 lvm
+  └─otus-test--snap       252:5    0   10G  0 lvm
+sdd                         8:48   0    1G  0 disk
+sde                         8:64   0    1G  0 disk
+sr0                        11:0    1 1024M  0 rom
+```
+
+Здесь otus-test-real — оригинальный LV, otus-test--snap — снапшот, а otus-test--snap-cow — copy-on-write, сюда пишутся изменения.
+
+Снапшот можно смонтировать как и любой другой LV:
+
+```console
+root@ubuntu2404-lvm:~# mkdir /data-snap
+
+root@ubuntu2404-lvm:~# mount /dev/otus/test-snap /data-snap
+
+root@ubuntu2404-lvm:~# ls -la /data-snap/
+total 8134108
+drwxr-xr-x  3 root root       4096 May 13 17:37 .
+drwxr-xr-x 25 root root       4096 May 13 21:58 ..
+drwx------  2 root root      16384 May 13 17:34 lost+found
+-rw-r--r--  1 root root 8329297920 May 13 17:37 test.log
+
+root@ubuntu2404-lvm:~# umount /data-snap
+```
+
+
+
+```console
+
+```
+
+
+
+```console
+
+```
+
+
+
+
+```console
+
+```
+
+
+
+
+```console
+
+```
+
+
+
+
+
+```console
+
+```
+
+
+
+```console
+
+```
+
+```console
+
+```
+
+```console
+
+```
+
+```console
+
+```
+
+```console
+
+```
+
+```console
+
+```
 
 
 
@@ -322,9 +441,27 @@ root@ubuntu24-lvm:~# lvs /dev/otus/test
 
 
 
-ДОМАШНЕЕ ЗАДАНИЕ 
 
-7) Уменьшить том под / до 8G.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ВЫПОЛНЕНИЕ ДОМАШНЕГО ЗАДАНИЯ:
+
+) Уменьшить том под / до 8G.
 
 ```console
 root@ubuntu24-lvm:~# vgcreate vg_root /dev/sdb
