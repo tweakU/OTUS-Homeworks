@@ -2,7 +2,7 @@
 
 Цель домашнего задания: научиться создавать и управлять логическими томами в Logical Volume Manager (LVM) в операционной системе (ОС) GNU/Linux.
 
-Выполнение домашнего задания:
+ПРАКТИЧЕСКАЯ РАБОТА:
 
 1) Установить Ubuntu 24.04 Server с LVM по умолчанию:
 
@@ -223,10 +223,10 @@ root@ubuntu24-lvm:~# vgs
   ubuntu-vg   1   1   0 wz--n- <60,95g 30,47g
 ```
 
-Командой dd сымитируем занятое место:
+Командой dd сымитируем занятое место, командой df проверим результат:
 
 ```console
-root@ubuntu24-lvm:~# dd if=/dev/zero of=/data/test.log bs=1M  count=8000 status=progress
+root@ubuntu24-lvm:~# dd if=/dev/zero of=/data/test.log bs=1M count=8000 status=progress
 6351224832 bytes (6,4 GB, 5,9 GiB) copied, 2 s, 3,2 GB/s
 dd: error writing '/data/test.log': No space left on device
 7944+0 records in
@@ -238,7 +238,9 @@ Filesystem            Type  Size  Used Avail Use% Mounted on
 /dev/mapper/otus-test ext4  7,8G  7,8G     0 100% /data
 ```
 
-Командой lvextend увеличим размер логического тома "test" 
+Командой lvextend увеличим размер логического тома "test". 
+
+Выводом команды df видим, что размер файловой системы не изменился. 
 
 ```console
 root@ubuntu24-lvm:~# lvextend -l+80%FREE /dev/otus/test
@@ -254,7 +256,9 @@ Filesystem            Type  Size  Used Avail Use% Mounted on
 /dev/mapper/otus-test ext4  7,8G  7,8G     0 100% /data
 ```
 
-5) Выполнить resize: 
+5) Выполнить resize файловой системы.
+
+Для изменения размера файловой системы необходимо воспользоваться утилитой resize2fs. 
 
 ```console
 root@ubuntu24-lvm:~# resize2fs /dev/otus/test 
@@ -266,7 +270,11 @@ The filesystem on /dev/otus/test is now 2914304 (4k) blocks long.
 root@ubuntu24-lvm:~# df -Th /data/
 Filesystem            Type  Size  Used Avail Use% Mounted on
 /dev/mapper/otus-test ext4   11G  7,8G  2,6G  76% /data
+```
 
+Задача: выделить место под снапшоты. Для этого можно уменьшить существующий LV с помощью команды lvreduce. Перед этим необходимо отмонтировать файловую систему, проверить её на ошибки и уменьшить ее размер:
+
+```console
 root@ubuntu24-lvm:~# umount /data 
 
 root@ubuntu24-lvm:~# e2fsck -fy /dev/otus/test 
@@ -293,7 +301,9 @@ Do you really want to reduce otus/test? [y/n]: y
 root@ubuntu24-lvm:~# mount /dev/otus/test /data/
 ```
 
-6) Проверить корректность работы:
+6) Проверить корректность совершенных действий.
+
+Командами df и lvs установим текущий размер логического тома: 
 
 ```console
 root@ubuntu24-lvm:~# df -Th /data/
@@ -308,6 +318,11 @@ root@ubuntu24-lvm:~# lvs /dev/otus/test
 
 
 
+
+
+
+
+ДОМАШНЕЕ ЗАДАНИЕ 
 
 7) Уменьшить том под / до 8G.
 
