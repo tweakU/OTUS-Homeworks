@@ -375,13 +375,34 @@ drwx------  2 root root      16384 May 13 17:34 lost+found
 root@ubuntu2404-lvm:~# umount /data-snap
 ```
 
-
+Можно также восстановить предыдущее состояние - “откатиться” на снапшот. Для этого сначала для большей наглядности удалим наш log файл:
 
 ```console
+root@ubuntu2404-lvm:~# rm /data/test.log
 
+root@ubuntu2404-lvm:~# ls -la /data
+total 24
+drwxr-xr-x  3 root root  4096 May 13 22:00 .
+drwxr-xr-x 25 root root  4096 May 13 21:58 ..
+drwx------  2 root root 16384 May 13 17:34 lost+found
+
+root@ubuntu2404-lvm:~# umount /data
+
+root@ubuntu2404-lvm:~# lvconvert --merge /dev/otus/test-snap
+  Merging of volume otus/test-snap started.
+  otus/test: Merged: 100.00%
+
+root@ubuntu2404-lvm:~# mount /dev/otus/test /data
+
+root@ubuntu2404-lvm:~# ls -la /data
+total 8134108
+drwxr-xr-x  3 root root       4096 May 13 17:37 .
+drwxr-xr-x 25 root root       4096 May 13 21:58 ..
+drwx------  2 root root      16384 May 13 17:34 lost+found
+-rw-r--r--  1 root root 8329297920 May 13 17:37 test.log
 ```
 
-
+8) (работа с LVM-RAID) создадим LVM-RAID: 
 
 ```console
 
