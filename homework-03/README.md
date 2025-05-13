@@ -405,84 +405,33 @@ drwx------  2 root root      16384 May 13 17:34 lost+found
 8) (работа с LVM-RAID) создадим LVM-RAID: 
 
 ```console
+root@ubuntu2404-lvm:~# pvcreate /dev/sd{d,e}
+  Physical volume "/dev/sdd" successfully created.
+  Physical volume "/dev/sde" successfully created.
 
+root@ubuntu2404-lvm:~# vgcreate vg0 /dev/sd{d,e}
+  Volume group "vg0" successfully created
+
+root@ubuntu2404-lvm:~# lvcreate -l+80%FREE -m1 -n mirror vg0
+  Logical volume "mirror" created.
+
+root@ubuntu2404-lvm:~# lvs
+  LV        VG        Attr       LSize   Pool Origin Data%  Meta%  Move Log Cpy%Sync Convert
+  small     otus      -wi-a----- 100.00m
+  test      otus      -wi-ao----  10.00g
+  ubuntu-lv ubuntu-vg -wi-ao---- <31.00g
+  mirror    vg0       rwi-a-r--- 816.00m                                    100.00
 ```
-
-
-
-
-```console
-
-```
-
-
-
-
-```console
-
-```
-
-
-
-
-
-```console
-
-```
-
-
-
-```console
-
-```
-
-```console
-
-```
-
-```console
-
-```
-
-```console
-
-```
-
-```console
-
-```
-
-```console
-
-```
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
 ВЫПОЛНЕНИЕ ДОМАШНЕГО ЗАДАНИЯ:
 
-) Уменьшить том под / до 8G.
+1) Уменьшить том под / (root, корневую директорию) до 8Gb.
+
+Эту часть можно выполнить разными способами, в данном примере мы будем уменьшать / до 8G без использования LiveCD.
+Если вы оставили том /dev/sdb из прошлых примеров заполненным, очистите его (отмонтруем целевые точки монтирования и последовательно используем lvremove, vgremove, pvremove).
+Подготовим временный том для / раздела:
 
 ```console
 root@ubuntu24-lvm:~# vgcreate vg_root /dev/sdb
