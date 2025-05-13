@@ -442,7 +442,11 @@ root@ubuntu24-lvm:~# lvcreate -n lv_root -l +100%FREE /dev/vg_root
 WARNING: ext4 signature detected on /dev/vg_root/lv_root at offset 1080. Wipe it? [y/n]: y
   Wiping ext4 signature on /dev/vg_root/lv_root.
   Logical volume "lv_root" created.
+```
 
+Создадим на нем файловую систему и смонтируем его, чтобы перенести туда данные:
+
+```console
 root@ubuntu24-lvm:~# mkfs.ext4 /dev/vg_root/lv_root
 mke2fs 1.47.0 (5-Feb-2023)
 Creating filesystem with 2620416 4k blocks and 655360 inodes
@@ -460,8 +464,15 @@ root@ubuntu24-lvm:~# mount /dev/vg_root/lv_root /mnt
 root@ubuntu24-lvm:~# ls -l /mnt/
 total 16
 drwx------ 2 root root 16384 мар 17 20:48 lost+found
+```
 
+Командой rsync cкопируем все данные из раздела / в /mnt:
+
+```console
 root@ubuntu24-lvm:~# rsync -aqvxHAX --progress / /mnt/
+...
+sent 4,594,268,950 bytes  received 1,576,404 bytes  113,477,663.06 bytes/sec
+total size is 4,591,554,714  speedup is 1.00
 
 root@ubuntu24-lvm:~# ls -l /mnt/
 total 2097256
@@ -491,9 +502,44 @@ dr-xr-xr-x   2 root root       4096 мар 17 16:57 sys
 drwxrwxrwt  12 root root       4096 мар 17 20:48 tmp
 drwxr-xr-x  11 root root       4096 авг 27  2024 usr
 drwxr-xr-x  13 root root       4096 мар 16 20:27 var
+```
 
-root@ubuntu24-lvm:~# for i in /proc/ /sys/ /dev/ /run/ /boot/; \
- do mount --bind $i /mnt/$i; done
+Затем сконфигурируем grub для того, чтобы при старте перейти в новый /. Сымитируем текущий root, сделаем в него chroot и обновим grub (с помощью цикла for i in и флага --bind команды mount подмонтируем директории vfs из / в /mnt/):
+
+```console
+root@ubuntu2404-lvm:~# ll /mnt/proc/
+total 8
+dr-xr-xr-x  2 root root 4096 May 13 17:07 ./
+drwxr-xr-x 25 root root 4096 May 13 21:58 ../
+root@ubuntu2404-lvm:~# ll /mnt/sys/
+total 8
+dr-xr-xr-x  2 root root 4096 May 13 22:00 ./
+drwxr-xr-x 25 root root 4096 May 13 21:58 ../
+root@ubuntu2404-lvm:~# ll /mnt/dev/
+total 8
+drwxr-xr-x  2 root root 4096 May 13 22:16 ./
+drwxr-xr-x 25 root root 4096 May 13 21:58 ../
+root@ubuntu2404-lvm:~# ll /mnt/run/
+total 8
+drwxr-xr-x  2 root root 4096 May 13 22:02 ./
+drwxr-xr-x 25 root root 4096 May 13 21:58 ../
+root@ubuntu2404-lvm:~# ll /mnt/boot/
+total 8
+drwxr-xr-x  2 root root 4096 Mar 23 19:24 ./
+drwxr-xr-x 25 root root 4096 May 13 21:58 ../
+
+root@ubuntu24-lvm:~# for i in /proc/ /sys/ /dev/ /run/ /boot/; do mount --bind $i /mnt/$i; done
+
+root@ubuntu2404-lvm:~# ll /mnt/proc/ | wc -l
+179
+root@ubuntu2404-lvm:~# ll /mnt/sys/ | wc -l
+14
+root@ubuntu2404-lvm:~# ll /mnt/dev/ | wc -l
+216
+root@ubuntu2404-lvm:~# ll /mnt/run/ | wc -l
+44
+root@ubuntu2404-lvm:~# ll /mnt/boot/ | wc -l
+13
 
 root@ubuntu24-lvm:~# chroot /mnt/
 
@@ -507,14 +553,20 @@ Systems on them will not be added to the GRUB boot configuration.
 Check GRUB_DISABLE_OS_PROBER documentation entry.
 Adding boot menu entry for UEFI Firmware Settings ...
 done
+```
 
+Обновим образ initrd
+
+```console
 root@ubuntu24-lvm:/# update-initramfs -u
 update-initramfs: Generating /boot/initrd.img-6.8.0-55-generic
 
-root@ubuntu24-lvm:/# exit
+root@ubuntu24-lvm:/# exit (to quit from chroot)
 exit
 
 root@ubuntu24-lvm:~# reboot
+```
+
 
 root@ubuntu24-lvm:~# lsblk 
 NAME                      MAJ:MIN RM  SIZE RO TYPE MOUNTPOINTS
