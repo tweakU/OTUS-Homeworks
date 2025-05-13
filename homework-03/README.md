@@ -660,9 +660,12 @@ dr-xr-xr-x   2 root root       4096 мар 17 20:52 sys
 drwxrwxrwt  12 root root       4096 мар 17 20:53 tmp
 drwxr-xr-x  11 root root       4096 авг 27  2024 usr
 drwxr-xr-x  13 root root       4096 мар 16 20:27 var
+```
 
-root@ubuntu24-lvm:~# for i in /proc/ /sys/ /dev/ /run/ /boot/; \
- do mount --bind $i /mnt/$i; done
+Так же как в первый раз cконфигурируем grub: 
+
+```console
+root@ubuntu24-lvm:~# for i in /proc/ /sys/ /dev/ /run/ /boot/; do mount --bind $i /mnt/$i; done
 
 root@ubuntu24-lvm:~# chroot /mnt/
 
@@ -682,113 +685,185 @@ update-initramfs: Generating /boot/initrd.img-6.8.0-55-generic
 W: Couldn't identify type of root file system for fsck hook
 ```
 
-8) Выделить том под /home.
+2) Выделить том под /var в зеркало.
+
+На свободных дисках создаем зеркало:
 
 ```console
-
-```
-
-9) Выделить том под /var - сделать в mirror.
-
-```console
-root@ubuntu24-lvm:/# vgcreate vg_var /dev/sdc /dev/sdd
+root@ubuntu2404-lvm:/# pvcreate /dev/sdc /dev/sdd
   Physical volume "/dev/sdc" successfully created.
   Physical volume "/dev/sdd" successfully created.
+
+root@ubuntu2404-lvm:/# vgcreate vg_var /dev/sdc /dev/sdd
   Volume group "vg_var" successfully created
 
-root@ubuntu24-lvm:/# lvcreate -L 950M -m1 -n lv_var vg_var
-  Rounding up size to full physical extent 952,00 MiB
+root@ubuntu2404-lvm:/# lvcreate -L 950M -m1 -n lv_var vg_var
+  Rounding up size to full physical extent 952.00 MiB
   Logical volume "lv_var" created.
+```
 
-root@ubuntu24-lvm:/# mkfs.ext4 /dev/vg_var/lv_var
+Создаем на нем файловую систему и перемещаем туда /var:
+
+```console
+root@ubuntu2404-lvm:/# mkfs.ext4 /dev/vg_var/lv_var
 mke2fs 1.47.0 (5-Feb-2023)
 Creating filesystem with 243712 4k blocks and 60928 inodes
-Filesystem UUID: ad604876-7596-45ec-90ce-fdbaa4f52430
-Superblock backups stored on blocks: 
-	32768, 98304, 163840, 229376
+Filesystem UUID: c1515178-efe5-448e-a526-45ef27ceb9dd
+Superblock backups stored on blocks:
+        32768, 98304, 163840, 229376
 
-Allocating group tables: done                            
-Writing inode tables: done                            
+Allocating group tables: done
+Writing inode tables: done
 Creating journal (4096 blocks): done
 Writing superblocks and filesystem accounting information: done
 
-root@ubuntu24-lvm:/# mount /dev/vg_var/lv_var /mnt/
+root@ubuntu2404-lvm:/# mount /dev/vg_var/lv_var /mnt
 
-root@ubuntu24-lvm:/# cp -aR /var/* /mnt/
+root@ubuntu2404-lvm:/# cp -aR /var/* /mnt/
+```
 
-root@ubuntu24-lvm:/# mkdir /tmp/oldvar && mv /var/* /tmp/oldvar
+На всякий случай сохраняем содержимое старого var (или же можно его просто удалить):
 
-root@ubuntu24-lvm:/# umount /mnt/
+```console
+root@ubuntu2404-lvm:/# mkdir /tmp/oldvar && mv /var/* /tmp/oldvar
 
-root@ubuntu24-lvm:/# mount /dev/vg_var/lv_var /var
+root@ubuntu2404-lvm:/# ll /tmp/oldvar/
+total 52
+drwxr-xr-x 13 root root   4096 May 13 23:06 ./
+drwxrwxrwt 13 root root   4096 May 13 23:06 ../
+drwxr-xr-x  2 root root   4096 May 13 14:11 backups/
+drwxr-xr-x 16 root root   4096 May 13 14:44 cache/
+drwxrwsrwt  2 root root   4096 Feb 16 20:58 crash/
+drwxr-xr-x 44 root root   4096 May 13 14:44 lib/
+drwxrwsr-x  2 root staff  4096 Apr 22  2024 local/
+lrwxrwxrwx  1 root root      9 Feb 16 20:51 lock -> /run/lock/
+drwxrwxr-x 10 root syslog 4096 May 13 22:49 log/
+drwxrwsr-x  2 root mail   4096 Feb 16 20:51 mail/
+drwxr-xr-x  2 root root   4096 Feb 16 20:51 opt/
+lrwxrwxrwx  1 root root      4 Feb 16 20:51 run -> /run/
+drwxr-xr-x  2 root root   4096 Oct 11  2024 snap/
+drwxr-xr-x  4 root root   4096 Feb 16 21:04 spool/
+drwxrwxrwt  7 root root   4096 May 13 23:01 tmp/
 
-root@ubuntu24-lvm:/# echo "`blkid | grep var: | awk '{print $2}'` \
- /var ext4 defaults 0 0" >> /etc/fstab
+root@ubuntu2404-lvm:/# ll /var/
+total 12
+drwxr-xr-x  2 root root 4096 May 13 23:06 ./
+drwxr-xr-x 25 root root 4096 May 13 21:58 ../
+-rw-r--r--  1 root root  208 Feb 16 20:51 .updated
+```
 
-root@ubuntu24-lvm:/# exit 
-exit
+Подмонтируем новый var в каталог /var:
 
-root@ubuntu24-lvm:~# reboot
+```console
+root@ubuntu2404-lvm:/# umount /mnt
 
-root@ubuntu24-lvm:~# lvremove /dev/vg_root/lv_root
+root@ubuntu2404-lvm:/# mount /dev/vg_var/lv_var /var
+```
+
+Отредактируем /etc/fstab для автоматического монтирования /var:
+
+```console
+root@ubuntu2404-lvm:/# echo "`blkid | grep var: | awk '{print $2}'` /var ext4 defaults 0 0" >> /etc/fstab
+```
+
+Перезагружаемся в "новый" (уменьшенный root) и удаляем временную VG: 
+
+```console
+root@ubuntu2404-lvm:~# uptime
+ 23:12:10 up 0 min,  1 user,  load average: 1.18, 0.30, 0.10
+
+root@ubuntu2404-lvm:~# lvremove /dev/vg_root/lv_root
 Do you really want to remove and DISCARD active logical volume vg_root/lv_root? [y/n]: y
   Logical volume "lv_root" successfully removed.
 
-root@ubuntu24-lvm:~# vgremove /dev/vg_root
+root@ubuntu2404-lvm:~# vgremove /dev/vg_root
   Volume group "vg_root" successfully removed
 
-root@ubuntu24-lvm:~# pvremove /dev/sdb
+root@ubuntu2404-lvm:~# pvremove /dev/sdb
   Labels on physical volume "/dev/sdb" successfully wiped.
 ```
 
-10) /home - сделать том для снапшотов.
+3) Выделить том под /home. 
+
+Выделяем том под /home по тому же принципу что делали для /var:
 
 ```console
-root@ubuntu24-lvm:~# lvcreate -n LogVol_Home -L 2G /dev/ubuntu-vg
+root@ubuntu2404-lvm:~# lvcreate -n LogVol_Home -L 2G /dev/ubuntu-vg
   Logical volume "LogVol_Home" created.
-
-root@ubuntu24-lvm:~# mkfs.ext4 /dev/ubuntu-vg/LogVol_Home
+root@ubuntu2404-lvm:~# mkfs.ext4 /dev/ubuntu-vg/LogVol_Home
 mke2fs 1.47.0 (5-Feb-2023)
 Creating filesystem with 524288 4k blocks and 131072 inodes
-Filesystem UUID: eb73cb94-f14a-4977-8e00-03094375fa10
-Superblock backups stored on blocks: 
-	32768, 98304, 163840, 229376, 294912
+Filesystem UUID: b622e985-3885-47d9-9af0-df5876795e1b
+Superblock backups stored on blocks:
+        32768, 98304, 163840, 229376, 294912
 
-Allocating group tables: done                            
-Writing inode tables: done                            
+Allocating group tables: done
+Writing inode tables: done
 Creating journal (16384 blocks): done
-Writing superblocks and filesystem accounting information: done 
+Writing superblocks and filesystem accounting information: done
 
-root@ubuntu24-lvm:~# mount /dev/ubuntu-vg/LogVol_Home /mnt/
+root@ubuntu2404-lvm:~# mount /dev/ubuntu-vg/LogVol_Home /mnt
 
-root@ubuntu24-lvm:~# cp -aR /home/* /mnt/
+root@ubuntu2404-lvm:~# cp -aR /home/* /mnt
 
-root@ubuntu24-lvm:~# rm -rf /home/*
+root@ubuntu2404-lvm:~# ll /mnt/
+total 28
+drwxr-xr-x  4 root  root   4096 May 13 23:15 ./
+drwxr-xr-x 25 root  root   4096 May 13 21:58 ../
+drwx------  2 root  root  16384 May 13 23:15 lost+found/
+drwxr-x---  4 tanin tanin  4096 Mar 23 20:10 tanin/
 
-root@ubuntu24-lvm:~# umount /mnt 
+root@ubuntu2404-lvm:~# rm -rf /home/*
 
-root@ubuntu24-lvm:~# mount /dev/ubuntu-vg/LogVol_Home /home/
+root@ubuntu2404-lvm:~# umount /mnt
 
-root@ubuntu24-lvm:~# echo "`blkid | grep Home | awk '{print $2}'` \
- /home xfs defaults 0 0" >> /etc/fstab
+root@ubuntu2404-lvm:~# mount /dev/ubuntu-vg/LogVol_Home /home
 ```
 
-11) Прописать монтирование в fstab. Попробовать с разными опциями и разными файловыми системами (на выбор).
+Отредактируем /etc/fstab для автоматического монтирования /home:
 
 ```console
-
+root@ubuntu2404-lvm:~# echo "`blkid | grep Home | awk '{print $2}'` /home xfs defaults 0 0" >> /etc/fstab
 ```
 
-12) Работа со снапшотами:
-	сгенерить файлы в /home/;
-	снять снапшот;
-	удалить часть файлов;
-	восстановится со снапшота.
+4) Работа со снапшотами.
 
+Сгенерируем файлы в /home/:
 
+```console
+root@ubuntu2404-lvm:~# touch /home/file{1..20}
+```
 
+Снимем снапшот: 
 
+```console
+root@ubuntu2404-lvm:~# lvcreate -L 100MB -s -n home_snap /dev/ubuntu-vg/LogVol_Home
+  Logical volume "home_snap" created.
+```
 
+Удалим часть файлов из /home:
+
+```console
+root@ubuntu2404-lvm:~# rm -f /home/file{11..20}
+
+root@ubuntu2404-lvm:~# ll /home/
+total 28
+drwxr-xr-x  4 root  root   4096 May 13 23:23 ./
+drwxr-xr-x 25 root  root   4096 May 13 21:58 ../
+-rw-r--r--  1 root  root      0 May 13 23:20 file1
+-rw-r--r--  1 root  root      0 May 13 23:20 file10
+-rw-r--r--  1 root  root      0 May 13 23:20 file2
+-rw-r--r--  1 root  root      0 May 13 23:20 file3
+-rw-r--r--  1 root  root      0 May 13 23:20 file4
+-rw-r--r--  1 root  root      0 May 13 23:20 file5
+-rw-r--r--  1 root  root      0 May 13 23:20 file6
+-rw-r--r--  1 root  root      0 May 13 23:20 file7
+-rw-r--r--  1 root  root      0 May 13 23:20 file8
+-rw-r--r--  1 root  root      0 May 13 23:20 file9
+drwx------  2 root  root  16384 May 13 23:15 lost+found/
+drwxr-x---  4 tanin tanin  4096 Mar 23 20:10 tanin/
+
+```
 
 Домашнее задание выполнено.
 
