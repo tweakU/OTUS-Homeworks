@@ -7,55 +7,117 @@
 1) 
 
 ```console
+[root@vbox ~]# yum install -y wget rpmdevtools rpm-build createrepo yum-utils cmake gcc git nano
+...
+Installed:
+  annobin-12.65-1.el9.x86_64                         attr-2.5.1-3.el9.x86_64                                cmake-3.26.5-2.el9.x86_64                         cmake-data-3.26.5-2.el9.noarch
+  cmake-filesystem-3.26.5-2.el9.x86_64               cmake-rpm-macros-3.26.5-2.el9.noarch                   createrepo_c-0.20.1-2.el9.x86_64                  createrepo_c-libs-0.20.1-2.el9.x86_64
+  debugedit-5.0-5.el9.x86_64                         ed-1.14.2-12.el9.x86_64                                elfutils-0.191-4.el9.alma.1.x86_64                emacs-filesystem-1:27.2-11.el9_5.2.noarch
+  gcc-11.5.0-5.el9_5.alma.1.x86_64                   gcc-plugin-annobin-11.5.0-5.el9_5.alma.1.x86_64        gdb-minimal-14.2-3.el9.x86_64                     git-2.43.5-2.el9_5.x86_64
+  git-core-2.43.5-2.el9_5.x86_64                     git-core-doc-2.43.5-2.el9_5.noarch                     glibc-devel-2.34-125.el9_5.8.alma.1.x86_64        info-6.7-15.el9.x86_64
+  kernel-headers-5.14.0-503.40.1.el9_5.x86_64        libuv-1:1.42.0-2.el9_4.x86_64                          libxcrypt-devel-4.4.18-3.el9.x86_64               make-1:4.3-8.el9.x86_64
+  nano-5.6.1-6.el9.x86_64                            patch-2.7.6-16.el9.x86_64                              perl-Error-1:0.17029-7.el9.noarch                 perl-Git-2.43.5-2.el9_5.noarch
+  python3-argcomplete-1.12.0-5.el9.noarch            python3-chardet-4.0.0-5.el9.noarch                     python3-idna-2.10-7.el9_4.1.noarch                python3-pysocks-1.7.1-12.el9.noarch
+  python3-requests-2.25.1-8.el9.noarch               python3-urllib3-1.26.5-6.el9.noarch                    rpm-build-4.16.1.3-34.el9.x86_64                  rpmdevtools-9.5-1.el9.noarch
+  vim-filesystem-2:8.2.2637-21.el9.noarch            wget-1.21.1-8.el9_4.x86_64                             yum-utils-4.3.0-16.el9.noarch                     zstd-1.5.1-2.el9.x86_64
+
+Complete!
 ```
 
-2) 
+yumdownloader - Download package to current directory
+```console
+[root@vbox ~]# mkdir rpm && cd rpm
+
+[root@vbox rpm]# yumdownloader --source nginx
+
+[root@vbox rpm]# ll
+total 1084
+-rw-r--r--. 1 root root 1109119 May 19 17:57 nginx-1.20.1-20.el9.alma.1.src.rpm
+
+[root@vbox rpm]# rpm -Uvh nginx-1.20.1-20.el9.alma.1.src.rpm
+Updating / installing...
+   1:nginx-2:1.20.1-20.el9.alma.1     ################################# [100%]
+
+[root@vbox rpm]# ll ~/
+total 0
+drwxr-xr-x. 2 root root 48 May 19 18:38 rpm
+drwxr-xr-x. 4 root root 34 May 19 19:12 rpmbuild
+```
+
+yum-builddep - Install build dependencies for package or spec file
+```console
+[root@vbox rpm]# yum-builddep nginx
+...
+Installed:
+  brotli-1.0.9-6.el9.x86_64             brotli-devel-1.0.9-6.el9.x86_64            bzip2-devel-1.0.8-8.el9.x86_64           cairo-1.17.4-7.el9.x86_64                 dejavu-sans-fonts-2.37-18.el9.noarch
+  fontconfig-2.14.0-2.el9_1.x86_64      fontconfig-devel-2.14.0-2.el9_1.x86_64     fonts-filesystem-1:2.0.5-7.el9.1.noarch  freetype-2.10.4-10.el9_5.x86_64           freetype-devel-2.10.4-10.el9_5.x86_64
+  gd-2.3.2-3.el9.x86_64                 gd-devel-2.3.2-3.el9.x86_64                glib2-devel-2.68.4-14.el9_4.1.x86_64     graphite2-1.3.14-9.el9.x86_64             graphite2-devel-1.3.14-9.el9.x86_64
+  harfbuzz-2.7.4-10.el9.x86_64          harfbuzz-devel-2.7.4-10.el9.x86_64         harfbuzz-icu-2.7.4-10.el9.x86_64         jbigkit-libs-2.1-23.el9.x86_64            langpacks-core-font-en-3.0-16.el9.noarch
+  libICE-1.0.10-8.el9.x86_64            libSM-1.2.3-10.el9.x86_64                  libX11-1.7.0-9.el9.x86_64                libX11-common-1.7.0-9.el9.noarch          libX11-devel-1.7.0-9.el9.x86_64
+  libX11-xcb-1.7.0-9.el9.x86_64         libXau-1.0.9-8.el9.x86_64                  libXau-devel-1.0.9-8.el9.x86_64          libXext-1.3.4-8.el9.x86_64                libXpm-3.5.13-10.el9.x86_64
+  libXpm-devel-3.5.13-10.el9.x86_64     libXrender-0.9.10-16.el9.x86_64            libXt-1.2.0-6.el9.x86_64                 libblkid-devel-2.37.4-20.el9.x86_64       libffi-devel-3.4.2-8.el9.x86_64
+  libgpg-error-devel-1.42-5.el9.x86_64  libicu-67.1-9.el9.x86_64                   libicu-devel-67.1-9.el9.x86_64           libjpeg-turbo-2.0.90-7.el9.x86_64         libjpeg-turbo-devel-2.0.90-7.el9.x86_64
+  libmount-devel-2.37.4-20.el9.x86_64   libpng-2:1.6.37-12.el9.x86_64              libpng-devel-2:1.6.37-12.el9.x86_64      libselinux-devel-3.6-1.el9.x86_64         libsepol-devel-3.6-1.el9.x86_64
+  libtiff-4.4.0-13.el9.x86_64           libtiff-devel-4.4.0-13.el9.x86_64          libwebp-1.2.0-8.el9_3.x86_64             libwebp-devel-1.2.0-8.el9_3.x86_64        libxcb-1.13.1-9.el9.x86_64
+  libxcb-devel-1.13.1-9.el9.x86_64      libxml2-devel-2.9.13-6.el9_5.2.x86_64      libxslt-1.1.34-9.el9_5.3.x86_64          libxslt-devel-1.1.34-9.el9_5.3.x86_64     pcre-cpp-8.44-4.el9.x86_64
+  pcre-devel-8.44-4.el9.x86_64          pcre-utf16-8.44-4.el9.x86_64               pcre-utf32-8.44-4.el9.x86_64             pcre2-devel-10.40-6.el9.x86_64            pcre2-utf16-10.40-6.el9.x86_64
+  pcre2-utf32-10.40-6.el9.x86_64        perl-ExtUtils-Embed-1.35-481.el9.noarch    perl-Fedora-VSP-0.001-23.el9.noarch      perl-devel-4:5.32.1-481.el9.x86_64        perl-generators-1.11-12.el9.noarch
+  pixman-0.40.0-6.el9_3.x86_64          sysprof-capture-devel-3.40.1-3.el9.x86_64  xml-common-0.6.3-58.el9.noarch           xorg-x11-proto-devel-2024.1-1.el9.noarch  xz-devel-5.2.5-8.el9_0.x86_64
+
+Complete!
+```
 
 ```console
+[root@vbox ~]# git clone --recurse-submodules -j8 https://github.com/google/ngx_brotli
+Cloning into 'ngx_brotli'...
+remote: Enumerating objects: 237, done.
+remote: Counting objects: 100% (37/37), done.
+remote: Compressing objects: 100% (16/16), done.
+remote: Total 237 (delta 24), reused 21 (delta 21), pack-reused 200 (from 1)
+Receiving objects: 100% (237/237), 79.51 KiB | 1.30 MiB/s, done.
+Resolving deltas: 100% (114/114), done.
+Submodule 'deps/brotli' (https://github.com/google/brotli.git) registered for path 'deps/brotli'
+Cloning into '/root/ngx_brotli/deps/brotli'...
+remote: Enumerating objects: 7810, done.
+remote: Counting objects: 100% (20/20), done.
+remote: Compressing objects: 100% (19/19), done.
+remote: Total 7810 (delta 11), reused 1 (delta 1), pack-reused 7790 (from 2)
+Receiving objects: 100% (7810/7810), 40.62 MiB | 10.76 MiB/s, done.
+Resolving deltas: 100% (5071/5071), done.
+Submodule path 'deps/brotli': checked out 'ed738e842d2fbdf2d6459e39267a633c4a9b2f5d'
+
+[root@vbox ~]# ll
+total 0
+drwxr-xr-x. 7 root root 179 May 19 19:19 ngx_brotli
+drwxr-xr-x. 2 root root  48 May 19 18:38 rpm
+drwxr-xr-x. 4 root root  34 May 19 19:12 rpmbuild
 ```
 
-3) 
 
-```console
-```
-
-4) 
-
-```console
-```
-
-5) 
-
-```console
-```
-
-6) 
-
-```console
-```
-
-7) 
-
-```console
-```
-
-8) 
 
 ```console
 
 ```
 
-9) 
 
-```console
-```
 
-10) 
 
-```console
-```
 
-11) 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 ```console
 
