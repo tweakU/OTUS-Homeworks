@@ -96,13 +96,103 @@ drwxr-xr-x. 4 root root  34 May 19 19:12 rpmbuild
 
 
 ```console
+[root@vbox ~]# cd ngx_brotli/deps/brotli
 
+/root/ngx_brotli/deps/brotli
+
+[root@vbox brotli]# mkdir out && cd out
+
+[root@vbox out]# cmake -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=OFF -DCMAKE_C_FLAGS="-Ofast -m64 -march=native -mtune=native -flto -funroll-loops -ffunction-sections -fdata-sections -Wl,--gc-sections" -DCMAKE_CXX_FLAGS="-Ofast -m64 -march=native -mtune=native -flto -funroll-loops -ffunction-sections -fdata-sections -Wl,--gc-sections" -DCMAKE_INSTALL_PREFIX=./installed ..
+-- The C compiler identification is GNU 11.5.0
+-- Detecting C compiler ABI info
+-- Detecting C compiler ABI info - done
+-- Check for working C compiler: /bin/cc - skipped
+-- Detecting C compile features
+-- Detecting C compile features - done
+-- Build type is 'Release'
+-- Performing Test BROTLI_EMSCRIPTEN
+-- Performing Test BROTLI_EMSCRIPTEN - Failed
+-- Compiler is not EMSCRIPTEN
+-- Looking for log2
+-- Looking for log2 - not found
+-- Looking for log2
+-- Looking for log2 - found
+-- Configuring done (0.5s)
+-- Generating done (0.0s)
+CMake Warning:
+  Manually-specified variables were not used by the project:
+
+    CMAKE_CXX_FLAGS
+
+
+-- Build files have been written to: /root/ngx_brotli/deps/brotli/out
 ```
 
+```console
+[root@vbox out]# cmake --build . --config Release -j 2 --target brotlienc
+[  3%] Building C object CMakeFiles/brotlicommon.dir/c/common/constants.c.o
+[  6%] Building C object CMakeFiles/brotlicommon.dir/c/common/context.c.o
+[ 10%] Building C object CMakeFiles/brotlicommon.dir/c/common/dictionary.c.o
+[ 13%] Building C object CMakeFiles/brotlicommon.dir/c/common/platform.c.o
+[ 17%] Building C object CMakeFiles/brotlicommon.dir/c/common/shared_dictionary.c.o
+[ 20%] Building C object CMakeFiles/brotlicommon.dir/c/common/transform.c.o
+[ 24%] Linking C static library libbrotlicommon.a
+[ 24%] Built target brotlicommon
+[ 27%] Building C object CMakeFiles/brotlienc.dir/c/enc/backward_references.c.o
+[ 31%] Building C object CMakeFiles/brotlienc.dir/c/enc/backward_references_hq.c.o
+[ 34%] Building C object CMakeFiles/brotlienc.dir/c/enc/bit_cost.c.o
+[ 37%] Building C object CMakeFiles/brotlienc.dir/c/enc/block_splitter.c.o
+[ 41%] Building C object CMakeFiles/brotlienc.dir/c/enc/brotli_bit_stream.c.o
+[ 44%] Building C object CMakeFiles/brotlienc.dir/c/enc/cluster.c.o
+[ 48%] Building C object CMakeFiles/brotlienc.dir/c/enc/command.c.o
+[ 51%] Building C object CMakeFiles/brotlienc.dir/c/enc/compound_dictionary.c.o
+[ 55%] Building C object CMakeFiles/brotlienc.dir/c/enc/compress_fragment.c.o
+[ 58%] Building C object CMakeFiles/brotlienc.dir/c/enc/compress_fragment_two_pass.c.o
+[ 62%] Building C object CMakeFiles/brotlienc.dir/c/enc/dictionary_hash.c.o
+[ 65%] Building C object CMakeFiles/brotlienc.dir/c/enc/encode.c.o
+[ 68%] Building C object CMakeFiles/brotlienc.dir/c/enc/encoder_dict.c.o
+[ 72%] Building C object CMakeFiles/brotlienc.dir/c/enc/entropy_encode.c.o
+[ 75%] Building C object CMakeFiles/brotlienc.dir/c/enc/fast_log.c.o
+[ 79%] Building C object CMakeFiles/brotlienc.dir/c/enc/histogram.c.o
+[ 82%] Building C object CMakeFiles/brotlienc.dir/c/enc/literal_cost.c.o
+[ 86%] Building C object CMakeFiles/brotlienc.dir/c/enc/memory.c.o
+[ 89%] Building C object CMakeFiles/brotlienc.dir/c/enc/metablock.c.o
+[ 93%] Building C object CMakeFiles/brotlienc.dir/c/enc/static_dict.c.o
+[ 96%] Building C object CMakeFiles/brotlienc.dir/c/enc/utf8_util.c.o
+[100%] Linking C static library libbrotlienc.a
+[100%] Built target brotlienc
+```
 
+```console
+[root@vbox ~]# cd ~/rpmbuild/SPECS/
 
+[root@vbox SPECS]# rpmbuild -ba nginx.spec -D 'debug_package %{nil}'
+...
+Checking for unpackaged file(s): /usr/lib/rpm/check-files /root/rpmbuild/BUILDROOT/nginx-1.20.1-20.el9.alma.1.x86_64
+Wrote: /root/rpmbuild/SRPMS/nginx-1.20.1-20.el9.alma.1.src.rpm
+Wrote: /root/rpmbuild/RPMS/x86_64/nginx-mod-devel-1.20.1-20.el9.alma.1.x86_64.rpm
+Wrote: /root/rpmbuild/RPMS/x86_64/nginx-core-1.20.1-20.el9.alma.1.x86_64.rpm
+Wrote: /root/rpmbuild/RPMS/x86_64/nginx-mod-stream-1.20.1-20.el9.alma.1.x86_64.rpm
+Wrote: /root/rpmbuild/RPMS/x86_64/nginx-1.20.1-20.el9.alma.1.x86_64.rpm
+Wrote: /root/rpmbuild/RPMS/x86_64/nginx-mod-mail-1.20.1-20.el9.alma.1.x86_64.rpm
+Wrote: /root/rpmbuild/RPMS/x86_64/nginx-mod-http-perl-1.20.1-20.el9.alma.1.x86_64.rpm
+Wrote: /root/rpmbuild/RPMS/x86_64/nginx-mod-http-image-filter-1.20.1-20.el9.alma.1.x86_64.rpm
+Wrote: /root/rpmbuild/RPMS/x86_64/nginx-mod-http-xslt-filter-1.20.1-20.el9.alma.1.x86_64.rpm
+Wrote: /root/rpmbuild/RPMS/noarch/nginx-all-modules-1.20.1-20.el9.alma.1.noarch.rpm
+Wrote: /root/rpmbuild/RPMS/noarch/nginx-filesystem-1.20.1-20.el9.alma.1.noarch.rpm
+Executing(%clean): /bin/sh -e /var/tmp/rpm-tmp.sVRvmN
++ umask 022
++ cd /root/rpmbuild/BUILD
++ cd nginx-1.20.1
++ /usr/bin/rm -rf /root/rpmbuild/BUILDROOT/nginx-1.20.1-20.el9.alma.1.x86_64
++ RPM_EC=0
+++ jobs -p
++ exit 0
+```
 
+```console
 
+```
 
 
 
