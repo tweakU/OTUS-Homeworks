@@ -1,10 +1,10 @@
-## Домашнее задание № 4 — «»
+## Домашнее задание № 7 — «Управление пакетами. Дистрибьюция софта.»
 
-Цель домашнего задания: в операционной системе (ОС) GNU/Linux.
+Цель домашнего задания: 1) Создать свой RPM пакет; 2) Создать свой репозиторий и разместить там ранее собранный RPM пакет в операционной системе (ОС) GNU/Linux.
 
 Выполнение домашнего задания:
 
-1) 
+1) Создать свой RPM пакет:
 
 ```console
 [root@vbox ~]# yum install -y wget rpmdevtools rpm-build createrepo yum-utils cmake gcc git nano
@@ -191,13 +191,63 @@ Executing(%clean): /bin/sh -e /var/tmp/rpm-tmp.sVRvmN
 ```
 
 ```console
+[root@vbox SPECS]# ll ~/rpmbuild/RPMS/x86_64/
+total 2000
+-rw-r--r--. 1 root root   36234 May 20 13:13 nginx-1.20.1-20.el9.alma.1.x86_64.rpm
+-rw-r--r--. 1 root root 1035322 May 20 13:13 nginx-core-1.20.1-20.el9.alma.1.x86_64.rpm
+-rw-r--r--. 1 root root  759882 May 20 13:13 nginx-mod-devel-1.20.1-20.el9.alma.1.x86_64.rpm
+-rw-r--r--. 1 root root   19365 May 20 13:13 nginx-mod-http-image-filter-1.20.1-20.el9.alma.1.x86_64.rpm
+-rw-r--r--. 1 root root   30996 May 20 13:13 nginx-mod-http-perl-1.20.1-20.el9.alma.1.x86_64.rpm
+-rw-r--r--. 1 root root   18160 May 20 13:13 nginx-mod-http-xslt-filter-1.20.1-20.el9.alma.1.x86_64.rpm
+-rw-r--r--. 1 root root   53797 May 20 13:13 nginx-mod-mail-1.20.1-20.el9.alma.1.x86_64.rpm
+-rw-r--r--. 1 root root   80417 May 20 13:13 nginx-mod-stream-1.20.1-20.el9.alma.1.x86_64.rpm
+```
 
+```console
+[root@vbox SPECS]# cd ~/rpmbuild/RPMS/x86_64/
+[
+root@vbox x86_64]# yum localinstall *.rpm
+...
+Installed:
+  almalinux-logos-httpd-90.5.1-1.1.el9.noarch                              nginx-2:1.20.1-20.el9.alma.1.x86_64                              nginx-all-modules-2:1.20.1-20.el9.alma.1.noarch
+  nginx-core-2:1.20.1-20.el9.alma.1.x86_64                                 nginx-filesystem-2:1.20.1-20.el9.alma.1.noarch                   nginx-mod-devel-2:1.20.1-20.el9.alma.1.x86_64
+  nginx-mod-http-image-filter-2:1.20.1-20.el9.alma.1.x86_64                nginx-mod-http-perl-2:1.20.1-20.el9.alma.1.x86_64                nginx-mod-http-xslt-filter-2:1.20.1-20.el9.alma.1.x86_64
+  nginx-mod-mail-2:1.20.1-20.el9.alma.1.x86_64                             nginx-mod-stream-2:1.20.1-20.el9.alma.1.x86_64
+
+Complete!
+```
+
+```console
+[root@vbox x86_64]# systemctl start nginx
+
+[root@vbox x86_64]# systemctl status nginx
+● nginx.service - The nginx HTTP and reverse proxy server
+     Loaded: loaded (/usr/lib/systemd/system/nginx.service; disabled; preset: disabled)
+     Active: active (running) since Tue 2025-05-20 13:19:14 UTC; 1s ago
+    Process: 32586 ExecStartPre=/usr/bin/rm -f /run/nginx.pid (code=exited, status=0/SUCCESS)
+    Process: 32587 ExecStartPre=/usr/sbin/nginx -t (code=exited, status=0/SUCCESS)
+    Process: 32588 ExecStart=/usr/sbin/nginx (code=exited, status=0/SUCCESS)
+   Main PID: 32589 (nginx)
+      Tasks: 2 (limit: 5473)
+     Memory: 5.8M
+        CPU: 26ms
+     CGroup: /system.slice/nginx.service
+             ├─32589 "nginx: master process /usr/sbin/nginx"
+             └─32590 "nginx: worker process"
+
+May 20 13:19:14 vbox systemd[1]: Starting The nginx HTTP and reverse proxy server...
+May 20 13:19:14 vbox nginx[32587]: nginx: the configuration file /etc/nginx/nginx.conf syntax is ok
+May 20 13:19:14 vbox nginx[32587]: nginx: configuration file /etc/nginx/nginx.conf test is successful
+May 20 13:19:14 vbox systemd[1]: Started The nginx HTTP and reverse proxy server.
 ```
 
 
 
+2) Создать свой репозиторий и разместить там ранее собранный RPM пакет:
 
+```console
 
+```
 
 
 
