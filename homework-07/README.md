@@ -246,10 +246,117 @@ May 20 13:19:14 vbox systemd[1]: Started The nginx HTTP and reverse proxy server
 2) Создать свой репозиторий и разместить там ранее собранный RPM пакет:
 
 ```console
+[root@vbox x86_64]# ll /usr/share/nginx/html/
+total 12
+-rw-r--r--. 1 root root 3797 Oct  3  2024 404.html
+-rw-r--r--. 1 root root 3846 Oct  3  2024 50x.html
+drwxr-xr-x. 2 root root   27 May 20 13:19 icons
+lrwxrwxrwx. 1 root root   25 May 20 13:13 index.html -> ../../testpage/index.html
+-rw-r--r--. 1 root root  368 Oct  3  2024 nginx-logo.png
+lrwxrwxrwx. 1 root root   14 May 20 13:13 poweredby.png -> nginx-logo.png
+lrwxrwxrwx. 1 root root   37 May 20 13:13 system_noindex_logo.png -> ../../pixmaps/system-noindex-logo.png
 
+[root@vbox x86_64]# mkdir /usr/share/nginx/html/repo
+
+[root@vbox x86_64]# cp ~/rpmbuild/RPMS/x86_64/*.rpm /usr/share/nginx/html/repo/
+
+[root@vbox x86_64]# ll /usr/share/nginx/html/repo
+total 2020
+-rw-r--r--. 1 root root   36234 May 20 13:25 nginx-1.20.1-20.el9.alma.1.x86_64.rpm
+-rw-r--r--. 1 root root    7345 May 20 13:25 nginx-all-modules-1.20.1-20.el9.alma.1.noarch.rpm
+-rw-r--r--. 1 root root 1035322 May 20 13:25 nginx-core-1.20.1-20.el9.alma.1.x86_64.rpm
+-rw-r--r--. 1 root root    8430 May 20 13:25 nginx-filesystem-1.20.1-20.el9.alma.1.noarch.rpm
+-rw-r--r--. 1 root root  759882 May 20 13:25 nginx-mod-devel-1.20.1-20.el9.alma.1.x86_64.rpm
+-rw-r--r--. 1 root root   19365 May 20 13:25 nginx-mod-http-image-filter-1.20.1-20.el9.alma.1.x86_64.rpm
+-rw-r--r--. 1 root root   30996 May 20 13:25 nginx-mod-http-perl-1.20.1-20.el9.alma.1.x86_64.rpm
+-rw-r--r--. 1 root root   18160 May 20 13:25 nginx-mod-http-xslt-filter-1.20.1-20.el9.alma.1.x86_64.rpm
+-rw-r--r--. 1 root root   53797 May 20 13:25 nginx-mod-mail-1.20.1-20.el9.alma.1.x86_64.rpm
+-rw-r--r--. 1 root root   80417 May 20 13:25 nginx-mod-stream-1.20.1-20.el9.alma.1.x86_64.rpm
+
+[root@vbox x86_64]# createrepo /usr/share/nginx/html/repo/
+Directory walk started
+Directory walk done - 10 packages
+Temporary output repo path: /usr/share/nginx/html/repo/.repodata/
+Preparing sqlite DBs
+Pool started (with 5 workers)
+Pool finished
 ```
 
+```console
+[root@vbox x86_64]# nano /etc/nginx/nginx.conf
 
+[root@vbox x86_64]# nginx -t
+nginx: the configuration file /etc/nginx/nginx.conf syntax is ok
+nginx: configuration file /etc/nginx/nginx.conf test is successful
+```
+
+```console
+[root@vbox x86_64]# curl -a http://localhost/repo/
+
+<html>
+<head><title>Index of /repo/</title></head>
+<body>
+<h1>Index of /repo/</h1><hr><pre><a href="../">../</a>
+<a href="repodata/">repodata/</a>                                          20-May-2025 13:25                   -
+<a href="nginx-1.20.1-20.el9.alma.1.x86_64.rpm">nginx-1.20.1-20.el9.alma.1.x86_64.rpm</a>              20-May-2025 13:25               36234
+<a href="nginx-all-modules-1.20.1-20.el9.alma.1.noarch.rpm">nginx-all-modules-1.20.1-20.el9.alma.1.noarch.rpm</a>  20-May-2025 13:25                7345
+<a href="nginx-core-1.20.1-20.el9.alma.1.x86_64.rpm">nginx-core-1.20.1-20.el9.alma.1.x86_64.rpm</a>         20-May-2025 13:25             1035322
+<a href="nginx-filesystem-1.20.1-20.el9.alma.1.noarch.rpm">nginx-filesystem-1.20.1-20.el9.alma.1.noarch.rpm</a>   20-May-2025 13:25                8430
+<a href="nginx-mod-devel-1.20.1-20.el9.alma.1.x86_64.rpm">nginx-mod-devel-1.20.1-20.el9.alma.1.x86_64.rpm</a>    20-May-2025 13:25              759882
+<a href="nginx-mod-http-image-filter-1.20.1-20.el9.alma.1.x86_64.rpm">nginx-mod-http-image-filter-1.20.1-20.el9.alma...&gt;</a> 20-May-2025 13:25               19365
+<a href="nginx-mod-http-perl-1.20.1-20.el9.alma.1.x86_64.rpm">nginx-mod-http-perl-1.20.1-20.el9.alma.1.x86_64..&gt;</a> 20-May-2025 13:25               30996
+<a href="nginx-mod-http-xslt-filter-1.20.1-20.el9.alma.1.x86_64.rpm">nginx-mod-http-xslt-filter-1.20.1-20.el9.alma.1..&gt;</a> 20-May-2025 13:25               18160
+<a href="nginx-mod-mail-1.20.1-20.el9.alma.1.x86_64.rpm">nginx-mod-mail-1.20.1-20.el9.alma.1.x86_64.rpm</a>     20-May-2025 13:25               53797
+<a href="nginx-mod-stream-1.20.1-20.el9.alma.1.x86_64.rpm">nginx-mod-stream-1.20.1-20.el9.alma.1.x86_64.rpm</a>   20-May-2025 13:25               80417
+</pre><hr></body>
+</html>
+```
+
+```console
+[root@vbox x86_64]# cat >> /etc/yum.repos.d/otus.repo << EOF
+> [otus]
+> name=otus-linux
+> baseurl=http://localhost/repo
+> gpgcheck=0
+> enabled=1
+> EOF
+
+[root@vbox x86_64]# yum repolist enabled | grep otus
+otus                             otus-linux
+```
+
+```console
+[root@vbox x86_64]# cd /usr/share/nginx/html/repo/
+[root@vbox repo]# wget https://repo.percona.com/yum/percona-release-latest.noarch.rpm
+--2025-05-20 13:34:32--  https://repo.percona.com/yum/percona-release-latest.noarch.rpm
+Resolving repo.percona.com (repo.percona.com)... 49.12.125.205, 2a01:4f8:242:5792::2
+Connecting to repo.percona.com (repo.percona.com)|49.12.125.205|:443... connected.
+HTTP request sent, awaiting response... 200 OK
+Length: 28300 (28K) [application/x-redhat-package-manager]
+Saving to: ‘percona-release-latest.noarch.rpm’
+
+percona-release-latest.noarch.rpm                    100%[=====================================================================================================================>]  27.64K  --.-KB/s    in 0.001s
+
+2025-05-20 13:34:32 (27.4 MB/s) - ‘percona-release-latest.noarch.rpm’ saved [28300/28300]
+
+[root@vbox repo]# createrepo /usr/share/nginx/html/repo/
+Directory walk started
+Directory walk done - 11 packages
+Temporary output repo path: /usr/share/nginx/html/repo/.repodata/
+Preparing sqlite DBs
+Pool started (with 5 workers)
+Pool finished
+
+[root@vbox repo]# yum makecache
+AlmaLinux 9 - AppStream                                                                                                                                                            6.0 kB/s | 4.2 kB     00:00
+AlmaLinux 9 - BaseOS                                                                                                                                                               5.6 kB/s | 3.8 kB     00:00
+AlmaLinux 9 - Extras                                                                                                                                                               4.6 kB/s | 3.3 kB     00:00
+otus-linux                                                                                                                                                                         3.1 MB/s | 7.2 kB     00:00
+Metadata cache created.
+
+[root@vbox repo]# yum list | grep otus
+percona-release.noarch                               1.0-30                              otus
+```
 
 
 
