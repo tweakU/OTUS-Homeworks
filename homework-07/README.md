@@ -634,6 +634,12 @@ root         706  0.0  0.2 203736  5532 ?        Ss   22:30   0:00 nginx: master
 www-data     707  0.0  0.5 204472 10988 ?        S    22:30   0:00 nginx: worker process
 www-data     708  0.0  0.5 204472 11048 ?        S    22:30   0:00 nginx: worker process
 root        1001  0.0  0.1   6480  2252 pts/1    S+   22:33   0:00 grep --color=auto nginx
+
+root@test:~# ps -elf | grep nginx
+1 S root         706       1  0  80   0 - 50934 sigsus 22:30 ?        00:00:00 nginx: master process /usr/sbin/nginx -g daemon on; master_process on;
+5 S www-data     707     706  0  80   0 - 51118 ep_pol 22:30 ?        00:00:00 nginx: worker process
+5 S www-data     708     706  0  80   0 - 51118 ep_pol 22:30 ?        00:00:00 nginx: worker process
+0 S root        1003     855  0  80   0 -  1620 pipe_r 22:34 pts/1    00:00:00 grep --color=auto nginx
 ```
 
 
