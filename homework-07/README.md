@@ -382,23 +382,98 @@ Complete!
 3) Создать свой DEB пакет:
 
 ```console
-root@ubuntu2004:~# apt install -y dpkg-dev build-essential zlib1g-dev libpcre3 libpcre3-dev unzip
-Reading package lists... Done
-Building dependency tree
-Reading state information... Done
-libpcre3 is already the newest version (2:8.39-12ubuntu0.1).
-unzip is already the newest version (6.0-25ubuntu1.2).
-unzip set to manually installed.
-The following additional packages will be installed:
-  binutils binutils-common binutils-x86-64-linux-gnu cpp cpp-9 fakeroot g++ g++-9 gcc gcc-9 gcc-9-base libalgorithm-diff-perl libalgorithm-diff-xs-perl libalgorithm-merge-perl libasan5 libatomic1 libbinutils
-  libc-dev-bin libc6-dev libcc1-0 libcrypt-dev libctf-nobfd0 libctf0 libdpkg-perl libfakeroot libfile-fcntllock-perl libgcc-9-dev libgomp1 libisl22 libitm1 liblsan0 libmpc3 libpcre16-3 libpcre32-3
-  libpcrecpp0v5 libquadmath0 libstdc++-9-dev libtsan0 libubsan1 linux-libc-dev make manpages-dev
-Suggested packages:
-  binutils-doc cpp-doc gcc-9-locales debian-keyring g++-multilib g++-9-multilib gcc-9-doc gcc-multilib autoconf automake libtool flex bison gdb gcc-doc gcc-9-multilib glibc-doc bzr libstdc++-9-doc make-doc
-The following NEW packages will be installed:
-  binutils binutils-common binutils-x86-64-linux-gnu build-essential cpp cpp-9 dpkg-dev fakeroot g++ g++-9 gcc gcc-9 gcc-9-base libalgorithm-diff-perl libalgorithm-diff-xs-perl libalgorithm-merge-perl libasan5
-  libatomic1 libbinutils libc-dev-bin libc6-dev libcc1-0 libcrypt-dev libctf-nobfd0 libctf0 libdpkg-perl libfakeroot libfile-fcntllock-perl libgcc-9-dev libgomp1 libisl22 libitm1 liblsan0 libmpc3 libpcre16-3
-  libpcre3-dev libpcre32-3 libpcrecpp0v5 libquadmath0 libstdc++-9-dev libtsan0 libubsan1 linux-libc-dev make manpages-dev zlib1g-dev
+Обновим репу
+root@test:~# apt update
+…
+All packages are up to date.
+
+Установим окружение для сборки
+root@test:~# apt install -y dpkg-dev build-essential zlib1g-dev libpcre3 libpcre3-dev unzip
+
+Внесем изменения
+nano /etc/apt/sources.list
+
+Установим зависимости для сборки
+root@test:~# apt install -y cmake debhelper-compat libexpat-dev libgd-dev libgeoip-dev libhiredis-dev libmaxminddb-dev libmhash-dev libpam0g-dev libperl-dev libssl-dev libxslt1-dev quilt
+
+Создадим 
+root@test:~# mkdir ~/custom-nginx && cd ~/custom-nginx
+
+Скачаем
+root@test:~/custom-nginx# apt source nginx
+
+Перейдём в суб директорию 
+root@test:~/custom-nginx# cd nginx-1.18.0/debian/modules
+
+Качаем brotli
+root@test:~/custom-nginx/nginx-1.18.0/debian/modules# git clone --recurse-submodules -j8 https://github.com/google/ngx_brotli
+…
+Submodule path 'deps/brotli': checked out 'ed738e842d2fbdf2d6459e39267a633c4a9b2f5d'
+
+Перейдём в суб директорию
+root@test:~/custom-nginx/nginx-1.18.0/debian/modules# cd ngx_brotli/deps/brotli
+
+Создадим и перейдём в директорию
+root@test:~/custom-nginx/nginx-1.18.0/debian/modules/ngx_brotli/deps/brotli# mkdir out && cd out
+
+Подготовим сборку 
+root@test:~/custom-nginx/nginx-1.18.0/debian/modules/ngx_brotli/deps/brotli/out# cmake -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=OFF -DCMAKE_C_FLAGS="-Ofast -m64 -march=native -mtune=native -flto -funroll-loops -ffunction-sections -fdata-sections -Wl,--gc-sections" -DCMAKE_CXX_FLAGS="-Ofast -m64 -march=native -mtune=native -flto -funroll-loops -ffunction-sections -fdata-sections -Wl,--gc-sections" -DCMAKE_INSTALL_PREFIX=./installed ..
+…
+-- Build files have been written to: /root/custom-nginx/nginx-1.18.0/debian/modules/ngx_brotli/deps/brotli/out
+
+Подготовим сборку 
+root@test:~/custom-nginx/nginx-1.18.0/debian/modules/ngx_brotli/deps/brotli/out# cmake --build . --config Release --target brotlienc
+…
+[100%] Built target brotlienc
+
+Редактируем файл сборки, добавляем модуль
+nano ~/custom-nginx/nginx-1.18.0/debian/rules
+--add-module=$(MODULESDIR)/ngx_brotli
+
+Редактируем файл версии
+nano ~/custom-nginx/nginx-1.18.0/debian/changelog
+
+Собираем пакет
+cd ~/custom-nginx/nginx-1.18.0/
+dpkg-buildpackage -b
+
+Смотрим пакеты
+cd ~/custom-nginx/
+root@test:~/custom-nginx# ll *.deb
+-rw-r--r-- 1 root root  41958 Jul  4 22:08 libnginx-mod-http-auth-pam_1.18.0-6ubuntu14-custom-brotli_amd64.deb
+-rw-r--r-- 1 root root  44510 Jul  4 22:08 libnginx-mod-http-cache-purge_1.18.0-6ubuntu14-custom-brotli_amd64.deb
+-rw-r--r-- 1 root root  50000 Jul  4 22:08 libnginx-mod-http-dav-ext_1.18.0-6ubuntu14-custom-brotli_amd64.deb
+-rw-r--r-- 1 root root  54724 Jul  4 22:08 libnginx-mod-http-echo_1.18.0-6ubuntu14-custom-brotli_amd64.deb
+-rw-r--r-- 1 root root  47288 Jul  4 22:08 libnginx-mod-http-fancyindex_1.18.0-6ubuntu14-custom-brotli_amd64.deb
+-rw-r--r-- 1 root root  43248 Jul  4 22:08 libnginx-mod-http-geoip_1.18.0-6ubuntu14-custom-brotli_amd64.deb
+-rw-r--r-- 1 root root  43824 Jul  4 22:08 libnginx-mod-http-geoip2_1.18.0-6ubuntu14-custom-brotli_amd64.deb
+-rw-r--r-- 1 root root  47738 Jul  4 22:08 libnginx-mod-http-headers-more-filter_1.18.0-6ubuntu14-custom-brotli_amd64.deb
+-rw-r--r-- 1 root root  47300 Jul  4 22:08 libnginx-mod-http-image-filter_1.18.0-6ubuntu14-custom-brotli_amd64.deb
+-rw-r--r-- 1 root root  39070 Jul  4 22:08 libnginx-mod-http-ndk_1.18.0-6ubuntu14-custom-brotli_amd64.deb
+-rw-r--r-- 1 root root  56098 Jul  4 22:08 libnginx-mod-http-perl_1.18.0-6ubuntu14-custom-brotli_amd64.deb
+-rw-r--r-- 1 root root  45172 Jul  4 22:08 libnginx-mod-http-subs-filter_1.18.0-6ubuntu14-custom-brotli_amd64.deb
+-rw-r--r-- 1 root root  49326 Jul  4 22:08 libnginx-mod-http-uploadprogress_1.18.0-6ubuntu14-custom-brotli_amd64.deb
+-rw-r--r-- 1 root root  45394 Jul  4 22:08 libnginx-mod-http-upstream-fair_1.18.0-6ubuntu14-custom-brotli_amd64.deb
+-rw-r--r-- 1 root root  45700 Jul  4 22:08 libnginx-mod-http-xslt-filter_1.18.0-6ubuntu14-custom-brotli_amd64.deb
+-rw-r--r-- 1 root root  77760 Jul  4 22:08 libnginx-mod-mail_1.18.0-6ubuntu14-custom-brotli_amd64.deb
+-rw-r--r-- 1 root root 261862 Jul  4 22:08 libnginx-mod-nchan_1.18.0-6ubuntu14-custom-brotli_amd64.deb
+-rw-r--r-- 1 root root 166230 Jul  4 22:08 libnginx-mod-rtmp_1.18.0-6ubuntu14-custom-brotli_amd64.deb
+-rw-r--r-- 1 root root 104784 Jul  4 22:08 libnginx-mod-stream_1.18.0-6ubuntu14-custom-brotli_amd64.deb
+-rw-r--r-- 1 root root  42330 Jul  4 22:08 libnginx-mod-stream-geoip_1.18.0-6ubuntu14-custom-brotli_amd64.deb
+-rw-r--r-- 1 root root  43328 Jul  4 22:08 libnginx-mod-stream-geoip2_1.18.0-6ubuntu14-custom-brotli_amd64.deb
+-rw-r--r-- 1 root root  37080 Jul  4 22:08 nginx_1.18.0-6ubuntu14-custom-brotli_amd64.deb
+-rw-r--r-- 1 root root  72366 Jul  4 22:08 nginx-common_1.18.0-6ubuntu14-custom-brotli_all.deb
+-rw-r--r-- 1 root root 957596 Jul  4 22:08 nginx-core_1.18.0-6ubuntu14-custom-brotli_amd64.deb
+-rw-r--r-- 1 root root  46506 Jul  4 22:08 nginx-doc_1.18.0-6ubuntu14-custom-brotli_all.deb
+-rw-r--r-- 1 root root 969736 Jul  4 22:08 nginx-extras_1.18.0-6ubuntu14-custom-brotli_amd64.deb
+-rw-r--r-- 1 root root  37550 Jul  4 22:08 nginx-full_1.18.0-6ubuntu14-custom-brotli_amd64.deb
+-rw-r--r-- 1 root root 931846 Jul  4 22:08 nginx-light_1.18.0-6ubuntu14-custom-brotli_amd64.deb
+
+Фиксируем 
+root@test:~/custom-nginx# apt-mark hold nginx
+nginx set on hold.
+
+
 ```
 
 
