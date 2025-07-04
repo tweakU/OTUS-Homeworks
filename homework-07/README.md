@@ -640,6 +640,39 @@ root@test:~# ps -elf | grep nginx
 5 S www-data     707     706  0  80   0 - 51118 ep_pol 22:30 ?        00:00:00 nginx: worker process
 5 S www-data     708     706  0  80   0 - 51118 ep_pol 22:30 ?        00:00:00 nginx: worker process
 0 S root        1003     855  0  80   0 -  1620 pipe_r 22:34 pts/1    00:00:00 grep --color=auto nginx
+
+root@test:~# ip a | grep inet
+    inet 127.0.0.1/8 scope host lo
+    inet6 ::1/128 scope host
+    inet 192.168.131.72/24 metric 100 brd 192.168.131.255 scope global dynamic enp0s3
+    inet6 2a03:d000:4224:573e:a00:27ff:feab:1b53/64 scope global dynamic mngtmpaddr noprefixroute
+    inet6 fe80::a00:27ff:feab:1b53/64 scope link
+root@test:~# curl 192.168.131.72
+<!DOCTYPE html>
+<html>
+<head>
+<title>Welcome to nginx!</title>
+<style>
+    body {
+        width: 35em;
+        margin: 0 auto;
+        font-family: Tahoma, Verdana, Arial, sans-serif;
+    }
+</style>
+</head>
+<body>
+<h1>Welcome to nginx!</h1>
+<p>If you see this page, the nginx web server is successfully installed and
+working. Further configuration is required.</p>
+
+<p>For online documentation and support please refer to
+<a href="http://nginx.org/">nginx.org</a>.<br/>
+Commercial support is available at
+<a href="http://nginx.com/">nginx.com</a>.</p>
+
+<p><em>Thank you for using nginx.</em></p>
+</body>
+</html>
 ```
 
 
