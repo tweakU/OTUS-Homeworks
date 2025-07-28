@@ -8,9 +8,8 @@
 
 По умолчанию меню загрузчика Grub скрыто и нет задержки при загрузке. Для отображения меню нужно отредактировать конфигурационный файл.
 Комментируем строку, скрывающую меню и ставим задержку для выбора пункта меню в 10 секунд.
-
-#GRUB_TIMEOUT_STYLE=hidden
-GRUB_TIMEOUT=10
+- #GRUB_TIMEOUT_STYLE=hidden
+- GRUB_TIMEOUT=10
 
 ```console
 root@test:~# nano /etc/default/grub
