@@ -84,7 +84,20 @@ root@ubuntu22:~# mount | grep root
 <img width="1024" height="768" alt="VirtualBox_ubuntu-22 04 5-server_08_06_2025_21_40_16" src="https://github.com/user-attachments/assets/b45a1aa1-810c-4941-af53-50efedddf553" />
 
 
-**Установить систему с LVM, после чего переименовать VG**
+**Установить систему с LVM, после чего переименовать VG** 
+
+
+
+
+```console
+root@test:~# vgs
+  VG   #PV #LV #SN Attr   VSize  VFree
+  vg00   1   1   0 wz--n- 15.98g 5.98g
+
+root@test:~# vgrename vg00 ubuntu-otus
+  Volume group "vg00" successfully renamed to "ubuntu-otus"
+```
+
 
 
 
