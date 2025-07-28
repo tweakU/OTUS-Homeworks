@@ -72,12 +72,19 @@ root@ubuntu22:~# mount | grep root
 
 <img width="1024" height="768" alt="VirtualBox_ubuntu-22 04 5-server_08_06_2025_21_38_39" src="https://github.com/user-attachments/assets/eaaba266-c293-4e77-bcfa-66b5c4d6da40" />
 
+В этом меню сначала включаем поддержку сети (network) для того, чтобы файловая
+система перемонтировалась в режим read/write (либо это можно сделать вручную).
+Далее выбираем пункт root и попадаем в консоль с пользователем root. Если вы
+ранее устанавливали пароль для пользователя root (по умолчанию его нет), то
+необходимо его ввести.
+В этой консоли можно производить любые манипуляции с системой
+
 <img width="1024" height="768" alt="VirtualBox_ubuntu-22 04 5-server_08_06_2025_21_30_51" src="https://github.com/user-attachments/assets/c61f0133-ae9a-4d16-967b-d94ce7bfa201" />
 
 <img width="1024" height="768" alt="VirtualBox_ubuntu-22 04 5-server_08_06_2025_21_40_16" src="https://github.com/user-attachments/assets/b45a1aa1-810c-4941-af53-50efedddf553" />
 
 
-
+**Установить систему с LVM, после чего переименовать VG**
 
 
 
