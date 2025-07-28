@@ -28,6 +28,7 @@ done
 root@test:~# reboot
 ```
 
+<img width="640" height="480" alt="VirtualBox_ubuntu-20 04 6-raid1-lvm_29_07_2025_00_42_18" src="https://github.com/user-attachments/assets/d3cbcb44-7810-4a3e-842d-78919c817641" />
 
 ![VirtualBox_ubuntu-22 04 5-server_08_06_2025_21_12_31](https://github.com/user-attachments/assets/d95a08b5-8988-40b0-b342-77da67e611d5)
 
