@@ -8,7 +8,7 @@
 
 **Выполнение домашнего задания:**
 
-Создадим Vagrantfile (оригинал тут https://github.com/Nickmob/vagrant_kernel_update/blob/main/Vagrantfile), в котором будут указаны параметры нашей ВМ:
+Создадим Vagrantfile (оригинал с правильными отступами [тут](https://github.com/Nickmob/vagrant_kernel_update/blob/main/Vagrantfile)), в котором будут указаны параметры нашей ВМ (Текст конфигов здесь представлен для ознакомления):
 
 ```console
 # Описываем Виртуальные машины
@@ -55,18 +55,48 @@ PS D:\linux\otus\linux_prof\hw-18> vagrant up
 ...
 ```
 
+**Обновление ядра**
+Подключаемся по ssh к созданной виртуальной машины. Для этого в каталоге
+с нашим Vagrantfile вводим команду vagrant ssh.
+Перед работами проверим текущую версию ядра
 
+```console
 PS D:\linux\otus\linux_prof\hw-18> vagrant ssh
-
-
 
 [vagrant@kernel-update ~]$ uname -r
 4.18.0-516.el8.x86_64
-
-
-
-
 ```
+
+Далее подключим репозиторий, откуда возьмём необходимую версию ядра:
+
+```console
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 2) Обновим ядро ОС из репозитория ELRepo.
 
