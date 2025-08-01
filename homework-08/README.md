@@ -58,12 +58,15 @@ root@test:~# reboot
 В целом на этом все, Вы попали в систему. Но есть один нюанс. Рутовая файловая
 система при этом монтируется в режиме Read-Only. Если вы хотите перемонтировать
 ее в режим Read-Write, можно воспользоваться командой:
-root@ubuntu22:~# mount -o remount,rw /
+```console
+**root@ubuntu22:~# mount -o remount,rw /**
+```
 
 После чего можно убедиться, записав данные в любой файл или прочитав вывод
-команды:
-root@ubuntu22:~# mount | grep root
-
+команды: 
+```console 
+**root@ubuntu22:~# mount | grep root**
+```
 
 **Способ 2. Recovery mode**
 
