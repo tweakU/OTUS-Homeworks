@@ -59,13 +59,13 @@ root@test:~# reboot
 система при этом монтируется в режиме Read-Only. Если вы хотите перемонтировать
 ее в режим Read-Write, можно воспользоваться командой:
 ```console
-**root@ubuntu22:~# mount -o remount,rw /**
+root@ubuntu22:~# mount -o remount,rw /
 ```
 
 После чего можно убедиться, записав данные в любой файл или прочитав вывод
 команды: 
 ```console 
-**root@ubuntu22:~# mount | grep root**
+root@ubuntu22:~# mount | grep root
 ```
 
 **Способ 2. Recovery mode**
