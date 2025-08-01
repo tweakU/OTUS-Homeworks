@@ -8,7 +8,7 @@
 
 **Выполнение домашнего задания**:
 
-Создадим Vagrantfile (thx to [%Nickmob](https://github.com/Nickmob/vagrant_kernel_update/tree/main)), в котором будут указаны параметры нашей ВМ (Текст конфигов здесь представлен для ознакомления):
+Создадим Vagrantfile (thx to [%Nickmob](https://github.com/Nickmob/vagrant_kernel_update/tree/main)), в котором будут указаны параметры нашей ВМ:
 
 ```console
 # Описываем Виртуальные машины
