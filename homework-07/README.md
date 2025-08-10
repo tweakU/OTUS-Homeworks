@@ -429,48 +429,56 @@ All packages are up to date.
 root@test:~# apt install -y dpkg-dev build-essential zlib1g-dev libpcre3 libpcre3-dev unzip
 ```
 
-Внесем изменения:  
+Внесем изменения в sources.list:  
 (раскоментим (или впишем руками) deb-src, который указывает на то, что данный репозиторий содержит исходные коды пакетов вместо бинарных файлов)
 ```console
 nano /etc/apt/sources.list
 ```
 
-Установим зависимости для сборки
+Установим зависимости для сборки:
+```console
 root@test:~# apt install -y cmake debhelper-compat libexpat-dev libgd-dev libgeoip-dev libhiredis-dev libmaxminddb-dev libmhash-dev libpam0g-dev libperl-dev libssl-dev libxslt1-dev quilt
+```
 
-Создадим 
+Создадим директорию для сборки и скачаем исходные файлы nginx:
+```console
 root@test:~# mkdir ~/custom-nginx && cd ~/custom-nginx
 
-Скачаем
 root@test:~/custom-nginx# apt source nginx
+```
 
-Перейдём в суб директорию 
+Перейдём в суб директорию и скачаем модуль brotli:
+```console
 root@test:~/custom-nginx# cd nginx-1.18.0/debian/modules
 
-Качаем brotli
 root@test:~/custom-nginx/nginx-1.18.0/debian/modules# git clone --recurse-submodules -j8 https://github.com/google/ngx_brotli
 …
 Submodule path 'deps/brotli': checked out 'ed738e842d2fbdf2d6459e39267a633c4a9b2f5d'
+```
 
-Перейдём в суб директорию
+Перейдём в директорию модуля brotli и создадим директорию для сборки:
+```console
 root@test:~/custom-nginx/nginx-1.18.0/debian/modules# cd ngx_brotli/deps/brotli
 
-Создадим и перейдём в директорию
 root@test:~/custom-nginx/nginx-1.18.0/debian/modules/ngx_brotli/deps/brotli# mkdir out && cd out
+```
 
-Подготовим сборку 
+Подготовим сборку:
+```console
 root@test:~/custom-nginx/nginx-1.18.0/debian/modules/ngx_brotli/deps/brotli/out# cmake -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=OFF -DCMAKE_C_FLAGS="-Ofast -m64 -march=native -mtune=native -flto -funroll-loops -ffunction-sections -fdata-sections -Wl,--gc-sections" -DCMAKE_CXX_FLAGS="-Ofast -m64 -march=native -mtune=native -flto -funroll-loops -ffunction-sections -fdata-sections -Wl,--gc-sections" -DCMAKE_INSTALL_PREFIX=./installed ..
 …
 -- Build files have been written to: /root/custom-nginx/nginx-1.18.0/debian/modules/ngx_brotli/deps/brotli/out
 
-Подготовим сборку 
 root@test:~/custom-nginx/nginx-1.18.0/debian/modules/ngx_brotli/deps/brotli/out# cmake --build . --config Release --target brotlienc
 …
 [100%] Built target brotlienc
+```
 
-Редактируем файл сборки, добавляем модуль
-nano ~/custom-nginx/nginx-1.18.0/debian/rules
---add-module=$(MODULESDIR)/ngx_brotli
+Редактируем файл сборки, добавляем модуль brotli:
+```console
+root@test:~/custom-nginx/nginx-1.18.0/debian/modules/ngx_brotli/deps/brotli/out# nano ~/custom-nginx/nginx-1.18.0/debian/rules
+_--add-module=$(MODULESDIR)/ngx_brotli \_
+```
 
 Редактируем файл версии
 nano ~/custom-nginx/nginx-1.18.0/debian/changelog
@@ -716,26 +724,6 @@ Commercial support is available at
 </body>
 </html>
 ```
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 Домашнее задание выполнено.
