@@ -40,7 +40,8 @@ total 1084
 -rw-r--r--. 1 root root 1109119 May 19 17:57 nginx-1.20.1-20.el9.alma.1.src.rpm
 ```
 
-При установке такого пакета в домашней директории создается дерево каталогов для сборки, далее поставим все зависимости для сборки пакета Nginx:
+При установке такого пакета в домашней директории создается дерево каталогов для сборки, 
+далее поставим все зависимости для сборки пакета Nginx:
 
 (yum-builddep - Install build dependencies for package or spec file)
 ```console
@@ -52,10 +53,7 @@ Updating / installing...
 total 0
 drwxr-xr-x. 2 root root 48 May 19 18:38 rpm
 drwxr-xr-x. 4 root root 34 May 19 19:12 rpmbuild
-```
 
-
-```console
 [root@vbox rpm]# yum-builddep nginx
 ...
 Installed:
@@ -77,6 +75,7 @@ Installed:
 Complete!
 ```
 
+Также нужно скачать исходный код модуля ngx_brotli — он потребуется при сборке:
 ```console
 [root@vbox ~]# git clone --recurse-submodules -j8 https://github.com/google/ngx_brotli
 Cloning into 'ngx_brotli'...
@@ -101,17 +100,16 @@ total 0
 drwxr-xr-x. 7 root root 179 May 19 19:19 ngx_brotli
 drwxr-xr-x. 2 root root  48 May 19 18:38 rpm
 drwxr-xr-x. 4 root root  34 May 19 19:12 rpmbuild
-```
 
-
-
-```console
 [root@vbox ~]# cd ngx_brotli/deps/brotli
 
 /root/ngx_brotli/deps/brotli
 
 [root@vbox brotli]# mkdir out && cd out
+```
 
+Собираем модуль ngx_brotli:
+```console
 [root@vbox out]# cmake -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=OFF -DCMAKE_C_FLAGS="-Ofast -m64 -march=native -mtune=native -flto -funroll-loops -ffunction-sections -fdata-sections -Wl,--gc-sections" -DCMAKE_CXX_FLAGS="-Ofast -m64 -march=native -mtune=native -flto -funroll-loops -ffunction-sections -fdata-sections -Wl,--gc-sections" -DCMAKE_INSTALL_PREFIX=./installed ..
 -- The C compiler identification is GNU 11.5.0
 -- Detecting C compiler ABI info
@@ -131,14 +129,9 @@ drwxr-xr-x. 4 root root  34 May 19 19:12 rpmbuild
 -- Generating done (0.0s)
 CMake Warning:
   Manually-specified variables were not used by the project:
-
     CMAKE_CXX_FLAGS
-
-
 -- Build files have been written to: /root/ngx_brotli/deps/brotli/out
-```
 
-```console
 [root@vbox out]# cmake --build . --config Release -j 2 --target brotlienc
 [  3%] Building C object CMakeFiles/brotlicommon.dir/c/common/constants.c.o
 [  6%] Building C object CMakeFiles/brotlicommon.dir/c/common/context.c.o
@@ -173,6 +166,12 @@ CMake Warning:
 [100%] Built target brotlienc
 ```
 
+Нужно поправить сам spec файл, чтобы Nginx собирался с необходимыми нам опциями: находим секцию с параметрами configure (до условий if) и добавляем указание на модуль (не забудьте указать завершающий обратный слэш):
+--add-module=/root/ngx_brotli \
+
+По этой [https://nginx.org/ru/docs/configure.html] ссылке можно посмотреть все доступные опции для сборки.
+
+Теперь можно приступить к сборке RPM пакета:
 ```console
 [root@vbox ~]# cd ~/rpmbuild/SPECS/
 
@@ -200,6 +199,7 @@ Executing(%clean): /bin/sh -e /var/tmp/rpm-tmp.sVRvmN
 + exit 0
 ```
 
+Убедимся, что пакеты создались:
 ```console
 [root@vbox SPECS]# ll ~/rpmbuild/RPMS/x86_64/
 total 2000
