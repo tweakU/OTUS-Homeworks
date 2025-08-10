@@ -1,10 +1,12 @@
 ## Домашнее задание № 7 — «Управление пакетами. Дистрибьюция софта.»
 
-Цель домашнего задания: 1) Создать свой RPM пакет; 2) Создать свой репозиторий и разместить там ранее собранный RPM пакет в операционной системе (ОС) GNU/Linux.
+Цель домашнего задания: 1) Создать свой RPM пакет; 2) Создать свой репозиторий 
+и разместить там ранее собранный RPM пакет в операционной системе (ОС) GNU/Linux.
 
 Выполнение домашнего задания:
 
 **1) Создать свой RPM пакет:**
+
 
 Для данного задания нам понадобятся следующие установленные пакеты:
 ```console
@@ -21,7 +23,6 @@ Installed:
   python3-argcomplete-1.12.0-5.el9.noarch            python3-chardet-4.0.0-5.el9.noarch                     python3-idna-2.10-7.el9_4.1.noarch                python3-pysocks-1.7.1-12.el9.noarch
   python3-requests-2.25.1-8.el9.noarch               python3-urllib3-1.26.5-6.el9.noarch                    rpm-build-4.16.1.3-34.el9.x86_64                  rpmdevtools-9.5-1.el9.noarch
   vim-filesystem-2:8.2.2637-21.el9.noarch            wget-1.21.1-8.el9_4.x86_64                             yum-utils-4.3.0-16.el9.noarch                     zstd-1.5.1-2.el9.x86_64
-
 Complete!
 ```
 
@@ -213,21 +214,24 @@ total 2000
 -rw-r--r--. 1 root root   80417 May 20 13:13 nginx-mod-stream-1.20.1-20.el9.alma.1.x86_64.rpm
 ```
 
+Копируем пакеты в общий каталог:
 ```console
+[root@vbox SPECS]# cp ~/rpmbuild/RPMS/noarch/* ~/rpmbuild/RPMS/x86_64/
+
 [root@vbox SPECS]# cd ~/rpmbuild/RPMS/x86_64/
-[
-root@vbox x86_64]# yum localinstall *.rpm
+```
+
+Теперь можно установить наш пакет и убедиться, что nginx работает:
+```console
+[root@vbox x86_64]# yum localinstall *.rpm
 ...
 Installed:
   almalinux-logos-httpd-90.5.1-1.1.el9.noarch                              nginx-2:1.20.1-20.el9.alma.1.x86_64                              nginx-all-modules-2:1.20.1-20.el9.alma.1.noarch
   nginx-core-2:1.20.1-20.el9.alma.1.x86_64                                 nginx-filesystem-2:1.20.1-20.el9.alma.1.noarch                   nginx-mod-devel-2:1.20.1-20.el9.alma.1.x86_64
   nginx-mod-http-image-filter-2:1.20.1-20.el9.alma.1.x86_64                nginx-mod-http-perl-2:1.20.1-20.el9.alma.1.x86_64                nginx-mod-http-xslt-filter-2:1.20.1-20.el9.alma.1.x86_64
   nginx-mod-mail-2:1.20.1-20.el9.alma.1.x86_64                             nginx-mod-stream-2:1.20.1-20.el9.alma.1.x86_64
-
 Complete!
-```
 
-```console
 [root@vbox x86_64]# systemctl start nginx
 
 [root@vbox x86_64]# systemctl status nginx
@@ -250,10 +254,10 @@ May 20 13:19:14 vbox nginx[32587]: nginx: the configuration file /etc/nginx/ngin
 May 20 13:19:14 vbox nginx[32587]: nginx: configuration file /etc/nginx/nginx.conf test is successful
 May 20 13:19:14 vbox systemd[1]: Started The nginx HTTP and reverse proxy server.
 ```
+Далее мы будем использовать его для доступа к своему репозиторию.
 
 
-
-2) Создать свой репозиторий и разместить там ранее собранный RPM пакет:
+**2) Создать свой репозиторий и разместить там ранее собранный RPM пакет:**
 
 ```console
 [root@vbox x86_64]# ll /usr/share/nginx/html/
