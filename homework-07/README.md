@@ -38,7 +38,11 @@ Complete!
 [root@vbox rpm]# ll
 total 1084
 -rw-r--r--. 1 root root 1109119 May 19 17:57 nginx-1.20.1-20.el9.alma.1.src.rpm
+```
 
+При установке такого пакета в домашней директории создается дерево каталогов для сборки, далее поставим все зависимости для сборки пакета Nginx:
+(yum-builddep - Install build dependencies for package or spec file)
+```console
 [root@vbox rpm]# rpm -Uvh nginx-1.20.1-20.el9.alma.1.src.rpm
 Updating / installing...
    1:nginx-2:1.20.1-20.el9.alma.1     ################################# [100%]
@@ -49,7 +53,7 @@ drwxr-xr-x. 2 root root 48 May 19 18:38 rpm
 drwxr-xr-x. 4 root root 34 May 19 19:12 rpmbuild
 ```
 
-yum-builddep - Install build dependencies for package or spec file
+
 ```console
 [root@vbox rpm]# yum-builddep nginx
 ...
