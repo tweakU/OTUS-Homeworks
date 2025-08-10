@@ -473,8 +473,19 @@ nginx | CHANGED | rc=0 >>
              └─607 "nginx: worker process" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" ""
 
 Warning: some journal files were not opened due to insufficient permissions.
+```
+hello
 
-root@test:~/otus/hw-16/Ansible# ansible nginx -m command -a '**sudo** systemctl status nginx'
+```console
+root@test:~/otus/hw-16/Ansible# ansible nginx -m command -a 'id'
+nginx | CHANGED | rc=0 >>
+uid=1000(vagrant) gid=1000(vagrant) groups=1000(vagrant)
+```
+
+hello
+
+```console
+root@test:~/otus/hw-16/Ansible# ansible nginx -m command -a 'sudo systemctl status nginx'
 nginx | CHANGED | rc=0 >>
 ● nginx.service - A high performance web server and a reverse proxy server
      Loaded: loaded (/lib/systemd/system/nginx.service; enabled; vendor preset: enabled)
@@ -525,23 +536,6 @@ Commercial support is available at
                                  Dload  Upload   Total   Spent    Left  Speed
 100   612  100   612    0     0  61322      0 --:--:-- --:--:-- --:--:-- 76500
 ```
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 Домашнее задание выполнено.
 
