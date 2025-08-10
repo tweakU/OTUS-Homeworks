@@ -4,8 +4,9 @@
 
 Выполнение домашнего задания:
 
-1) Создать свой RPM пакет:
+**1) Создать свой RPM пакет:**
 
+Для данного задания нам понадобятся следующие установленные пакеты:
 ```console
 [root@vbox ~]# yum install -y wget rpmdevtools rpm-build createrepo yum-utils cmake gcc git nano
 ...
@@ -24,7 +25,9 @@ Installed:
 Complete!
 ```
 
-yumdownloader - Download package to current directory
+Для примера возьмем пакет Nginx и соберем его с дополнительным модулем ngx_broli. 
+Загрузим SRPM пакет Nginx для дальнейшей работы над ним:
+(yumdownloader - Download package to current directory)
 ```console
 [root@vbox ~]# mkdir rpm && cd rpm
 
