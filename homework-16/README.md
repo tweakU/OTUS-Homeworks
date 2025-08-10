@@ -388,6 +388,8 @@ vagrant@nginx:~$ sudo systemctl status nginx
 Unit nginx.service could not be found.
 ```
 
+hello
+
 ```console
 root@test:~/otus/hw-16/Ansible# ansible-playbook nginx.yml
 
@@ -402,6 +404,8 @@ changed: [nginx]
 PLAY RECAP ********************************************************************************************************************************************************************************************************
 nginx                      : ok=2    changed=1    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
 ```
+
+hello
 
 ```console
 root@test:~/otus/hw-16/Ansible# vagrant ssh
@@ -424,6 +428,8 @@ vagrant@nginx:~$ sudo systemctl status nginx
 Aug 09 19:44:07 nginx systemd[1]: Starting A high performance web server and a reverse proxy server...
 Aug 09 19:44:07 nginx systemd[1]: Started A high performance web server and a reverse proxy server.
 ```
+
+hello
 
 ```console
 root@test:~/otus/hw-16/Ansible# ansible-playbook nginx.yml
@@ -448,6 +454,28 @@ changed: [nginx]
 PLAY RECAP ********************************************************************************************************************************************************************************************************
 nginx                      : ok=5    changed=3    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
 ```
+
+hello
+
+```console
+root@test:~/otus/hw-16/Ansible# ansible nginx -m command -a 'systemctl status nginx'
+nginx | CHANGED | rc=0 >>
+● nginx.service - A high performance web server and a reverse proxy server
+     Loaded: loaded (/lib/systemd/system/nginx.service; enabled; vendor preset: enabled)
+     Active: active (running) since Sun 2025-08-10 01:05:51 UTC; 5min ago
+       Docs: man:nginx(8)
+   Main PID: 605 (nginx)
+      Tasks: 2 (limit: 710)
+     Memory: 5.0M
+        CPU: 99ms
+     CGroup: /system.slice/nginx.service
+             ├─605 "nginx: master process /usr/sbin/nginx -g daemon on; master_process on;"
+             └─607 "nginx: worker process" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" ""
+
+Warning: some journal files were not opened due to insufficient permissions.
+```
+
+hello
 
 ```console
 root@test:~/otus/hw-16/Ansible# ansible nginx -m command -a 'curl http://192.168.11.150:8080'
