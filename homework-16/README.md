@@ -84,9 +84,8 @@ Host nginx
 
 Создадим свой первый inventory файл ./staging/hosts со следующим содержимым:  
 [web]  
-nginx ansible_host=127.0.0.1 ansible_port=2222 ansible_user=vagrant ansible_private_key_file=.vagrant/machines/nginx/virtualbox/private_key  
-и, наконец, убедимся, что Ansible может управлять нашим хостом.  
-Сделать это можно с помощью команды:
+nginx ansible_host=127.0.0.1 ansible_port=2222 ansible_user=vagrant ansible_private_key_file=.vagrant/machines/nginx/virtualbox/private_key и, наконец,  
+убедимся, что Ansible может управлять нашим хостом. Сделать это можно с помощью команды:  
 ```console
 root@test:~/otus/hw-16/Ansible# ansible nginx -m ping -i ./staging/hosts
 The authenticity of host '[127.0.0.1]:2222 ([127.0.0.1]:2222)' can't be established.
