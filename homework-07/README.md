@@ -474,21 +474,27 @@ root@test:~/custom-nginx/nginx-1.18.0/debian/modules/ngx_brotli/deps/brotli/out#
 [100%] Built target brotlienc
 ```
 
-Редактируем файл сборки, добавляем модуль brotli:
+Редактируем файл сборки, добавляем модуль brotli в раздел # configure flags:
 ```console
 root@test:~/custom-nginx/nginx-1.18.0/debian/modules/ngx_brotli/deps/brotli/out# nano ~/custom-nginx/nginx-1.18.0/debian/rules
-_--add-module=$(MODULESDIR)/ngx_brotli \_
+--add-module=$(MODULESDIR)/ngx_brotli \
 ```
 
-Редактируем файл версии
-nano ~/custom-nginx/nginx-1.18.0/debian/changelog
+Редактируем файл версии, добавляем тег -custom к последней версии сборки:
+```console
+root@test:~/custom-nginx/nginx-1.18.0/debian/modules/ngx_brotli/deps/brotli/out# nano ~/custom-nginx/nginx-1.18.0/debian/changelog
+```
 
 Собираем пакет
-cd ~/custom-nginx/nginx-1.18.0/
-dpkg-buildpackage -b
+```console
+root@test:~/custom-nginx/nginx-1.18.0/debian/modules/ngx_brotli/deps/brotli/out# cd ~/custom-nginx/nginx-1.18.0/
+root@test:~/custom-nginx/nginx-1.18.0/debian/modules/ngx_brotli/deps/brotli/out# dpkg-buildpackage -b
+```
 
-Смотрим пакеты
-cd ~/custom-nginx/
+Смотрим собраные пакеты:
+```console
+root@test:~/custom-nginx/nginx-1.18.0/debian/modules/ngx_brotli/deps/brotli/out# cd ~/custom-nginx/
+
 root@test:~/custom-nginx# ll *.deb
 -rw-r--r-- 1 root root  41958 Jul  4 22:08 libnginx-mod-http-auth-pam_1.18.0-6ubuntu14-custom-brotli_amd64.deb
 -rw-r--r-- 1 root root  44510 Jul  4 22:08 libnginx-mod-http-cache-purge_1.18.0-6ubuntu14-custom-brotli_amd64.deb
@@ -518,10 +524,17 @@ root@test:~/custom-nginx# ll *.deb
 -rw-r--r-- 1 root root 969736 Jul  4 22:08 nginx-extras_1.18.0-6ubuntu14-custom-brotli_amd64.deb
 -rw-r--r-- 1 root root  37550 Jul  4 22:08 nginx-full_1.18.0-6ubuntu14-custom-brotli_amd64.deb
 -rw-r--r-- 1 root root 931846 Jul  4 22:08 nginx-light_1.18.0-6ubuntu14-custom-brotli_amd64.deb
+```
 
-Фиксируем 
+Фиксируем пакет nginx:  
+(Команда apt-mark hold используется для пометки пакета как "задержанного",  
+что предотвращает его автоматическую установку, обновление или удаление с помощью apt.  
+Она полезна, когда нужно зафиксировать определенную версию пакета или избежать нежелательных изменений в системе. )
+```console
 root@test:~/custom-nginx# apt-mark hold nginx
 nginx set on hold.
+```
+
 
 root@test:~/custom-nginx# dpkg -i ./*.deb
 Selecting previously unselected package libnginx-mod-http-auth-pam.
