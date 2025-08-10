@@ -411,23 +411,29 @@ Installed:
 Complete!
 ```
 Все прошло успешно. В случае, если потребуется обновить репозиторий (а это  
-делается при каждом добавлении файлов) снова, необходимо выполнить команду  
-_createrepo /usr/share/nginx/html/repo/_.
+делается при каждом добавлении файлов) снова, необходимо выполнить команду:  
+_#createrepo /usr/share/nginx/html/repo/_
 
 
-**3) Создать свой DEB пакет:**
+**Задание со * "Создать свой DEB пакет":**
 
+Обновим списки доступных пакетов:
 ```console
-Обновим репу
 root@test:~# apt update
 …
 All packages are up to date.
+```
 
-Установим окружение для сборки
+Установим окружение для сборки:
+```console
 root@test:~# apt install -y dpkg-dev build-essential zlib1g-dev libpcre3 libpcre3-dev unzip
+```
 
-Внесем изменения
+Внесем изменения:  
+(раскоментим (или впишем руками) deb-src, который указывает на то, что данный репозиторий содержит исходные коды пакетов вместо бинарных файлов)
+```console
 nano /etc/apt/sources.list
+```
 
 Установим зависимости для сборки
 root@test:~# apt install -y cmake debhelper-compat libexpat-dev libgd-dev libgeoip-dev libhiredis-dev libmaxminddb-dev libmhash-dev libpam0g-dev libperl-dev libssl-dev libxslt1-dev quilt
