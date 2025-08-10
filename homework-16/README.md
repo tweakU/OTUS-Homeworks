@@ -144,8 +144,7 @@ nginx | CHANGED | rc=0 >>
 5.15.0-91-generic
 ```
 
-hello
-
+Проверим статус сервиса firewalld:
 ```console
 root@test:~/otus/hw-16/Ansible# ansible nginx -m systemd -a name=firewalld
 nginx | SUCCESS => {
@@ -388,8 +387,7 @@ nginx | SUCCESS => {
 }
 ```
 
-hello
-
+Убедимся, что целевой хост не имеет предустановленного nginx: 
 ```console
 root@test:~/otus/hw-16/Ansible# vagrant ssh
 Last login: Sat Aug  9 17:19:59 2025 from 10.0.2.2
@@ -397,8 +395,7 @@ vagrant@nginx:~$ sudo systemctl status nginx
 Unit nginx.service could not be found.
 ```
 
-hello
-
+Итак, среда подготовлена. Приступим к выполнению ДЗ - напишем playbook и инициализируем его исполнение:
 ```console
 root@test:~/otus/hw-16/Ansible# ansible-playbook nginx.yml
 
