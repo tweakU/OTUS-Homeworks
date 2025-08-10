@@ -51,7 +51,7 @@ Aug 09 19:44:07 nginx systemd[1]: Started A high performance web server and a re
 ```
 
 ```console
-root@test:~/otus/hw-16/Ansible# ansible-playbook nginx_2nd_stage.yml
+root@test:~/otus/hw-16/Ansible# ansible-playbook nginx.yml
 
 PLAY [NGINX | Install and configure NGINX] ************************************************************************************************************************************************************************
 
@@ -74,6 +74,37 @@ PLAY RECAP *********************************************************************
 nginx                      : ok=5    changed=3    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
 ```
 
+```console
+root@test:~/otus/hw-16/Ansible# ansible nginx -m command -a 'curl http://192.168.11.150:8080'
+nginx | CHANGED | rc=0 >>
+<!DOCTYPE html>
+<html>
+<head>
+<title>Welcome to nginx!</title>
+<style>
+    body {
+        width: 35em;
+        margin: 0 auto;
+        font-family: Tahoma, Verdana, Arial, sans-serif;
+    }
+</style>
+</head>
+<body>
+<h1>Welcome to nginx!</h1>
+<p>If you see this page, the nginx web server is successfully installed and
+working. Further configuration is required.</p>
+
+<p>For online documentation and support please refer to
+<a href="http://nginx.org/">nginx.org</a>.<br/>
+Commercial support is available at
+<a href="http://nginx.com/">nginx.com</a>.</p>
+
+<p><em>Thank you for using nginx.</em></p>
+</body>
+</html>  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+100   612  100   612    0     0  61322      0 --:--:-- --:--:-- --:--:-- 76500
+```
 
 
 
