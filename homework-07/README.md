@@ -26,10 +26,8 @@ Installed:
 Complete!
 ```
 
-Для примера возьмем пакет Nginx и соберем его с дополнительным модулем ngx_broli. 
-
-Загрузим SRPM пакет Nginx для дальнейшей работы над ним:
-
+Для примера возьмем пакет Nginx и соберем его с дополнительным модулем ngx_broli.  
+Загрузим SRPM пакет Nginx для дальнейшей работы над ним:  
 (yumdownloader - Download package to current directory)
 ```console
 [root@vbox ~]# mkdir rpm && cd rpm
