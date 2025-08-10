@@ -41,6 +41,7 @@ total 1084
 ```
 
 При установке такого пакета в домашней директории создается дерево каталогов для сборки, далее поставим все зависимости для сборки пакета Nginx:
+
 (yum-builddep - Install build dependencies for package or spec file)
 ```console
 [root@vbox rpm]# rpm -Uvh nginx-1.20.1-20.el9.alma.1.src.rpm
