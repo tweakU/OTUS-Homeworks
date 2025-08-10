@@ -39,9 +39,8 @@ total 1084
 -rw-r--r--. 1 root root 1109119 May 19 17:57 nginx-1.20.1-20.el9.alma.1.src.rpm
 ```
 
-При установке такого пакета в домашней директории создается дерево каталогов для сборки, 
-далее поставим все зависимости для сборки пакета Nginx:
-
+При установке такого пакета в домашней директории создается дерево каталогов для сборки,  
+далее поставим все зависимости для сборки пакета Nginx:  
 (yum-builddep - Install build dependencies for package or spec file)
 ```console
 [root@vbox rpm]# rpm -Uvh nginx-1.20.1-20.el9.alma.1.src.rpm
@@ -165,11 +164,10 @@ CMake Warning:
 [100%] Built target brotlienc
 ```
 
-Нужно поправить сам spec файл, чтобы Nginx собирался с необходимыми нам опциями: находим секцию с параметрами configure (до условий if) и добавляем указание на модуль (не забудьте указать завершающий обратный слэш):
---add-module=/root/ngx_brotli \
-
-По [этой](https://nginx.org/ru/docs/configure.html) ссылке можно посмотреть все доступные опции для сборки.
-
+Нужно поправить сам spec файл, чтобы Nginx собирался с необходимыми нам опциями: находим секцию с параметрами configure (до условий if)  
+и добавляем указание на модуль (не забудьте указать завершающий обратный слэш):  
+--add-module=/root/ngx_brotli \  
+По [этой](https://nginx.org/ru/docs/configure.html) ссылке можно посмотреть все доступные опции для сборки.  
 Теперь можно приступить к сборке RPM пакета:
 ```console
 [root@vbox ~]# cd ~/rpmbuild/SPECS/
@@ -257,7 +255,8 @@ May 20 13:19:14 vbox systemd[1]: Started The nginx HTTP and reverse proxy server
 
 **2) Создать свой репозиторий и разместить там ранее собранный RPM пакет:**
 
-Теперь приступим к созданию своего репозитория. Директория для статики у Nginx по умолчанию /usr/share/nginx/html. Создадим там каталог repo:
+Теперь приступим к созданию своего репозитория.  
+Директория для статики у Nginx по умолчанию /usr/share/nginx/html. Создадим там каталог repo:
 ```console
 [root@vbox x86_64]# ll /usr/share/nginx/html/
 total 12
@@ -301,11 +300,10 @@ Pool started (with 5 workers)
 Pool finished
 ```
 
-Для прозрачности настроим в NGINX доступ к листингу каталога. В файле /etc/nginx/nginx.conf в блоке server добавим следующие директивы:
-
-  _index index.html index.htm;  autoindex on;_
-    
-
+Для прозрачности настроим в NGINX доступ к листингу каталога.  
+В файле /etc/nginx/nginx.conf в блоке server добавим следующие директивы:  
+_index index.html index.htm;  
+autoindex on;_  
 ```console
 [root@vbox x86_64]# nano /etc/nginx/nginx.conf
 
