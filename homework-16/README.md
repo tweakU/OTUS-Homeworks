@@ -115,6 +115,7 @@ retry_files_enabled = False
 Теперь из инвентори можно убрать информацию о пользователе:  
 [web]  
 nginx ansible_host=127.0.0.1 ansible_port=2222 ansible_private_key_file=.vagrant/machines/nginx/virtualbox/private_key  
+
 Еще раз убедимся, что управляемый хост доступен, только теперь без явного указания inventory файла:
 ```console
 root@test:~/otus/hw-16/Ansible# ansible nginx -m ping
