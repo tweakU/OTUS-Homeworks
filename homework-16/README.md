@@ -130,8 +130,12 @@ nginx | SUCCESS => {
 }
 ```
 
-hello
+Теперь, когда мы убедились, что у нас все подготовлено - установлен Ansible,  
+поднят хост для теста и Ansible имеет к нему доступ, мы можем конфигурировать наш хост.  
 
+Для начала воспользуемся Ad-Hoc командами и выполним некоторые удаленные команды на нашем хосте.  
+
+Посмотрим какое ядро установлено на хосте:
 ```console
 root@test:~/otus/hw-16/Ansible# ansible nginx -m command -a 'uname -r'
 [WARNING]: Platform linux on host nginx is using the discovered Python interpreter at /usr/bin/python3.10, but future installation of another Python interpreter could change the meaning of that path. See
