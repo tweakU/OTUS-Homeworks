@@ -259,6 +259,7 @@ May 20 13:19:14 vbox systemd[1]: Started The nginx HTTP and reverse proxy server
 
 **2) Создать свой репозиторий и разместить там ранее собранный RPM пакет:**
 
+Теперь приступим к созданию своего репозитория. Директория для статики у Nginx по умолчанию /usr/share/nginx/html. Создадим там каталог repo:
 ```console
 [root@vbox x86_64]# ll /usr/share/nginx/html/
 total 12
@@ -271,7 +272,10 @@ lrwxrwxrwx. 1 root root   14 May 20 13:13 poweredby.png -> nginx-logo.png
 lrwxrwxrwx. 1 root root   37 May 20 13:13 system_noindex_logo.png -> ../../pixmaps/system-noindex-logo.png
 
 [root@vbox x86_64]# mkdir /usr/share/nginx/html/repo
+```
 
+Копируем туда наши собранные RPM-пакеты:
+```console
 [root@vbox x86_64]# cp ~/rpmbuild/RPMS/x86_64/*.rpm /usr/share/nginx/html/repo/
 
 [root@vbox x86_64]# ll /usr/share/nginx/html/repo
@@ -286,7 +290,10 @@ total 2020
 -rw-r--r--. 1 root root   18160 May 20 13:25 nginx-mod-http-xslt-filter-1.20.1-20.el9.alma.1.x86_64.rpm
 -rw-r--r--. 1 root root   53797 May 20 13:25 nginx-mod-mail-1.20.1-20.el9.alma.1.x86_64.rpm
 -rw-r--r--. 1 root root   80417 May 20 13:25 nginx-mod-stream-1.20.1-20.el9.alma.1.x86_64.rpm
+```
 
+Инициализируем репозиторий командой:
+```console
 [root@vbox x86_64]# createrepo /usr/share/nginx/html/repo/
 Directory walk started
 Directory walk done - 10 packages
@@ -296,6 +303,9 @@ Pool started (with 5 workers)
 Pool finished
 ```
 
+Для прозрачности настроим в NGINX доступ к листингу каталога. В файле /etc/nginx/nginx.conf в блоке server добавим следующие директивы:
+  _index index.html index.htm;
+	autoindex on;_
 ```console
 [root@vbox x86_64]# nano /etc/nginx/nginx.conf
 
