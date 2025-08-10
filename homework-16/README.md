@@ -4,7 +4,7 @@
 
 **Выполнение домашнего задания**:
 
-1) Установим Vagrant + Virualbox, Ansible и подготовим стенд Vagrant с одним сервером:
+1) Установим Vagrant + гипервизор Virtualbox, Ansible и подготовим стенд Vagrant с одним сервером:
 
 ```console
 root@test:~/otus/hw-16/Ansible# apt update
@@ -13,6 +13,7 @@ All packages are up to date.
 
 root@test:~/otus/hw-16/Ansible# apt install vagrant
 ...
+
 root@test:~/otus/hw-16/Ansible# vagrant -v
 Vagrant 2.2.19
 
@@ -25,6 +26,7 @@ root@test:~/otus/hw-16/Ansible# apt install pipx
 
 root@test:~/otus/hw-16/Ansible# pipx install --include-deps ansible
 ...
+
 root@test:~/otus/hw-16/Ansible# ansible --version
 ansible [core 2.17.13]
   config file = /root/otus/hw-16/Ansible/ansible.cfg
@@ -80,8 +82,11 @@ Host nginx
   LogLevel FATAL
 ```
 
-hello
-
+Создадим свой первый inventory файл ./staging/hosts со следующим содержимым:  
+[web]  
+nginx ansible_host=127.0.0.1 ansible_port=2222 ansible_user=vagrant ansible_private_key_file=.vagrant/machines/nginx/virtualbox/private_key  
+и, наконец, убедимся, что Ansible может управлять нашим хостом.  
+Сделать это можно с помощью команды:
 ```console
 root@test:~/otus/hw-16/Ansible# ansible nginx -m ping -i ./staging/hosts
 The authenticity of host '[127.0.0.1]:2222 ([127.0.0.1]:2222)' can't be established.
