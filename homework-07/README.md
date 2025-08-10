@@ -305,7 +305,9 @@ Pool finished
 
 Для прозрачности настроим в NGINX доступ к листингу каталога. В файле /etc/nginx/nginx.conf в блоке server добавим следующие директивы:
 
-  _index index.html index.htm; autoindex on;_
+  _index index.html index.htm; 
+    autoindex on;_
+    
 
 ```console
 [root@vbox x86_64]# nano /etc/nginx/nginx.conf
