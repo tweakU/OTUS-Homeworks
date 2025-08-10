@@ -102,7 +102,7 @@ nginx | SUCCESS => {
     "ping": "pong"
 }
 ```
-Как видно, нам придется каждый раз явно указывать наш inventory file и вписывать в него много информации.  
+Как видно, нам придется каждый раз явно указывать наш inventory файл и вписывать в него много информации.  
 
 Это можно обойти используя ansible.cfg файл - прописав конфигурацию в нем.  
 Для этого в текущем каталоге создадим файл ansible.cfg со следующим содержанием:  
@@ -114,7 +114,8 @@ retry_files_enabled = False
 
 Теперь из инвентори можно убрать информацию о пользователе:  
 [web]  
-nginx ansible_host=127.0.0.1 ansible_port=2222 ansible_private_key_file=.vagrant/machines/nginx/virtualbox/private_key
+nginx ansible_host=127.0.0.1 ansible_port=2222 ansible_private_key_file=.vagrant/machines/nginx/virtualbox/private_key  
+Еще раз убедимся, что управляемый хост доступен, только теперь без явного указания inventory файла:
 ```console
 root@test:~/otus/hw-16/Ansible# ansible nginx -m ping
 [WARNING]: Platform linux on host nginx is using the discovered Python interpreter at /usr/bin/python3.10, but future installation of another Python interpreter could change the meaning of that path. See
