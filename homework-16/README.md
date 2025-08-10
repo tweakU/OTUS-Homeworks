@@ -395,7 +395,25 @@ vagrant@nginx:~$ sudo systemctl status nginx
 Unit nginx.service could not be found.
 ```
 
-Итак, среда подготовлена. Приступим к выполнению ДЗ - напишем playbook и инициализируем его исполнение:
+Итак, среда подготовлена. Приступим к выполнению ДЗ - напишем playbook и инициализируем его исполнение. Будем писать его постепенно:
+
+- name: NGINX | Install and configure NGINX
+  hosts: nginx
+  become: true
+
+  tasks:
+    - name: update
+      apt:
+        name: nginx
+        state: latest
+
+- name: NGINX | Create NGINX config file from template
+template:
+src: templates/nginx.conf.j2
+dest: /tmp/nginx.conf
+tags:
+- nginx-configuration
+
 ```console
 root@test:~/otus/hw-16/Ansible# ansible-playbook nginx.yml
 
@@ -416,6 +434,7 @@ hello
 ```console
 root@test:~/otus/hw-16/Ansible# vagrant ssh
 Last login: Sat Aug  9 19:43:45 2025 from 10.0.2.2
+
 vagrant@nginx:~$ sudo systemctl status nginx
 ● nginx.service - A high performance web server and a reverse proxy server
      Loaded: loaded (/lib/systemd/system/nginx.service; enabled; vendor preset: enabled)
