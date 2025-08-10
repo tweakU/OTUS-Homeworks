@@ -84,8 +84,8 @@ Host nginx
 
 Создадим свой первый inventory файл ./staging/hosts со следующим содержимым:  
 [web]  
-nginx ansible_host=127.0.0.1 ansible_port=2222 ansible_user=vagrant ansible_private_key_file=.vagrant/machines/nginx/virtualbox/private_key и, наконец,  
-убедимся, что Ansible может управлять нашим хостом. Сделать это можно с помощью команды:  
+nginx ansible_host=127.0.0.1 ansible_port=2222 ansible_user=vagrant ansible_private_key_file=.vagrant/machines/nginx/virtualbox/private_key  
+и, наконец, убедимся, что Ansible может управлять нашим хостом. Сделать это можно с помощью команды:  
 ```console
 root@test:~/otus/hw-16/Ansible# ansible nginx -m ping -i ./staging/hosts
 The authenticity of host '[127.0.0.1]:2222 ([127.0.0.1]:2222)' can't be established.
@@ -103,8 +103,18 @@ nginx | SUCCESS => {
 }
 ```
 
-hello
-
+Как видно, нам придется каждый раз явно указывать наш inventory file и вписывать в него много информации.  
+Это можно обойти используя ansible.cfg файл - прописав конфигурацию в нем.  
+Для этого в текущем каталоге создадим файл ansible.cfg со следующим содержанием:  
+[defaults]
+inventory = staging/hosts
+remote_user = vagrant
+host_key_checking = False
+retry_files_enabled = False  
+Теперь из инвентори можно убрать информацию о пользователе:
+[web]
+nginx ansible_host=127.0.0.1 ansible_port=2222
+ansible_private_key_file=.vagrant/machines/nginx/virtualbox/private_key
 ```console
 root@test:~/otus/hw-16/Ansible# ansible nginx -m ping
 [WARNING]: Platform linux on host nginx is using the discovered Python interpreter at /usr/bin/python3.10, but future installation of another Python interpreter could change the meaning of that path. See
