@@ -166,7 +166,7 @@ CMake Warning:
 
 Нужно поправить сам spec файл, чтобы Nginx собирался с необходимыми нам опциями: находим секцию с параметрами configure (до условий if)  
 и добавляем указание на модуль (не забудьте указать завершающий обратный слэш):  
---add-module=/root/ngx_brotli \  
+_--add-module=/root/ngx_brotli \_  
 По [этой](https://nginx.org/ru/docs/configure.html) ссылке можно посмотреть все доступные опции для сборки.  
 Теперь можно приступить к сборке RPM пакета:
 ```console
@@ -306,12 +306,18 @@ _index index.html index.htm;
 autoindex on;_  
 ```console
 [root@vbox x86_64]# nano /etc/nginx/nginx.conf
+```
 
+Проверяем синтаксис и перезапускаем NGINX:
+```console
 [root@vbox x86_64]# nginx -t
 nginx: the configuration file /etc/nginx/nginx.conf syntax is ok
 nginx: configuration file /etc/nginx/nginx.conf test is successful
+
+[root@vbox x86_64]# nginx -s reload
 ```
 
+Теперь ради интереса можно посмотреть в браузере или с помощью curl:
 ```console
 [root@vbox x86_64]# curl -a http://localhost/repo/
 
@@ -334,6 +340,8 @@ nginx: configuration file /etc/nginx/nginx.conf test is successful
 </html>
 ```
 
+Все готово для того, чтобы протестировать репозиторий.  
+Добавим его в /etc/yum.repos.d:
 ```console
 [root@vbox x86_64]# cat >> /etc/yum.repos.d/otus.repo << EOF
 > [otus]
@@ -345,10 +353,9 @@ nginx: configuration file /etc/nginx/nginx.conf test is successful
 
 [root@vbox x86_64]# yum repolist enabled | grep otus
 otus                             otus-linux
-```
 
-```console
 [root@vbox x86_64]# cd /usr/share/nginx/html/repo/
+
 [root@vbox repo]# wget https://repo.percona.com/yum/percona-release-latest.noarch.rpm
 --2025-05-20 13:34:32--  https://repo.percona.com/yum/percona-release-latest.noarch.rpm
 Resolving repo.percona.com (repo.percona.com)... 49.12.125.205, 2a01:4f8:242:5792::2
@@ -360,7 +367,10 @@ Saving to: ‘percona-release-latest.noarch.rpm’
 percona-release-latest.noarch.rpm                    100%[=====================================================================================================================>]  27.64K  --.-KB/s    in 0.001s
 
 2025-05-20 13:34:32 (27.4 MB/s) - ‘percona-release-latest.noarch.rpm’ saved [28300/28300]
+```
 
+Обновим список пакетов в репозитории:
+```console
 [root@vbox repo]# createrepo /usr/share/nginx/html/repo/
 Directory walk started
 Directory walk done - 11 packages
@@ -380,6 +390,7 @@ Metadata cache created.
 percona-release.noarch                               1.0-30                              otus
 ```
 
+Так как Nginx у нас уже стоит, установим репозиторий percona-release:
 ```console
 [root@vbox repo]# yum install -y percona-release.noarch
 Last metadata expiration check: 0:01:30 ago on Tue May 20 13:34:59 2025.
@@ -399,9 +410,12 @@ Installed:
 
 Complete!
 ```
+Все прошло успешно. В случае, если потребуется обновить репозиторий (а это  
+делается при каждом добавлении файлов) снова, необходимо выполнить команду  
+_createrepo /usr/share/nginx/html/repo/_.
 
 
-3) Создать свой DEB пакет:
+**3) Создать свой DEB пакет:**
 
 ```console
 Обновим репу
