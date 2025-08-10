@@ -106,15 +106,15 @@ nginx | SUCCESS => {
 
 Это можно обойти используя ansible.cfg файл - прописав конфигурацию в нем.  
 Для этого в текущем каталоге создадим файл ansible.cfg со следующим содержанием:  
-[defaults]
-inventory = staging/hosts
-remote_user = vagrant
-host_key_checking = False
+[defaults]  
+inventory = staging/hosts  
+remote_user = vagrant  
+host_key_checking = False  
 retry_files_enabled = False  
-Теперь из инвентори можно убрать информацию о пользователе:
-[web]
-nginx ansible_host=127.0.0.1 ansible_port=2222
-ansible_private_key_file=.vagrant/machines/nginx/virtualbox/private_key
+
+Теперь из инвентори можно убрать информацию о пользователе:  
+[web]  
+nginx ansible_host=127.0.0.1 ansible_port=2222 ansible_private_key_file=.vagrant/machines/nginx/virtualbox/private_key
 ```console
 root@test:~/otus/hw-16/Ansible# ansible nginx -m ping
 [WARNING]: Platform linux on host nginx is using the discovered Python interpreter at /usr/bin/python3.10, but future installation of another Python interpreter could change the meaning of that path. See
