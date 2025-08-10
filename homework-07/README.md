@@ -535,7 +535,8 @@ root@test:~/custom-nginx# apt-mark hold nginx
 nginx set on hold.
 ```
 
-
+Установим nginx из только что собранного пакета:
+```console
 root@test:~/custom-nginx# dpkg -i ./*.deb
 Selecting previously unselected package libnginx-mod-http-auth-pam.
 (Reading database ... 122770 files and directories currently installed.)
@@ -662,7 +663,10 @@ Processing triggers for man-db (2.10.2-1) ...
 Errors were encountered while processing:
  ./nginx-extras_1.18.0-6ubuntu14-custom-brotli_amd64.deb
  ./nginx-light_1.18.0-6ubuntu14-custom-brotli_amd64.deb
+```
 
+Проверим статус текущее состояние nginx:
+```console
 root@test:~# systemctl status nginx
 ● nginx.service - A high performance web server and a reverse proxy server
      Loaded: loaded (/lib/systemd/system/nginx.service; enabled; vendor preset: enabled)
@@ -681,15 +685,23 @@ root@test:~# systemctl status nginx
 
 Jul 04 22:30:14 test systemd[1]: Starting A high performance web server and a reverse proxy server...
 Jul 04 22:30:15 test systemd[1]: Started A high performance web server and a reverse proxy server.
+```
+
+Посмотрим версия nginx и состав модулей:
+```console
 root@test:~# nginx -v
 nginx version: nginx/1.18.0 (Ubuntu)
+
 root@test:~# nginx -V
 nginx version: nginx/1.18.0 (Ubuntu)
 built with OpenSSL 3.0.2 15 Mar 2022
 TLS SNI support enabled
 configure arguments: --with-cc-opt='-g -O2 -ffile-prefix-map=/root/custom-nginx/nginx-1.18.0=. -flto=auto -ffat-lto-objects -flto=auto -ffat-lto-objects -fstack-protector-strong -Wformat -Werror=format-security -fPIC -Wdate-time -D_FORTIFY_SOURCE=2' --with-ld-opt='-Wl,-Bsymbolic-functions -flto=auto -ffat-lto-objects -flto=auto -Wl,-z,relro -Wl,-z,now -fPIC' --prefix=/usr/share/nginx --conf-path=/etc/nginx/nginx.conf --http-log-path=/var/log/nginx/access.log --error-log-path=/var/log/nginx/error.log --lock-path=/var/lock/nginx.lock --pid-path=/run/nginx.pid --modules-path=/usr/lib/nginx/modules --http-client-body-temp-path=/var/lib/nginx/body --http-fastcgi-temp-path=/var/lib/nginx/fastcgi --http-proxy-temp-path=/var/lib/nginx/proxy --http-scgi-temp-path=/var/lib/nginx/scgi --http-uwsgi-temp-path=/var/lib/nginx/uwsgi --with-compat --with-debug --with-pcre-jit --with-http_ssl_module --with-http_stub_status_module --with-http_realip_module --with-http_auth_request_module --with-http_v2_module --with-http_dav_module --with-http_slice_module --with-threads --add-dynamic-module=/root/custom-nginx/nginx-1.18.0/debian/modules/http-geoip2 --add-module=/root/custom-nginx/nginx-1.18.0/debian/modules/ngx_brotli --with-http_addition_module --with-http_gunzip_module --with-http_gzip_static_module --with-http_sub_module
+```
 
-root@test:~# ss -tulpan | grep nginx
+Посмотрим информации о сетевых соединениях, связанных с nginx:
+```console
+root@test:~# ss -tulpn | grep nginx
 tcp   LISTEN 0      511                  0.0.0.0:80          0.0.0.0:*     users:(("nginx",pid=708,fd=6),("nginx",pid=707,fd=6),("nginx",pid=706,fd=6))
 tcp   LISTEN 0      511                     [::]:80             [::]:*     users:(("nginx",pid=708,fd=7),("nginx",pid=707,fd=7),("nginx",pid=706,fd=7))
 root@test:~# ps -aux | grep nginx
@@ -697,6 +709,8 @@ root         706  0.0  0.2 203736  5532 ?        Ss   22:30   0:00 nginx: master
 www-data     707  0.0  0.5 204472 10988 ?        S    22:30   0:00 nginx: worker process
 www-data     708  0.0  0.5 204472 11048 ?        S    22:30   0:00 nginx: worker process
 root        1001  0.0  0.1   6480  2252 pts/1    S+   22:33   0:00 grep --color=auto nginx
+```
+
 
 root@test:~# ps -elf | grep nginx
 1 S root         706       1  0  80   0 - 50934 sigsus 22:30 ?        00:00:00 nginx: master process /usr/sbin/nginx -g daemon on; master_process on;
