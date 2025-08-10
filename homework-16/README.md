@@ -1,12 +1,30 @@
 ## Домашнее задание № 16 — «Ansible»
 
-**Цель домашнего задания: Написать первые шаги с Ansible в операционной системе (ОС) GNU/Linux**.
+**Цель домашнего задания: Написать первые шаги с Ansible**.
 
 **Выполнение домашнего задания**:
 
-1) 
+1) Установим Vagrant + Virualbox, Ansible и подготовим стенд Vagrant с одним сервером:
 
 ```console
+root@test:~/otus/hw-16/Ansible# apt update
+...
+All packages are up to date.
+
+root@test:~/otus/hw-16/Ansible# apt install vagrant
+...
+root@test:~/otus/hw-16/Ansible# vagrant -v
+Vagrant 2.2.19
+
+root@test:~/otus/hw-16/Ansible# apt install virtualbox
+
+root@test:~/otus/hw-16/Ansible# python3 -V
+Python 3.10.12
+
+root@test:~/otus/hw-16/Ansible# apt install pipx
+
+root@test:~/otus/hw-16/Ansible# pipx install --include-deps ansible
+...
 root@test:~/otus/hw-16/Ansible# ansible --version
 ansible [core 2.17.13]
   config file = /root/otus/hw-16/Ansible/ansible.cfg
@@ -19,38 +37,7 @@ ansible [core 2.17.13]
   libyaml = True
 ```
 
-hello
-
-```console
-root@test:~/otus/hw-16/Ansible# python3 -V
-Python 3.10.12
-```
-
-hello 
-
-```console
-root@test:~/otus/hw-16/Ansible# vagrant -v
-Vagrant 2.2.19
-```
-
-hello 
-
-```console
-root@test:~/otus/hw-16/Ansible# ll
-total 36
-drwxr-xr-x 6 root root 4096 Aug 10 03:44 ./
-drwxr-xr-x 3 root root 4096 Aug  9 17:18 ../
--rw-r--r-- 1 root root  277 Aug  9 20:16 ansible.cfg
--rw-r--r-- 1 root root  801 Aug 10 03:41 nginx.yml
-drwxr-xr-x 2 root root 4096 Aug  9 20:13 staging/
-drwxr-xr-x 2 root root 4096 Aug 10 03:32 templates/
-drwxr-xr-x 3 root root 4096 Aug  9 20:37 tmp/
-drwxr-xr-x 4 root root 4096 Aug  9 17:19 .vagrant/
--rw-r--r-- 1 root root 1109 Aug  9 17:30 Vagrantfile
-```
-
-hello
-
+Инициализируем создание и запуск ВМ, описанной в Vagrantfile:
 ```console
 root@test:~/otus/hw-16/Ansible# vagrant up
 Bringing machine 'nginx' up with 'virtualbox' provider...
@@ -75,8 +62,10 @@ Bringing machine 'nginx' up with 'virtualbox' provider...
 ==> nginx: flag to force provisioning. Provisioners marked to run always will still run.
 ```
 
-hello
-
+Посмотрим информацию о настройках SSH для текущей виртуальной машины Vagrant,  
+чтобы подключиться к ней через SSH вручную, если это необходимо.  
+Она показывает параметры, такие как адрес хоста, порт, имя пользователя и приватный ключ,  
+которые можно использовать для подключения к виртуальной машине через SSH-клиент.
 ```console
 root@test:~/otus/hw-16/Ansible# vagrant ssh-config
 Host nginx
@@ -536,6 +525,29 @@ Commercial support is available at
                                  Dload  Upload   Total   Spent    Left  Speed
 100   612  100   612    0     0  61322      0 --:--:-- --:--:-- --:--:-- 76500
 ```
+
+
+
+
+```console
+root@test:~/otus/hw-16/Ansible# ll
+total 36
+drwxr-xr-x 6 root root 4096 Aug 10 03:44 ./
+drwxr-xr-x 3 root root 4096 Aug  9 17:18 ../
+-rw-r--r-- 1 root root  277 Aug  9 20:16 ansible.cfg
+-rw-r--r-- 1 root root  801 Aug 10 03:41 nginx.yml
+drwxr-xr-x 2 root root 4096 Aug  9 20:13 staging/
+drwxr-xr-x 2 root root 4096 Aug 10 03:32 templates/
+drwxr-xr-x 3 root root 4096 Aug  9 20:37 tmp/
+drwxr-xr-x 4 root root 4096 Aug  9 17:19 .vagrant/
+-rw-r--r-- 1 root root 1109 Aug  9 17:30 Vagrantfile
+```
+
+
+
+
+
+
 
 Домашнее задание выполнено.
 
