@@ -27,13 +27,48 @@ WORD="ALERT"
 LOG=/var/log/watchlog.log
 ```
 
+Затем создаем /var/log/watchlog.log и пишем туда строки на своё усмотрение,
+плюс ключевое слово ‘ALERT’
+```console
+root@test:~# cat /var/log/watchlog.log | wc -l && cat /var/log/watchlog.log | grep -i alert
+88
+ALERT
+```
 
+Создадим скрипт:
+```console
+root@test:~# cat /opt/watchlog.sh
+#!/bin/bash
 
+WORD=$1
+LOG=$2
+DATE=`date`
 
+if grep $WORD $LOG &> /dev/null
+then
+logger "$DATE: I found word, Master!"
+else
+exit 0
+fi
+```
 
+Команда logger отправляет лог в системный журнал.
+Добавим права на запуск файла:
+```console
+root@test:~# chmod +x /opt/watchlog.sh
+```
 
+Создадим юнит для сервиса:
+```console
+root@test:~# cat /etc/systemd/system/watchlog.service
+yx[Unit]
+Description=My watchlog service
 
-
+[Service]
+Type=oneshot
+EnvironmentFile=/etc/default/watchlog
+ExecStart=/opt/watchlog.sh $WORD $LOG
+```
 
 
 
