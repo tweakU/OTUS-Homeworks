@@ -435,8 +435,58 @@ Aug 09 19:44:07 nginx systemd[1]: Starting A high performance web server and a r
 Aug 09 19:44:07 nginx systemd[1]: Started A high performance web server and a reverse proxy server.
 ```
 
-hello
+Далее добавим шаблон для конфига NGINX и модуль, который будет копировать этот шаблон на хост.  
+Пропишем в playbook необходимую нам переменную, чтобы nginx "слушал" порт 8080.  
+Добавим tags и создадим handler, notify к копирования шаблона. Теперь каждый раз, когда конфиг будет изменяться - сервис перезагрузиться.  
+Так же создадим handler для рестарта и включения сервиса при загрузке.  
 
+Результирующий файл nginx.yml выглядит так:  
+```console
+- name: NGINX | Install and configure NGINX
+  hosts: nginx
+  become: true
+  vars:
+    nginx_listen_port: 8080
+
+  tasks:
+    - name: update
+      apt:
+        update_cache=yes
+      tags:
+        - update apt
+
+    - name: NGINX | Install NGINX
+      apt:
+        name: nginx
+        state: latest
+      notify:
+        - restart nginx
+      tags:
+        - nginx-package
+
+    - name: NGINX | Create NGINX config file from template
+      template:
+        src: templates/nginx.conf.j2
+        dest: /etc/nginx/nginx.conf
+      notify:
+        - reload nginx
+      tags:
+        - nginx-configuration
+
+  handlers:
+    - name: restart nginx
+      systemd:
+       name: nginx
+       state: restarted
+       enabled: yes
+
+    - name: reload nginx
+      systemd:
+        name: nginx
+        state: reloaded
+```
+
+Инициализируем его исполнение:
 ```console
 root@test:~/otus/hw-16/Ansible# ansible-playbook nginx.yml
 
