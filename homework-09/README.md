@@ -18,7 +18,7 @@
 1) Написать service, который будет раз в 30 секунд мониторить лог на предмет наличия ключевого слова.
 Для начала создаём файл с конфигурацией для сервиса в директории /etc/default - из неё сервис будет брать необходимые переменные.
 ```console
-root@test:~# cat /etc/default/watchlog
+root@test:~# cat > /etc/default/watchlog
 # Configuration file for my watchlog service
 # Place it to the /etc/default
 
@@ -37,7 +37,7 @@ ALERT
 
 Создадим скрипт:
 ```console
-root@test:~# cat /opt/watchlog.sh
+root@test:~# cat > /opt/watchlog.sh
 #!/bin/bash
 
 WORD=$1
@@ -60,14 +60,36 @@ root@test:~# chmod +x /opt/watchlog.sh
 
 Создадим юнит для сервиса:
 ```console
-root@test:~# cat /etc/systemd/system/watchlog.service
-yx[Unit]
+root@test:~# cat > /etc/systemd/system/watchlog.service
+[Unit]
 Description=My watchlog service
 
 [Service]
 Type=oneshot
 EnvironmentFile=/etc/default/watchlog
 ExecStart=/opt/watchlog.sh $WORD $LOG
+```
+
+Создадим юнит для таймера:
+```console
+root@test:~# cat > /etc/systemd/system/watchlog.timer
+[Unit]
+Description=Run watchlog script every 30 seconds
+
+[Timer]
+#Run every 30 seconds
+OnUnitActiveSec=30
+Unit=watchlog.service
+
+[Install]
+WantedBy=multi-user.target
+```
+
+Затем достаточно только запустить timer и убедиться в результате:
+```console
+root@test:~# systemctl start watchlog.timer
+
+???!!
 ```
 
 
