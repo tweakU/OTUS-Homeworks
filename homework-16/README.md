@@ -396,6 +396,23 @@ Unit nginx.service could not be found.
 ```
 
 Итак, среда подготовлена. Приступим к выполнению ДЗ - напишем playbook и инициализируем его исполнение. Будем писать его постепенно:
+
+```console
+- name: NGINX | Install and configure NGINX
+  hosts: nginx
+  become: true
+
+  tasks:
+    - name: update
+      apt:
+        update_cache=yes
+
+    - name: NGINX | Install NGINX
+      apt:
+        name: nginx
+        state: latest
+```
+
 ```console
 root@test:~/otus/hw-16/Ansible# ansible-playbook nginx.yml
 
@@ -435,9 +452,10 @@ Aug 09 19:44:07 nginx systemd[1]: Starting A high performance web server and a r
 Aug 09 19:44:07 nginx systemd[1]: Started A high performance web server and a reverse proxy server.
 ```
 
-Далее добавим шаблон для конфига NGINX и модуль, который будет копировать этот шаблон на хост.  
+Далее добавим шаблон для конфига nginx и модуль, который будет копировать этот шаблон на хост.  
 Пропишем в playbook необходимую нам переменную, чтобы nginx "слушал" порт 8080.  
-Добавим tags и создадим handler, notify к копирования шаблона. Теперь каждый раз, когда конфиг будет изменяться - сервис перезагрузиться.  
+Добавим tags и создадим handler, notify к копированию шаблона.  
+Теперь каждый раз, когда конфиг будет изменяться - сервис перезагрузиться.  
 Так же создадим handler для рестарта и включения сервиса при загрузке.  
 
 Результирующий файл nginx.yml выглядит так:  
