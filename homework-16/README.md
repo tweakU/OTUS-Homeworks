@@ -396,24 +396,6 @@ Unit nginx.service could not be found.
 ```
 
 Итак, среда подготовлена. Приступим к выполнению ДЗ - напишем playbook и инициализируем его исполнение. Будем писать его постепенно:
-
-- name: NGINX | Install and configure NGINX
-  hosts: nginx
-  become: true
-
-  tasks:
-    - name: update
-      apt:
-        name: nginx
-        state: latest
-
-- name: NGINX | Create NGINX config file from template
-template:
-src: templates/nginx.conf.j2
-dest: /tmp/nginx.conf
-tags:
-- nginx-configuration
-
 ```console
 root@test:~/otus/hw-16/Ansible# ansible-playbook nginx.yml
 
@@ -429,8 +411,7 @@ PLAY RECAP *********************************************************************
 nginx                      : ok=2    changed=1    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
 ```
 
-hello
-
+Подключимся к ВМ и убедимся, что магия существует):
 ```console
 root@test:~/otus/hw-16/Ansible# vagrant ssh
 Last login: Sat Aug  9 19:43:45 2025 from 10.0.2.2
@@ -480,8 +461,7 @@ PLAY RECAP *********************************************************************
 nginx                      : ok=5    changed=3    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
 ```
 
-hello
-
+Ещё раз убедимся в существовании магии):
 ```console
 root@test:~/otus/hw-16/Ansible# ansible nginx -m command -a 'systemctl status nginx'
 nginx | CHANGED | rc=0 >>
@@ -499,16 +479,17 @@ nginx | CHANGED | rc=0 >>
 
 Warning: some journal files were not opened due to insufficient permissions.
 ```
-hello
+Ворнинг? хмм ...
 
+Первые грабли:
 ```console
 root@test:~/otus/hw-16/Ansible# ansible nginx -m command -a 'id'
 nginx | CHANGED | rc=0 >>
 uid=1000(vagrant) gid=1000(vagrant) groups=1000(vagrant)
 ```
+Семён Семёныч)
 
-hello
-
+Ещё раз:
 ```console
 root@test:~/otus/hw-16/Ansible# ansible nginx -m command -a 'sudo systemctl status nginx'
 nginx | CHANGED | rc=0 >>
@@ -528,8 +509,7 @@ Aug 10 01:05:50 nginx systemd[1]: Starting A high performance web server and a r
 Aug 10 01:05:51 nginx systemd[1]: Started A high performance web server and a reverse proxy server.
 ```
 
-hello
-
+"дёрним" curl`ом ip:
 ```console
 root@test:~/otus/hw-16/Ansible# ansible nginx -m command -a 'curl http://192.168.11.150:8080'
 nginx | CHANGED | rc=0 >>
@@ -561,10 +541,9 @@ Commercial support is available at
                                  Dload  Upload   Total   Spent    Left  Speed
 100   612  100   612    0     0  61322      0 --:--:-- --:--:-- --:--:-- 76500
 ```
+Видим стандарное сожержание страницы nginx по умолчанию.
 
-
-
-
+Содержание директории лабораторной работы выложено на github:
 ```console
 root@test:~/otus/hw-16/Ansible# ll
 total 36
@@ -580,12 +559,7 @@ drwxr-xr-x 4 root root 4096 Aug  9 17:19 .vagrant/
 ```
 
 
-
-
-
-
-
-Домашнее задание выполнено.
+**Домашнее задание выполнено**.
 
 <br/>
 
