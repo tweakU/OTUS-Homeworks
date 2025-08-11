@@ -7,11 +7,24 @@
 3 изучить состав и синтаксис systemd unit.
 
 
+**Домашнее задание**:  
+1 Написать service, который будет раз в 30 секунд мониторить лог на предмет наличия ключевого слова (файл лога и ключевое слово должны задаваться в /etc/default).  
+2 Установить spawn-fcgi и создать unit-файл (spawn-fcgi.sevice) с помощью переделки init-скрипта (https://gist.github.com/cea2k/1318020).  
+3 Доработать unit-файл Nginx (nginx.service) для запуска нескольких инстансов сервера с разными конфигурационными файлами одновременно.
+
+
 **Выполнение домашнего задания**:
 
-1) 
-
+1) Написать service, который будет раз в 30 секунд мониторить лог на предмет наличия ключевого слова.
+Для начала создаём файл с конфигурацией для сервиса в директории /etc/default - из неё сервис будет брать необходимые переменные.
 ```console
+root@test:~# cat /etc/default/watchlog
+# Configuration file for my watchlog service
+# Place it to the /etc/default
+
+# File and word in that file that we will be monitor
+WORD="ALERT"
+LOG=/var/log/watchlog.log
 ```
 
 
