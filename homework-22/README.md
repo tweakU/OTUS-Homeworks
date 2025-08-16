@@ -44,7 +44,7 @@ LISTEN 0      4096               *:9100            *:*    users:(("prometheus-no
 
 2) Grafana
 
-Установим Grafana "родного" репозитория согласно [инструкции](https://grafana.com/docs/grafana/latest/setup-grafana/installation/debian/):
+Установим Grafana из "родного" репозитория согласно [инструкции](https://grafana.com/docs/grafana/latest/setup-grafana/installation/debian/):
 
 ```console
 root@test:~# apt-get install -y apt-transport-https software-properties-common wget
