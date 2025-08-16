@@ -20,7 +20,7 @@ root@test:~# apt update
 All packages are up to date.
 ```
 
-Установим Prometheus и посмотрим информацию о сетевых сокетах:
+Установим Prometheus, посмотрим информацию о сетевых сокетах:
 ```console
 root@test:~# apt install prometheus -y
 
