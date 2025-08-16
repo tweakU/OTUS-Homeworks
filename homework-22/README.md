@@ -42,9 +42,29 @@ LISTEN 0      4096               *:9100            *:*    users:(("prometheus-no
 
 
 
+2) Grafana
 
+Установим Grafana "родного" репозитория согласно [инструкции](https://grafana.com/docs/grafana/latest/setup-grafana/installation/debian/):
 
+```console
+root@test:~# apt-get install -y apt-transport-https software-properties-common wget
+```
 
+Импортируем GPG (GNU Privacy Guard) ключ:
+```console
+root@test:~# mkdir -p /etc/apt/keyrings/
+root@test:~# wget -q -O - https://apt.grafana.com/gpg.key | gpg --dearmor | tee /etc/apt/keyrings/grafana.gpg > /dev/null
+```
+
+```
+root@test:~# echo "deb [signed-by=/etc/apt/keyrings/grafana.gpg] https://apt.grafana.com stable main" | tee -a /etc/apt/sources.list.d/grafana.list
+```
+
+```console
+root@test:~# apt-get update
+
+root@test:~# apt-get install grafana
+```
 
 Домашнее задание выполнено.
 
