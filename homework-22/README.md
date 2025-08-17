@@ -77,9 +77,7 @@ LISTEN 0      4096               *:9100            *:*    users:(("prometheus-no
 ```
 
 Prometheus работает:
-```console
 <img width="1920" height="1040" alt="изображение" src="https://github.com/user-attachments/assets/217c220f-404b-4a64-9158-eb0b11f368cd" />
-```
 
 
 
