@@ -27,7 +27,7 @@ root@test:~# apt install prometheus -y
 root@test:~# systemctl status prometheus
 ● prometheus.service - Monitoring system and time series database
      Loaded: loaded (/lib/systemd/system/prometheus.service; enabled; vendor preset: enabled)
-     Active: active (running) since Sun 2025-08-17 09:02:14 MSK; 34s ago
+     Active: `active (running)` since Sun 2025-08-17 09:02:14 MSK; 34s ago
        Docs: https://prometheus.io/docs/introduction/overview/
              man:prometheus(1)
    Main PID: 678 (prometheus)
