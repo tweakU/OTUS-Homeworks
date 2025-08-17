@@ -11,7 +11,7 @@
 
 **Выполнение домашнего задания**:
 
-1) Prometheus
+**1) Prometheus**
 
 Обновим списки доступных пакетов:
 ```console
@@ -80,20 +80,11 @@ Prometheus работает:
 <img width="1920" height="1040" alt="изображение" src="https://github.com/user-attachments/assets/217c220f-404b-4a64-9158-eb0b11f368cd" />
 
 
-
-
-
-
-
-
-
-
-
-
-2) Grafana
+**2) Grafana**
 
 Установим Grafana из "родного" репозитория согласно [инструкции](https://grafana.com/docs/grafana/latest/setup-grafana/installation/debian/):
 
+Установим необходимые пакеты:
 ```console
 root@test:~# apt-get install -y apt-transport-https software-properties-common wget
 ```
