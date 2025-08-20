@@ -113,74 +113,70 @@ root@test:~# apt-get install grafana
 
 **2) Zabbix**
 
-# Обновим списки доступных пакетов:
+Установим Zabbix согласно [инструкции]([url](https://www.zabbix.com/download)):  
+Zabbix version: 7.0 LTS  
+OS Distribution: Ubunttu  
+OS Version: 22.04 Jammy  
+ZABBIX COMPONENT: Server, Frontend, Agent 2  
+Database: MySQL  
+Web Server: Apache
+
+a. Install Zabbix repository
 ```console
-[root@vbox ~]# yum update
-Loaded plugins: fastestmirror
-Determining fastest mirrors
-base                                                                                                                                                                                        | 3.6 kB  00:00:00
-extras                                                                                                                                                                                      | 2.9 kB  00:00:00
-updates                                                                                                                                                                                     | 2.9 kB  00:00:00
-(1/4): base/7/x86_64/group_gz                                                                                                                                                               | 153 kB  00:00:00
-(2/4): extras/7/x86_64/primary_db                                                                                                                                                           | 253 kB  00:00:00
-(3/4): base/7/x86_64/primary_db                                                                                                                                                             | 6.1 MB  00:00:00
-(4/4): updates/7/x86_64/primary_db                                                                                                                                                          |  27 MB  00:00:32
-No packages marked for update
+# wget https://repo.zabbix.com/zabbix/7.4/release/ubuntu/pool/main/z/zabbix-release/zabbix-release_latest_7.4+ubuntu22.04_all.deb
+# dpkg -i zabbix-release_latest_7.4+ubuntu22.04_all.deb
+# apt update
 ```
 
-# Устанавливаем репозиторий Zabbix
+b. Install Zabbix server, frontend, agent2
 ```console
-[root@vbox ~]# rpm -Uvh https://repo.zabbix.com/zabbix/5.0/rhel/7/x86_64/zabbix-release-5.0-1.el7.noarch.rpm
-Retrieving https://repo.zabbix.com/zabbix/5.0/rhel/7/x86_64/zabbix-release-5.0-1.el7.noarch.rpm
-warning: /var/tmp/rpm-tmp.rIvh1u: Header V4 RSA/SHA512 Signature, key ID a14fe591: NOKEY
-Preparing...                          ################################# [100%]
-Updating / installing...
-   1:zabbix-release-5.0-1.el7         ################################# [100%]
-
-[root@vbox ~]# yum clean all
-Loaded plugins: fastestmirror
-Cleaning repos: base extras updates zabbix zabbix-non-supported
-Cleaning up list of fastest mirrors
+# apt install zabbix-server-mysql zabbix-frontend-php zabbix-apache-conf zabbix-sql-scripts zabbix-agent2
 ```
 
-# Устанавливаем zabbix-server, zabbix-agent, zabbix-frontend
+c. Install Zabbix agent 2 plugins
 ```console
-[root@vbox ~]# yum install zabbix-server-mysql zabbix-agent
-...
-Installed:
-  zabbix-agent.x86_64 0:5.0.47-1.el7                                                                   zabbix-server-mysql.x86_64 0:5.0.47-1.el7
-
-Dependency Installed:
-  OpenIPMI.x86_64 0:2.0.27-1.el7  OpenIPMI-libs.x86_64 0:2.0.27-1.el7  OpenIPMI-modalias.x86_64 0:2.0.27-1.el7  fping.x86_64 0:5.1-1.el7  net-snmp-libs.x86_64 1:5.7.2-49.el7_9.4  unixODBC.x86_64 0:2.3.1-14.el7
-
-Complete!
+# apt install zabbix-agent2-plugin-mongodb zabbix-agent2-plugin-mssql zabbix-agent2-plugin-postgresql
 ```
 
-# Активируем zabbix-frontend репозиторий
+d. Create initial database  
+Make sure you have database server up and running.  
+Run the following on your database host.  
 ```console
-[root@vbox ~]# vim /etc/yum.repos.d/zabbix.repo
-[zabbix-frontend]
-...
-enabled=1
-...
+# mysql -uroot -p
+password
+mysql> create database zabbix character set utf8mb4 collate utf8mb4_bin;
+mysql> create user zabbix@localhost identified by 'password';
+mysql> grant all privileges on zabbix.* to zabbix@localhost;
+mysql> set global log_bin_trust_function_creators = 1;
+mysql> quit;
+```
+On Zabbix server host import initial schema and data. You will be prompted to enter your newly created password.
+```console
+# zcat /usr/share/zabbix/sql-scripts/mysql/server.sql.gz | mysql --default-character-set=utf8mb4 -uzabbix -p zabbix
+```
+Disable log_bin_trust_function_creators option after importing database schema.
+```console
+# mysql -uroot -p
+password
+mysql> set global log_bin_trust_function_creators = 0;
+mysql> quit;
 ```
 
-# Устанавливаем пакеты zabbix-frontend и mysql 
+e. Configure the database for Zabbix server  
+Edit file /etc/zabbix/zabbix_server.conf
+```console
+DBPassword=password
+```
 
+f. Start Zabbix server and agent processes  
+Start Zabbix server and agent processes and make it start at system boot.
+```console
+# systemctl restart zabbix-server zabbix-agent2 apache2
+# systemctl enable zabbix-server zabbix-agent2 apache2
+```
 
-
-
-
-
-
-
-
-
-
-
-
-
-
+g. Open Zabbix UI web page  
+The default URL for Zabbix UI when using Apache web server is http://host/zabbix
 
 
 
