@@ -92,8 +92,7 @@ sudo dpkg -i grafana-enterprise_12.1.1_16903967602_linux_amd64.deb
 ```
 
 
-
-
+<img width="1920" height="1040" alt="изображение" src="https://github.com/user-attachments/assets/3dfcd665-e905-4bd7-9fd7-2ad33f1b8b44" />
 
 
 #**2) Zabbix**
