@@ -105,6 +105,87 @@ root@test:~# apt-get update
 root@test:~# apt-get install grafana
 ```
 
+
+
+
+
+
+
+**2) Zabbix**
+
+# Обновим списки доступных пакетов:
+```console
+[root@vbox ~]# yum update
+Loaded plugins: fastestmirror
+Determining fastest mirrors
+base                                                                                                                                                                                        | 3.6 kB  00:00:00
+extras                                                                                                                                                                                      | 2.9 kB  00:00:00
+updates                                                                                                                                                                                     | 2.9 kB  00:00:00
+(1/4): base/7/x86_64/group_gz                                                                                                                                                               | 153 kB  00:00:00
+(2/4): extras/7/x86_64/primary_db                                                                                                                                                           | 253 kB  00:00:00
+(3/4): base/7/x86_64/primary_db                                                                                                                                                             | 6.1 MB  00:00:00
+(4/4): updates/7/x86_64/primary_db                                                                                                                                                          |  27 MB  00:00:32
+No packages marked for update
+```
+
+# Устанавливаем репозиторий Zabbix
+```console
+[root@vbox ~]# rpm -Uvh https://repo.zabbix.com/zabbix/5.0/rhel/7/x86_64/zabbix-release-5.0-1.el7.noarch.rpm
+Retrieving https://repo.zabbix.com/zabbix/5.0/rhel/7/x86_64/zabbix-release-5.0-1.el7.noarch.rpm
+warning: /var/tmp/rpm-tmp.rIvh1u: Header V4 RSA/SHA512 Signature, key ID a14fe591: NOKEY
+Preparing...                          ################################# [100%]
+Updating / installing...
+   1:zabbix-release-5.0-1.el7         ################################# [100%]
+
+[root@vbox ~]# yum clean all
+Loaded plugins: fastestmirror
+Cleaning repos: base extras updates zabbix zabbix-non-supported
+Cleaning up list of fastest mirrors
+```
+
+# Устанавливаем zabbix-server, zabbix-agent, zabbix-frontend
+```console
+[root@vbox ~]# yum install zabbix-server-mysql zabbix-agent
+...
+Installed:
+  zabbix-agent.x86_64 0:5.0.47-1.el7                                                                   zabbix-server-mysql.x86_64 0:5.0.47-1.el7
+
+Dependency Installed:
+  OpenIPMI.x86_64 0:2.0.27-1.el7  OpenIPMI-libs.x86_64 0:2.0.27-1.el7  OpenIPMI-modalias.x86_64 0:2.0.27-1.el7  fping.x86_64 0:5.1-1.el7  net-snmp-libs.x86_64 1:5.7.2-49.el7_9.4  unixODBC.x86_64 0:2.3.1-14.el7
+
+Complete!
+```
+
+# Активируем zabbix-frontend репозиторий
+```console
+[root@vbox ~]# vim /etc/yum.repos.d/zabbix.repo
+[zabbix-frontend]
+...
+enabled=1
+...
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 Домашнее задание выполнено.
 
 <br/>
