@@ -180,8 +180,7 @@ g. Open Zabbix UI web page
 The default URL for Zabbix UI when using Apache web server is http://host/zabbix
 
 
-
-
+<img width="1920" height="1040" alt="изображение" src="https://github.com/user-attachments/assets/c5388f66-ed1e-4bce-9977-717d824cb2b0" />
 
 
 Домашнее задание выполнено.
