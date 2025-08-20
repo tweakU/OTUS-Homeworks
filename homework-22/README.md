@@ -11,7 +11,7 @@
 
 **Выполнение домашнего задания**:
 
-**1) Prometheus**
+#**1) Prometheus**
 
 Обновим списки доступных пакетов:
 ```console
@@ -80,29 +80,15 @@ Prometheus работает:
 <img width="1920" height="1040" alt="изображение" src="https://github.com/user-attachments/assets/217c220f-404b-4a64-9158-eb0b11f368cd" />
 
 
-**2) Grafana**
+#**2) Grafana**
 
-Установим Grafana из "родного" репозитория согласно [инструкции](https://grafana.com/docs/grafana/latest/setup-grafana/installation/debian/):
+Установим Grafana с помощью [deb пакета](https://grafana.com/grafana/download):
 
-Установим необходимые пакеты:
+Установим необходимые пакеты. Скачаем и установим Grafana:
 ```console
-root@test:~# apt-get install -y apt-transport-https software-properties-common wget
-```
-
-Импортируем GPG (GNU Privacy Guard) ключ:
-```console
-root@test:~# mkdir -p /etc/apt/keyrings/
-root@test:~# wget -q -O - https://apt.grafana.com/gpg.key | gpg --dearmor | tee /etc/apt/keyrings/grafana.gpg > /dev/null
-```
-
-```
-root@test:~# echo "deb [signed-by=/etc/apt/keyrings/grafana.gpg] https://apt.grafana.com stable main" | tee -a /etc/apt/sources.list.d/grafana.list
-```
-
-```console
-root@test:~# apt-get update
-
-root@test:~# apt-get install grafana
+sudo apt-get install -y adduser libfontconfig1 musl
+wget https://dl.grafana.com/grafana-enterprise/release/12.1.1/grafana-enterprise_12.1.1_16903967602_linux_amd64.deb
+sudo dpkg -i grafana-enterprise_12.1.1_16903967602_linux_amd64.deb
 ```
 
 
@@ -110,8 +96,7 @@ root@test:~# apt-get install grafana
 
 
 
-
-**2) Zabbix**
+#**2) Zabbix**
 
 ```console
 root@test:~# cat /etc/os-release
