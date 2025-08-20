@@ -165,6 +165,7 @@ enabled=1
 ...
 ```
 
+# Устанавливаем пакеты zabbix-frontend и mysql 
 
 
 
