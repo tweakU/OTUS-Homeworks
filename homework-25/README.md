@@ -6,7 +6,7 @@
 
 **Выполнение домашнего задания**:
 
-1) Создаём виртуальные машины.
+**1) Создаём виртуальные машины.**
 ```console
 Vagrant.configure("2") do |config|
   config.vm.box = "bento/ubuntu-22.04"
@@ -51,7 +51,7 @@ root@web:~# timedatectl set-ntp true
 ```
 Тоже самое выполним на ВМ log.
 
-2) Установка nginx на виртуальной машине web:
+**2) Установка nginx на виртуальной машине web:**
 
 Установим nginx:
 ```console
@@ -112,7 +112,7 @@ Commercial support is available at
 ```
 Видим что nginx запускается корректно.
 
-3) Настройка центрального сервера сбора логов.
+**3) Настройка центрального сервера сбора логов.**
 
 rsyslog должен быть установлен по умолчанию в нашей ОС, проверим это:
 ```console
@@ -126,6 +126,30 @@ N: There is 1 additional version. Please use the '-a' switch to see it
 root@log:~# dpkg -l | grep rsyslog
 ii  rsyslog                                8.2112.0-2ubuntu2.2                     amd64        reliable system and kernel logging daemon
 ```
+
+Все настройки Rsyslog хранятся в файле /etc/rsyslog.conf 
+Для того, чтобы наш сервер мог принимать логи, нам необходимо внести следующие изменения в файл: 
+Открываем порт 514 (TCP и UDP):
+Находим закомментированные строки:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
