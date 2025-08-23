@@ -127,10 +127,32 @@ root@log:~# dpkg -l | grep rsyslog
 ii  rsyslog                                8.2112.0-2ubuntu2.2                     amd64        reliable system and kernel logging daemon
 ```
 
-Все настройки Rsyslog хранятся в файле /etc/rsyslog.conf 
-Для того, чтобы наш сервер мог принимать логи, нам необходимо внести следующие изменения в файл: 
-Открываем порт 514 (TCP и UDP):
+Все настройки Rsyslog хранятся в файле /etc/rsyslog.conf.  
+Для того, чтобы наш сервер мог принимать логи, нам необходимо внести следующие изменения в файл: открыть порт 514 (TCP и UDP) в разделе MODULES.  
+
 Находим закомментированные строки:
+```console
+# provides UDP syslog reception
+#module(load="imudp")
+#input(type="imudp" port="514")
+
+# provides TCP syslog reception
+#module(load="imtcp")
+#input(type="imtcp" port="514")
+```
+
+И приводим их к виду:
+```console
+# provides UDP syslog reception
+module(load="imudp")
+input(type="imudp" port="514")
+
+# provides TCP syslog reception
+module(load="imtcp")
+input(type="imtcp" port="514")
+```
+
+
 
 
 
