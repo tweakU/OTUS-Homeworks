@@ -165,7 +165,45 @@ $template RemoteLogs,"/var/log/rsyslog/%HOSTNAME%/%PROGRAMNAME%.log"
 
 Если ошибок не допущено, то у нас будут видны открытые порты TCP, UDP 514:  
 ```console
+root@log:~# ss -ntulp | grep rsyslog
+udp   UNCONN 0      0             0.0.0.0:514       0.0.0.0:*    users:(("rsyslogd",pid=2027,fd=5))
+udp   UNCONN 0      0                [::]:514          [::]:*    users:(("rsyslogd",pid=2027,fd=6))
+tcp   LISTEN 0      25            0.0.0.0:514       0.0.0.0:*    users:(("rsyslogd",pid=2027,fd=7))
+tcp   LISTEN 0      25               [::]:514          [::]:*    users:(("rsyslogd",pid=2027,fd=8))
+```
 
+
+Далее настроим отправку логов с web-сервера.  
+Заходим на web сервер: vagrant ssh web.  
+Переходим в root пользователя: sudo -i.  
+Проверим версию nginx: nginx -v:  
+```console
+root@web:~# nginx -v
+nginx version: nginx/1.18.0 (Ubuntu)
+```
+
+Версия nginx должна быть 1.7 или выше. В нашем примере используется версия nginx 1.18.  
+Находим в файле /etc/nginx/nginx.conf раздел с логами и приводим их к следующему виду:  
+```console
+        ##
+        # Logging Settings
+        ##
+
+        access_log /var/log/nginx/access.log;
+        access_log syslog:server=192.168.56.15:514,tag=nginx_access,severity=info combined;
+        error_log /var/log/nginx/error.log;
+        error_log syslog:server=192.168.56.15:514,tag=nginx_error;
+```
+
+Для Access-логов указываем удаленный сервер и уровень логов, которые нужно отправлять. Для error_log добавляем удаленный сервер. Если требуется чтобы логи хранились локально и отправлялись на удаленный сервер, требуется указать 2 строки. 	
+Tag нужен для того, чтобы логи записывались в разные файлы.
+По умолчанию, error-логи отправляют логи, которые имеют severity: error, crit, alert и emerg. Если требуется хранить или пересылать логи с другим severity, то это также можно указать в настройках nginx. 
+
+
+```console
+root@web:~# nginx -t
+nginx: the configuration file /etc/nginx/nginx.conf syntax is ok
+nginx: configuration file /etc/nginx/nginx.conf test is successful
 ```
 
 
