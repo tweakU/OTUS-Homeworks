@@ -228,6 +228,79 @@ Aug 24 18:13:29 web nginx_access: 192.168.56.10 - - [24/Aug/2025:18:13:29 +0300]
 ```
 Видим, что логи отправляются корректно. 
 
+**8) ELK**
+
+Для установки ELK стека с помощью пакетного менеджера APT добавим зеркало Яндекc:
+```console
+root@elk:~# echo "deb [trusted=yes] https://mirror.yandex.ru/mirrors/elastic/8/ stable main" | tee /etc/apt/sources.list.d/elastic-8.x.list
+```
+
+Установим Elasticsearch и сохраним блок Security autoconfiguration information в файл:
+```console
+root@elk:~# apt install elasticsearch -y
+
+root@elk:~# cat ~/elk/elk_help
+--------------------------- Security autoconfiguration information ------------------------------
+
+Authentication and authorization are enabled.
+TLS for the transport and HTTP layers is enabled and configured.
+
+The generated password for the elastic built-in superuser is : *VTLBiOW6UmfqeNxt0qo
+
+If this node should join an existing cluster, you can reconfigure this with
+'/usr/share/elasticsearch/bin/elasticsearch-reconfigure-node --enrollment-token <token-here>'
+after creating an enrollment token on your existing cluster.
+
+You can complete the following actions at any time:
+
+Reset the password of the elastic built-in superuser with
+'/usr/share/elasticsearch/bin/elasticsearch-reset-password -u elastic'.
+
+Generate an enrollment token for Kibana instances with
+ '/usr/share/elasticsearch/bin/elasticsearch-create-enrollment-token -s kibana'.
+
+Generate an enrollment token for Elasticsearch nodes with
+'/usr/share/elasticsearch/bin/elasticsearch-create-enrollment-token -s node'.
+
+-------------------------------------------------------------------------------------------------
+### NOT starting on installation, please execute the following statements to configure elasticsearch service to start automatically using systemd
+ sudo systemctl daemon-reload
+ sudo systemctl enable elasticsearch.service
+### You can start elasticsearch service by executing
+ sudo systemctl start elasticsearch.service
+```
+
+Перед запуском Elasticsearch проведём базовую настройку:
+1. cluster.name
+2. node.name
+3. network.host: 0.0.0.0 (в таком случае es будет работать на любом IP)
+4. cluster.initial_master_nodes: best practice - указать IP вместо hostname
+5. transport.host: 0.0.0.0
+
+```console
+root@elk:~# systemctl start elasticsearch
+
+root@elk:~# systemctl status elasticsearch
+
+
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 Домашнее задание выполнено.
 
