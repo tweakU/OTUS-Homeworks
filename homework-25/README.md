@@ -8,26 +8,13 @@
 
 **1) Создаём виртуальные машины.**
 ```console
-Vagrant.configure("2") do |config|
-  config.vm.box = "bento/ubuntu-22.04"
-
-  boxes = [
-    { name: "web", ip: "192.168.56.10" },
-    { name: "log", ip: "192.168.56.15" }
-  ]
-
-  boxes.each do |opts|
-    config.vm.define opts[:name] do |node_config|
-      node_config.vm.hostname = opts[:name]
-      node_config.vm.network "private_network", ip: opts[:ip]
-
-      node_config.vm.provider "virtualbox" do |v|
-        v.memory = 2048
-        v.cpus = 2
-      end
-    end
-  end
-end
+PS C:\Users\funt1k\vagrant\otus\hw-25> vagrant up
+Bringing machine 'web' up with 'virtualbox' provider...
+Bringing machine 'log' up with 'virtualbox' provider...
+...
+==> web: Machine booted and ready!
+...
+==> log: Machine booted and ready!
 ```
 
 Для правильной работы c логами, нужно, чтобы на всех хостах было настроено одинаковое время. 
