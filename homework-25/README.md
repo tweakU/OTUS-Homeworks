@@ -229,19 +229,17 @@ mv /var/www/html/index.nginx-debian.html /var/www/
 ```console
 root@log:~# cat /var/log/rsyslog/web/nginx_error.log
 Aug 24 18:13:29 web nginx_error: 2025/08/24 18:13:29 [error] 3275#3275: *1 directory index of "/var/www/html/" is forbidden, client: 192.168.56.10, server: _, request: "GET / HTTP/1.1", host: "192.168.56.10"
+
+root@log:~# cat /var/log/rsyslog/web/nginx_access.log
+Aug 24 18:01:57 web nginx_access: 192.168.56.10 - - [24/Aug/2025:18:01:57 +0300] "GET / HTTP/1.1" 200 612 "-" "curl/7.81.0"
+Aug 24 18:02:00 web nginx_access: 192.168.56.10 - - [24/Aug/2025:18:02:00 +0300] "GET / HTTP/1.1" 200 612 "-" "curl/7.81.0"
+Aug 24 18:02:08 web nginx_access: 192.168.56.10 - - [24/Aug/2025:18:02:08 +0300] "GET / HTTP/1.1" 200 612 "-" "curl/7.81.0"
+Aug 24 18:02:56 web nginx_access: 192.168.56.10 - - [24/Aug/2025:18:02:56 +0300] "GET /metrics HTTP/1.1" 404 162 "-" "curl/7.81.0"
+Aug 24 18:03:00 web nginx_access: 192.168.56.10 - - [24/Aug/2025:18:03:00 +0300] "GET /metrics HTTP/1.1" 404 162 "-" "curl/7.81.0"
+Aug 24 18:03:00 web nginx_access: 192.168.56.10 - - [24/Aug/2025:18:03:00 +0300] "GET /metrics HTTP/1.1" 404 162 "-" "curl/7.81.0"
+Aug 24 18:13:29 web nginx_access: 192.168.56.10 - - [24/Aug/2025:18:13:29 +0300] "GET / HTTP/1.1" 403 162 "-" "curl/7.81.0"
 ```
 Видим, что логи отправляются корректно. 
-
-
-
-
-
-
-
-
-
-
-
 
 
 Домашнее задание выполнено.
