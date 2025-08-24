@@ -281,10 +281,29 @@ Generate an enrollment token for Elasticsearch nodes with
 root@elk:~# systemctl start elasticsearch
 
 root@elk:~# systemctl status elasticsearch
+● elasticsearch.service - Elasticsearch
+     Loaded: loaded (/lib/systemd/system/elasticsearch.service; disabled; vendor preset: enabled)
+     Active: active (running) since Sun 2025-08-24 17:02:53 UTC; 52s ago
+       Docs: https://www.elastic.co
+   Main PID: 3473 (java)
+      Tasks: 79 (limit: 2275)
+     Memory: 1.4G
+        CPU: 39.581s
+     CGroup: /system.slice/elasticsearch.service
+             ├─3473 /usr/share/elasticsearch/jdk/bin/java -Xms4m -Xmx64m -XX:+UseSerialGC -Dcli.name=server -Dcli.script=/usr/share/elasticsearch/bin/elasticsearch -Dcli.libs=lib/tools/server-cli -Des.path.home>
+             ├─3535 /usr/share/elasticsearch/jdk/bin/java -Des.networkaddress.cache.ttl=60 -Des.networkaddress.cache.negative.ttl=10 -XX:+AlwaysPreTouch -Xss1m -Djava.awt.headless=true -Dfile.encoding=UTF-8 -Dj>
+             └─3555 /usr/share/elasticsearch/modules/x-pack-ml/platform/linux-x86_64/bin/controller
 
-
-
+Aug 24 17:02:06 elk systemd[1]: Starting Elasticsearch...
+Aug 24 17:02:53 elk systemd[1]: Started Elasticsearch.
 ```
+
+Проверим работу кластера, сменой пароля в интерактивном режиме (ключ i).  
+Нужная команда содержится в сохраненном выше help`е:
+```console
+root@elk:~# cat ~/elk/elk_help | grep -i reset
+Reset the password of the elastic built-in superuser with
+'/usr/share/elasticsearch/bin/elasticsearch-reset-password -u elastic'.
 
 
 
