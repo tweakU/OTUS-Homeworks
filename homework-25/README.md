@@ -305,9 +305,21 @@ root@elk:~# cat ~/elk/elk_help | grep -i reset
 Reset the password of the elastic built-in superuser with
 '/usr/share/elasticsearch/bin/elasticsearch-reset-password -u elastic'.
 
+root@elk:~# /usr/share/elasticsearch/bin/elasticsearch-reset-password -u elastic -i
+This tool will reset the password of the [elastic] user.
+You will be prompted to enter the password.
+Please confirm that you would like to continue [y/N]y
+Enter password for [elastic]:
+Re-enter password for [elastic]:
+Password for the [elastic] user successfully reset.
 
+root@elk:~# curl -k -u elastic:897653 https://localhost:9200/_cat/health?v
+epoch      timestamp cluster    status node.total node.data shards pri relo init unassign unassign.pri pending_tasks max_task_wait_time active_shards_percent
+1756079294 23:48:14  otus-tanin green           1         1      3   3    0    0        0            0             0                  -                100.0%
+```
 
-
+Kibana
+!!Kibana ставится на хост с NGINX, делаем прокси-пасс на 127.0.0.1:5601
 
 
 
