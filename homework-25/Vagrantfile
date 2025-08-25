@@ -1,20 +1,43 @@
-Vagrant.configure("2") do |config|
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.configure(2) do |config|
   config.vm.box = "bento/ubuntu-22.04"
+  config.vm.box_check_update = false
 
-  boxes = [
-    { name: "web", ip: "192.168.56.10" },
-    { name: "log", ip: "192.168.56.15" }
-  ]
-
-  boxes.each do |opts|
-    config.vm.define opts[:name] do |node_config|
-      node_config.vm.hostname = opts[:name]
-      node_config.vm.network "private_network", ip: opts[:ip]
-
-      node_config.vm.provider "virtualbox" do |v|
-        v.memory = 2048
-        v.cpus = 2
+  config.vm.define "web" do |web|
+      web.vm.network  "public_network", ip: "192.168.1.110"
+      web.vm.hostname = "web"
+      web.vm.provider "virtualbox" do |vb|
+         vb.memory = "2048"
+         vb.cpus = "2"
       end
-    end
   end
+
+ config.vm.define "log" do |log|
+     log.vm.network "public_network", ip: "192.168.1.115"
+     log.vm.hostname = "log"
+     log.vm.provider "virtualbox" do |vb|
+         vb.memory = "2048"
+         vb.cpus = "2"
+     end
+ end
+
+ config.vm.define "rsyslogsrv" do |rsyslogsrv|
+     rsyslogsrv.vm.network "public_network", ip: "192.168.1.120"
+     rsyslogsrv.vm.hostname = "rsyslogsrv"
+     rsyslogsrv.vm.provider "virtualbox" do |vb|
+         vb.memory = "2048"
+         vb.cpus = "2"
+     end
+ end
+
+ config.vm.define "elk" do |elk|
+     elk.vm.network "public_network", ip: "192.168.1.125"
+     elk.vm.hostname = "elk"
+     elk.vm.provider "virtualbox" do |vb|
+         vb.memory = "2048"
+         vb.cpus = "2"
+     end
+ end
 end
