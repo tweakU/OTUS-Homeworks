@@ -351,6 +351,7 @@ root@elk:~# systemctl status kibana.service
      CGroup: /system.slice/kibana.service
              └─1949 /usr/share/kibana/bin/../node/glibc-217/bin/node /usr/share/kibana/bin/../src/cli/dist
 ```
+
 ```console
 root@elk:~# ss -tnlp | grep :5601
 LISTEN 0      511          0.0.0.0:5601      0.0.0.0:*    users:(("node",pid=1949,fd=22))
@@ -358,6 +359,7 @@ LISTEN 0      511          0.0.0.0:5601      0.0.0.0:*    users:(("node",pid=194
 root@elk:~# ip a | grep 192.
     inet 192.168.1.125/24 brd 192.168.1.255 scope global eth1
 ```
+
 ```console
 root@elk:~# curl http://192.168.1.125:5601/login?next=%2F | head
   % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
