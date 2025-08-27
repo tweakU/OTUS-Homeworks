@@ -318,13 +318,63 @@ epoch      timestamp cluster    status node.total node.data shards pri relo init
 1756079294 23:48:14  otus-tanin green           1         1      3   3    0    0        0            0             0                  -                100.0%
 ```
 
-Kibana
-!!Kibana ставится на хост с NGINX, делаем прокси-пасс на 127.0.0.1:5601
+**Kibana**
+(best practice: ставить Kibana на хост с nginx и делать proxy_pass на 127.0.0.1:5601)
 
+Установим Kibana, используем зеркало Яндекc:
+```console
+root@elk:~# apt install kibana
 
+root@elk:~# systemctl status kibana
+○ kibana.service - Kibana
+     Loaded: loaded (/lib/systemd/system/kibana.service; disabled; vendor preset: enabled)
+     Active: inactive (dead)
+       Docs: https://www.elastic.co
+```
 
+Внесем изменения в конфигурационный файл в соотвествии с техзаданием - заменим значение по умолчанию "localhost", "любой IP-адрес":
+```
+server.host: "0.0.0.0"
+```
 
+Запустим Kibana:
+```cosnole
+root@elk:~# systemctl status kibana.service
+● kibana.service - Kibana
+     Loaded: loaded (/lib/systemd/system/kibana.service; disabled; vendor preset: enabled)
+     Active: active (running) since Wed 2025-08-27 17:41:52 MSK; 47s ago
+       Docs: https://www.elastic.co
+   Main PID: 1949 (node)
+      Tasks: 11 (limit: 2219)
+     Memory: 653.1M
+        CPU: 27.882s
+     CGroup: /system.slice/kibana.service
+             └─1949 /usr/share/kibana/bin/../node/glibc-217/bin/node /usr/share/kibana/bin/../src/cli/dist
 
+root@elk:~# ss -tnlp | grep :5601
+LISTEN 0      511          0.0.0.0:5601      0.0.0.0:*    users:(("node",pid=1949,fd=22))
+
+root@elk:~# ip a | grep 192.
+    inet 192.168.1.125/24 brd 192.168.1.255 scope global eth1
+
+root@elk:~# curl http://192.168.1.125:5601/login?next=%2F | head
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0<!DOCTYPE html><html lang="en"><head><meta charSet="utf-8"/><meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/><meta name="viewport" content="width=device-width"/><title>Elastic</title><style>
+
+        @font-face {
+          font-family: 'Inter';
+          font-style: normal;
+          font-weight: 100;
+          src: url('/8634f44eaffa/ui/fonts/inter/Inter-Thin.woff2') format('woff2'), url('/8634f44eaffa/ui/fonts/inter/Inter-Thin.woff') format('woff');
+        }
+
+        @font-face {
+ 59  106k   59 64665    0     0  4835k      0 --:--:-- --:--:-- --:--:-- 5262k
+curl: (23) Failure writing output to destination
+```
+
+Установим Logstash
 
 
 
