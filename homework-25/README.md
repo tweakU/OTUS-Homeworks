@@ -381,20 +381,33 @@ curl: (23) Failure writing output to destination
 После авторизации на сервере перейдём в раздел Management --> Stack Monitoring:  
 
 
-<img width="1920" height="1040" alt="изображение" src="https://github.com/user-attachments/assets/76565f84-3fd4-4631-8c47-08cf39a1ff97" />
+<img width="1920" height="1040" alt="изображение" src="https://github.com/user-attachments/assets/76565f84-3fd4-4631-8c47-08cf39a1ff97" />  
+
+
+Мы видим сообщение "Elasticsearch node detected". Kibana работает.  
+Далее перейдём к настройке Logstash, чтобы он также увидил Elasticsearch.  
 
 
 
+Установим Logstash и проверим работу сервиса:  
+```console
+root@elk:~# apt install logstash
 
+root@elk:~# systemctl status logstash.service
+● logstash.service - logstash
+     Loaded: loaded (/lib/systemd/system/logstash.service; enabled; vendor preset: enabled)
+     Active: active (running) since Sat 2025-09-06 14:15:24 MSK; 5s ago
+   Main PID: 18156 (java)
+      Tasks: 21 (limit: 2219)
+     Memory: 253.3M
+        CPU: 9.581s
+     CGroup: /system.slice/logstash.service
+             └─18156 /usr/share/logstash/jdk/bin/java -Xms1g -Xmx1g -Djava.awt.headless=true -Dfile.encoding=UTF-8 -Djruby.compile.invokedynamic=true -XX:+HeapDumpOnOutOfMemoryError -Djava.security.egd=file:/de>
 
+Sep 06 14:15:24 elk systemd[1]: logstash.service: Consumed 20.796s CPU time.
+Sep 06 14:15:24 elk systemd[1]: Started logstash.
+Sep 06 14:15:24 elk logstash[18156]: Using bundled JDK: /usr/share/logstash/jdk
 
-
-
-
-
-
-
-Установим Logstash:  
 
 
 
