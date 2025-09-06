@@ -421,14 +421,12 @@ output.conf
 Изменим владельца и группу chown -R logstash:logstash /etc/logstash/certs/  
 
 Перезагурзим Logstash:
-```conscole
+```console
 root@elk:~# systemctl restart logstash.service
-
-root@elk:~# systemctl status logstash.service
 ```
 
 Если сервис стартовал без ошибок, в логе должны увидеть следующую запись:  
-```
+```console
 root@elk:~# tail /var/log/logstash/logstash-plain.log
 ...
 [2025-09-06T15:58:57,460][INFO ][org.logstash.beats.Server][main][9ddf974bb685958560559a204b1557a3c076260f4afc5a6c41516ca79fbb31bf] Starting server on port: 5044
