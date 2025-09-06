@@ -337,7 +337,7 @@ root@elk:~# systemctl status kibana
 server.host: "0.0.0.0"
 ```
 
-Запустим Kibana:
+Запустим Kibana и проверим работу сервиса:
 ```console
 root@elk:~# systemctl status kibana.service
 ● kibana.service - Kibana
@@ -374,7 +374,24 @@ root@elk:~# curl http://192.168.1.125:5601/login?next=%2F | head
 curl: (23) Failure writing output to destination
 ```
 
-Установим Logstash
+Далее настроим Kiabana:  
+Откроем web-браузер и перейдём по http://192.168.1.125:5601.  
+Сгенерируем токен командой "/usr/share/elasticsearch/bin/elasticsearch-create-enrollment-token -s kibana".  
+Далее получим код верификации "/usr/share/kibana/bin/kibana-verification-code".  
+
+
+
+
+
+
+
+
+
+
+
+
+Установим Logstash:  
+
 
 
 
