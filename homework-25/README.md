@@ -378,6 +378,10 @@ curl: (23) Failure writing output to destination
 Откроем web-браузер и перейдём по http://192.168.1.125:5601.  
 Сгенерируем токен командой "/usr/share/elasticsearch/bin/elasticsearch-create-enrollment-token -s kibana".  
 Далее получим код верификации "/usr/share/kibana/bin/kibana-verification-code".  
+После авторизации на сервере перейдём в раздел Management --> Stack Monitoring:  
+
+
+<img width="1920" height="1040" alt="изображение" src="https://github.com/user-attachments/assets/76565f84-3fd4-4631-8c47-08cf39a1ff97" />
 
 
 
