@@ -407,6 +407,32 @@ root@elk:~# systemctl status logstash.service
 Sep 06 14:15:24 elk systemd[1]: logstash.service: Consumed 20.796s CPU time.
 Sep 06 14:15:24 elk systemd[1]: Started logstash.
 Sep 06 14:15:24 elk logstash[18156]: Using bundled JDK: /usr/share/logstash/jdk
+```
+
+Проведём настройку Logstash:
+Создадим директорию /etc/logstash/conf.d
+Внутри создадим файлы конфигурации:
+filter.conf  
+input.conf  
+output.conf
+
+Также создадим директорию /etc/logstash/certs  
+И скопируем /etc/elasticsearch/certs/http_ca.crt в директорию выше  
+Изменим владельца и группу chown -R logstash:logstash /etc/logstash/certs/  
+
+Перезагурзим Logstash:
+```conscole
+root@elk:~# systemctl restart logstash.service
+
+root@elk:~# systemctl status logstash.service
+```
+
+Если сервис стартовал без ошибок, в логе должны увидеть следующую запись:  
+```
+root@elk:~# tail /var/log/logstash/logstash-plain.log
+...
+[2025-09-06T15:58:57,460][INFO ][org.logstash.beats.Server][main][9ddf974bb685958560559a204b1557a3c076260f4afc5a6c41516ca79fbb31bf] Starting server on port: 5044
+```
 
 
 
