@@ -18,18 +18,18 @@ echo -e "PID\tSTATE\tCOMMAND"
 # Проходим по всем папкам в /proc
 for pid in /proc/[0-9]*; do
 
-    # Проверяем, существует ли файл stat
+# Проверяем, существует ли файл stat
     if [ -f "$pid/stat" ]; then
 
-        # Читаем данные из stat
+# Читаем данные из stat
         stat_info=$(cat "$pid/stat")
 
-        # Извлекаем PID, состояние (state), команду (command)
+# Извлекаем PID, состояние (state), команду (command)
         pid_value=$(echo "$stat_info" | awk '{print $1}')
         state=$(echo "$stat_info" | awk '{print $3}')
         command=$(echo "$stat_info" | awk '{print $2}')
 
-        # Выводим
+# Выводим результат
         echo -e "$pid_value\t$state\t$command"
     fi
 done
