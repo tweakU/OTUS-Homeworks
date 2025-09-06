@@ -409,8 +409,9 @@ Sep 06 14:15:24 elk systemd[1]: Started logstash.
 Sep 06 14:15:24 elk logstash[18156]: Using bundled JDK: /usr/share/logstash/jdk
 ```
 
-Проведём настройку Logstash:
-Создадим директорию /etc/logstash/conf.d
+Проведём настройку Logstash:  
+Внесём изменения в файл конфигурации /etc/logstash/logstash.yml - path.config: /etc/logstash/conf.d/*.conf  
+Создадим директорию /etc/logstash/conf.d  
 Внутри создадим файлы конфигурации:
 filter.conf  
 input.conf  
