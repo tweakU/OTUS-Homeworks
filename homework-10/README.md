@@ -58,8 +58,7 @@ echo "Script ended at: $(date)"
 #!/bin/bash
 
 # Путь к log файлу
-#LOG=./access-4560-644067.log
-LOG="/var/log/apache2/access.log"
+LOG=./access-4560-644067.log
 
 # Файл для хранения позиции последнего прочитанного байта
 STATE_FILE="./last_position.txt"
@@ -79,7 +78,7 @@ NEW_LOG=$(tail -c +$((LAST_POS + 1)) "$LOG")
 if [ -n "$NEW_LOG" ]; then
   echo "$NEW_LOG" | awk '{print $1}' | sort | uniq -c | sort -n
 else
-  echo "Нет новых запросов."
+  echo "There are no changes"
 fi
 
 # Обновляем позицию последнего прочитанного байта
