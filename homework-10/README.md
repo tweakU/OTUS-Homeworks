@@ -54,7 +54,7 @@ echo "Script ended at: $(date)"
 <img width="1366" height="728" alt="изображение" src="https://github.com/user-attachments/assets/5447c168-1c0e-4db6-8378-718d5f34c4fc" />
 
 Напишем модуль, который будет проверять новые записи в лог файл после последней проверки:
-```consle
+```console
 #!/bin/bash
 
 # Путь к log файлу
