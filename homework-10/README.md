@@ -29,12 +29,10 @@ awk '{ print $1}' "./access-4560-644067.log" | sort | uniq -c | sort -n | tail
 ```console
 #!/bin/bash
 
-# Файл блокировки
-LOCK_FILE="./hw10.lock"
-
 # Захват блокировки
-exec 200>"$LOCK_FILE"
+exec 200>./hw10.lock
 flock -n 200 || {
+  echo "$(date)"
   echo "Script already running. Exiting..."
   exit 1
 }
@@ -50,4 +48,46 @@ sleep 10
 
 # Завершение скрипта
 echo "Script ended at: $(date)"
+```
+
+Проверим работу flock из второго теминала:
+<img width="1366" height="728" alt="изображение" src="https://github.com/user-attachments/assets/5447c168-1c0e-4db6-8378-718d5f34c4fc" />
+
+Напишем модуль, который будет проверять новые записи в лог файл после последней проверки:
+```consle
+#!/bin/bash
+
+# Путь к log файлу
+#LOG=./access-4560-644067.log
+LOG="/var/log/apache2/access.log"
+
+# Файл для хранения позиции последнего прочитанного байта
+STATE_FILE="./last_position.txt"
+
+# Если состояние не существует, создаём его с начальной позицией 0
+if [ ! -f "$STATE_FILE" ]; then
+  echo 0 > "$STATE_FILE"
+fi
+
+# Чтение последней позиции
+LAST_POS=$(cat "$STATE_FILE")
+
+# Чтение новых данных из лога (с позиции LAST_POS)
+NEW_LOG=$(tail -c +$((LAST_POS + 1)) "$LOG")
+
+# Если в логе появились новые строки, парсим их
+if [ -n "$NEW_LOG" ]; then
+  echo "$NEW_LOG" | awk '{print $1}' | sort | uniq -c | sort -n
+else
+  echo "Нет новых запросов."
+fi
+
+# Обновляем позицию последнего прочитанного байта
+NEW_POS=$(stat -c %s "$LOG")
+echo "$NEW_POS" > "$STATE_FILE"
+```
+
+Создадим задание для cron:
+```console
+123
 ```
