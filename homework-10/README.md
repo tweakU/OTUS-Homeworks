@@ -96,7 +96,12 @@ funt1k@ubuntu24043:~/tmp$ sudo apt-get install mailutils
 ```console
 funt1k@ubuntu24043:~$ crontab -e
 
-add new task: 1 * * * * /home/funt1k/tmp/hw10.sh | mail -s "Apache Log Report" user@example.com
+new task: 1 * * * * /home/funt1k/tmp/hw10.sh | mail -s "Apache Log Report" user@example.com
 ```
 
 Сложим все модули в один файл и запушим в текущую репу.
+
+
+<br/>
+
+[Вернуться к списку всех ДЗ](../README.md)
