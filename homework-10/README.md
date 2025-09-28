@@ -50,10 +50,10 @@ sleep 10
 echo "Script ended at: $(date)"
 ```
 
-Проверим работу flock из второго теминала:
+Проверяем работу flock из второго окна теминала:
 <img width="1366" height="728" alt="изображение" src="https://github.com/user-attachments/assets/5447c168-1c0e-4db6-8378-718d5f34c4fc" />
 
-Напишем модуль, который будет проверять новые записи в лог файл после последней проверки:
+Пишем следующих модуль скрипта, который будет отслеживать новые записи в лог файл:
 ```console
 #!/bin/bash
 
@@ -86,7 +86,17 @@ NEW_POS=$(stat -c %s "$LOG")
 echo "$NEW_POS" > "$STATE_FILE"
 ```
 
-Создадим задание для cron:
+Для отправки писем с помощью cron можно использовать команду mail из пакета mailutils.  
+Установим его:
 ```console
-123
+funt1k@ubuntu24043:~/tmp$ sudo apt-get install mailutils
 ```
+
+Настроим cron:
+```console
+funt1k@ubuntu24043:~$ crontab -e
+
+add new task: 1 * * * * /home/funt1k/tmp/hw10.sh | mail -s "Apache Log Report" user@example.com
+```
+
+Сложим все модули в один файл и запушим в текущую репу.
