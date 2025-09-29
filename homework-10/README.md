@@ -87,6 +87,8 @@ funt1k@ubuntu24043:~$ crontab -e
 1 * * * * /home/funt1k/tmp/hw10.sh | mail -s "Apache Log Report" user@example.com
 ```
 
+Соберем все модули в один файл и запушим его в репу под именем hw10.sh
+
 Домашнее задание выполнено.
 
 <br/>
