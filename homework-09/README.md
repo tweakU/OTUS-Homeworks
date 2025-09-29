@@ -195,9 +195,11 @@ Sep 29 23:14:17 test systemd[1]: Started Spawn-fcgi startup service by Otus.
 3) Доработать unit-файл Nginx (nginx.service) для запуска нескольких инстансов сервера с разными конфигурационными файлами одновременно.
 Установим Nginx из стандартного репозитория:
 ```console
-
+root@test:~/tmp# apt install nginx -y
 ```
 
+Для запуска нескольких экземпляров сервиса модифицируем исходный service для использования различной конфигурации, 
+а также PID-файлов. Для этого создадим новый Unit для работы с шаблонами (/etc/systemd/system/nginx@.service):
 
 
 
