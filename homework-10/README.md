@@ -36,18 +36,6 @@ flock -n 200 || {
   echo "Script already running. Exiting..."
   exit 1
 }
-
-# Начало выполнения скрипта
-echo "Script started at: $(date)"
-
-# Парсим лог
-awk '{ print $1 }' "./access-4560-644067.log" | sort | uniq -c | sort -n | tail
-
-# Пауза (10 секунд)
-sleep 10
-
-# Завершение скрипта
-echo "Script ended at: $(date)"
 ```
 
 Проверяем работу flock из второго окна теминала:
