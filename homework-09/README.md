@@ -198,9 +198,127 @@ Sep 29 23:14:17 test systemd[1]: Started Spawn-fcgi startup service by Otus.
 root@test:~/tmp# apt install nginx -y
 ```
 
-Для запуска нескольких экземпляров сервиса модифицируем исходный service для использования различной конфигурации, 
-а также PID-файлов. Для этого создадим новый Unit для работы с шаблонами (/etc/systemd/system/nginx@.service):
+Для запуска нескольких экземпляров сервиса модифицируем исходный service для использования различной конфигурации,  
+а также PID-файлов. Для этого создадим новый unit для работы с шаблонами (/etc/systemd/system/nginx@.service):
+```console
+cat > /etc/systemd/system/nginx@.service
 
+# Stop dance for nginx
+# =======================
+#
+# ExecStop sends SIGSTOP (graceful stop) to the nginx process.
+# If, after 5s (--retry QUIT/5) nginx is still running, systemd takes control
+# and sends SIGTERM (fast shutdown) to the main process.
+# After another 5s (TimeoutStopSec=5), and if nginx is alive, systemd sends
+# SIGKILL to all the remaining processes in the process group (KillMode=mixed).
+#
+# nginx signals reference doc:
+# http://nginx.org/en/docs/control.html
+#
+[Unit]
+Description=A high performance web server and a reverse proxy server
+Documentation=man:nginx(8)
+After=network.target nss-lookup.target
+
+[Service]
+Type=forking
+PIDFile=/run/nginx-%I.pid
+ExecStartPre=/usr/sbin/nginx -t -c /etc/nginx/nginx-%I.conf -q -g 'daemon on; master_process on;'
+ExecStart=/usr/sbin/nginx -c /etc/nginx/nginx-%I.conf -g 'daemon on; master_process on;'
+ExecReload=/usr/sbin/nginx -c /etc/nginx/nginx-%I.conf -g 'daemon on; master_process on;' -s reload
+ExecStop=-/sbin/start-stop-daemon --quiet --stop --retry QUIT/5 --pidfile /run/nginx-%I.pid
+TimeoutStopSec=5
+KillMode=mixed
+
+[Install]
+WantedBy=multi-user.target
+
+Ctrl + D
+```
+
+Далее необходимо создать два файла конфигурации (/etc/nginx/nginx-first.conf, /etc/nginx/nginx-second.conf).  
+Их можно сформировать из стандартного конфига /etc/nginx/nginx.conf, с модификацией путей до PID-файлов и разделением по портам:
+```console
+pid /run/nginx-first.pid;
+
+http {
+…
+	server {
+		listen 9001;
+	}
+#include /etc/nginx/sites-enabled/*;
+….
+}
+```
+
+Этого достаточно для успешного запуска сервисов.
+Проверим работу:
+```console
+root@test:~# systemctl start nginx@first
+
+root@test:~# systemctl status nginx@first
+● nginx@first.service - A high performance web server and a reverse proxy server
+     Loaded: loaded (/etc/systemd/system/nginx@.service; disabled; vendor preset: enabled)
+     Active: active (running) since Tue 2025-09-30 03:17:15 MSK; 3min 1s ago
+       Docs: man:nginx(8)
+    Process: 3068 ExecStartPre=/usr/sbin/nginx -t -c /etc/nginx/nginx-first.conf -q -g daemon on; master_process on; (code=exited, status=0/SUCCESS)
+    Process: 3069 ExecStart=/usr/sbin/nginx -c /etc/nginx/nginx-first.conf -g daemon on; master_process on; (code=exited, status=0/SUCCESS)
+    Process: 3116 ExecReload=/usr/sbin/nginx -c /etc/nginx/nginx-first.conf -g daemon on; master_process on; -s reload (code=exited, status=0/SUCCESS)
+   Main PID: 3070 (nginx)
+      Tasks: 3 (limit: 2198)
+     Memory: 3.4M
+        CPU: 29ms
+     CGroup: /system.slice/system-nginx.slice/nginx@first.service
+             ├─3070 "nginx: master process /usr/sbin/nginx -c /etc/nginx/nginx-first.conf -g daemon on; master_process on;"
+             ├─3117 "nginx: worker process" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" ">
+             └─3118 "nginx: worker process" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" ">
+
+Sep 30 03:17:15 test systemd[1]: Starting A high performance web server and a reverse proxy server...
+Sep 30 03:17:15 test systemd[1]: Started A high performance web server and a reverse proxy server.
+Sep 30 03:19:06 test systemd[1]: Reloading A high performance web server and a reverse proxy server...
+Sep 30 03:19:06 test systemd[1]: Reloaded A high performance web server and a reverse proxy server.
+
+root@test:~# systemctl start nginx@second
+
+root@test:~# systemctl status nginx@second
+● nginx@second.service - A high performance web server and a reverse proxy server
+     Loaded: loaded (/etc/systemd/system/nginx@.service; disabled; vendor preset: enabled)
+     Active: active (running) since Tue 2025-09-30 03:19:28 MSK; 1min 5s ago
+       Docs: man:nginx(8)
+    Process: 3129 ExecStartPre=/usr/sbin/nginx -t -c /etc/nginx/nginx-second.conf -q -g daemon on; master_process on; (code=exited, status=0/SUCCESS)
+    Process: 3130 ExecStart=/usr/sbin/nginx -c /etc/nginx/nginx-second.conf -g daemon on; master_process on; (code=exited, status=0/SUCCESS)
+   Main PID: 3131 (nginx)
+      Tasks: 3 (limit: 2198)
+     Memory: 3.2M
+        CPU: 15ms
+     CGroup: /system.slice/system-nginx.slice/nginx@second.service
+             ├─3131 "nginx: master process /usr/sbin/nginx -c /etc/nginx/nginx-second.conf -g daemon on; master_process on;"
+             ├─3132 "nginx: worker process" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" ">
+             └─3133 "nginx: worker process" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" ">
+
+Sep 30 03:19:28 test systemd[1]: Starting A high performance web server and a reverse proxy server...
+Sep 30 03:19:28 test systemd[1]: Started A high performance web server and a reverse proxy server.
+```
+
+Проверить можно несколькими способами, например, посмотреть, какие порты слушаются:
+```console
+root@test:~# ss -tnlp | grep nginx
+LISTEN 0      511          0.0.0.0:9002      0.0.0.0:*    users:(("nginx",pid=3133,fd=6),("nginx",pid=3132,fd=6),("nginx",pid=3131,fd=6))
+LISTEN 0      511          0.0.0.0:9001      0.0.0.0:*    users:(("nginx",pid=3118,fd=6),("nginx",pid=3117,fd=6),("nginx",pid=3070,fd=6))
+```
+
+Или просмотреть список процессов:
+```console
+root@test:~# ps afx | grep nginx
+   3175 pts/1    S+     0:00                          \_ grep --color=auto nginx
+   3070 ?        Ss     0:00 nginx: master process /usr/sbin/nginx -c /etc/nginx/nginx-first.conf -g daemon on; master_process on;
+   3117 ?        S      0:00  \_ nginx: worker process
+   3118 ?        S      0:00  \_ nginx: worker process
+   3131 ?        Ss     0:00 nginx: master process /usr/sbin/nginx -c /etc/nginx/nginx-second.conf -g daemon on; master_process on;
+   3132 ?        S      0:00  \_ nginx: worker process
+   3133 ?        S      0:00  \_ nginx: worker process
+```
+Если мы видим две группы процессов nginx, то всё в порядке.
 
 
 Домашнее задание выполнено.
