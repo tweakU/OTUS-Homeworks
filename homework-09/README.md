@@ -19,10 +19,6 @@
 Для начала создаём файл с конфигурацией для сервиса в директории /etc/default - из неё сервис будет брать необходимые переменные.
 ```console
 root@test:~# cat > /etc/default/watchlog
-# Configuration file for my watchlog service
-# Place it to the /etc/default
-
-# File and word in that file that we will be monitor
 WORD="ALERT"
 LOG=/var/log/watchlog.log
 ```
