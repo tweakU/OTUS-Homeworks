@@ -6,6 +6,8 @@
 3 запустить контейнер;  
 4 запустить docker-compose.  
 
+[DigitalOcean - Tutorials - Docker - How To Remove Docker Images, Containers, and Volumes](https://www.digitalocean.com/community/tutorials/how-to-remove-docker-images-containers-and-volumes)
+
 **Выполнение домашнего задания**:
 
 ```console
