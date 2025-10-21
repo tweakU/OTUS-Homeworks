@@ -100,7 +100,7 @@ root@test:~/otus/hw19/nginx-alpine# curl localhost:8080
     <title>Custom Alpine-based Nginx page</title>
 </head>
 <body>
-    <h1>Привет, Otus! Это кастомная страница Nginx на базе дистрибутива Alpine!</h1>
+    <h1>Привет, Otus! Это кастомная страница Nginx на базе дистрибутива Alpine Linux!</h1>
     <p>Запуск кастомного Docker-образа прошёл успешно.</p>
 </body>
 </html>
