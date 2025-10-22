@@ -1,5 +1,5 @@
 # GNU/Linux Vagrant boxes structure 
-# box 'almalinux/9' version '9.4.20240805'
+# box example for 'almalinux/9' version '9.4.20240805'
 ```console
 root@test:~/.vagrant.d/boxes/almalinux-VAGRANTSLASH-9/9.4.20240805/virtualbox# ll
 total 1026104
