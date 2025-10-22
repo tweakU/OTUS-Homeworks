@@ -71,12 +71,51 @@ type=AVC msg=audit(1761138800.643:701): avc:  denied  { name_bind } for  pid=824
         Allow access by executing:
         # setsebool -P nis_enabled 1
 ```
+Утилита audit2why покажет почему трафик блокируется. Исходя из вывода утилиты, мы видим, что нам нужно поменять параметр nis_enabled.
 
 
+Включим параметр nis_enabled и перезапустим nginx:  
+```console
+[root@selinux ~]# setsebool -P nis_enabled on
 
+[root@selinux ~]# systemctl restart nginx
 
+[root@selinux ~]# systemctl status nginx
+● nginx.service - The nginx HTTP and reverse proxy server
+     Loaded: loaded (/usr/lib/systemd/system/nginx.service; disabled; preset: disabled)
+     Active: active (running) since Wed 2025-10-22 13:45:52 UTC; 7s ago
+    Process: 9107 ExecStartPre=/usr/bin/rm -f /run/nginx.pid (code=exited, status=0/SUCCESS)
+    Process: 9108 ExecStartPre=/usr/sbin/nginx -t (code=exited, status=0/SUCCESS)
+    Process: 9109 ExecStart=/usr/sbin/nginx (code=exited, status=0/SUCCESS)
+   Main PID: 9110 (nginx)
+      Tasks: 3 (limit: 11984)
+     Memory: 2.9M
+        CPU: 114ms
+     CGroup: /system.slice/nginx.service
+             ├─9110 "nginx: master process /usr/sbin/nginx"
+             ├─9111 "nginx: worker process"
+             └─9112 "nginx: worker process"
 
+Oct 22 13:45:52 selinux systemd[1]: Starting The nginx HTTP and reverse proxy server...
+Oct 22 13:45:52 selinux nginx[9108]: nginx: the configuration file /etc/nginx/nginx.conf syntax is ok
+Oct 22 13:45:52 selinux nginx[9108]: nginx: configuration file /etc/nginx/nginx.conf test is successful
+Oct 22 13:45:52 selinux systemd[1]: Started The nginx HTTP and reverse proxy server.
 
+[root@selinux ~]# ss -ntlp | grep nginx
+LISTEN 0      511          0.0.0.0:4881      0.0.0.0:*    users:(("nginx",pid=9112,fd=6),("nginx",pid=9111,fd=6),("nginx",pid=9110,fd=6))
+LISTEN 0      511             [::]:4881         [::]:*    users:(("nginx",pid=9112,fd=7),("nginx",pid=9111,fd=7),("nginx",pid=9110,fd=7))
+```
+
+Также можно проверить работу Nginx curl`ом:  
+```console
+[root@selinux ~]# curl 127.0.0.1:4881
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+        <head>
+                <title>Test Page for the HTTP Server on AlmaLinux</title>
+...
+```
 
 
 
