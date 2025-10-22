@@ -280,7 +280,22 @@ Oct 22 14:03:58 selinux nginx[9273]: nginx: configuration file /etc/nginx/nginx.
 Oct 22 14:03:58 selinux systemd[1]: Started The nginx HTTP and reverse proxy server.
 ```
 
+После добавления модуля Nginx запустился без ошибок. При использовании модуля изменения сохранятся после перезагрузки. 
+Просмотр всех установленных модулей: semodule -l
 
+Для удаления модуля воспользуемся командой:  
+```console
+[root@selinux ~]# semodule -r nginx
+libsemanage.semanage_direct_remove_key: Removing last nginx module (no other nginx module exists at another priority).
+```
+
+
+**2. Обеспечение работоспособности приложения при включенном SELinux**
+
+Выполним клонирование репозитория:  
+```console
+
+```
 
 
 
