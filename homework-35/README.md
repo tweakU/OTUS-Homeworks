@@ -1,3 +1,4 @@
+```console
 PS C:\Users\funt1k> mkdir .\vagrant\otus\hw-34
 
     Каталог: C:\Users\funt1k\vagrant\otus
@@ -46,3 +47,5 @@ setenforce: SELinux is disabled
 
 
 
+
+```
