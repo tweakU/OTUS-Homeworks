@@ -146,6 +146,7 @@ logout
 Connection to 192.168.57.10 closed.
 
 root@pam:~# tail -f /var/log/auth.log
+...
 Oct 25 12:00:13 pam sshd[3160]: pam_exec(sshd:auth): Calling /usr/local/bin/login.sh ...
 Oct 25 12:00:13 pam sshd[3158]: Accepted password for otusadm from 192.168.57.1 port 61682 ssh2
 Oct 25 12:00:13 pam sshd[3158]: pam_unix(sshd:session): session opened for user otusadm(uid=1002) by (uid=0)
