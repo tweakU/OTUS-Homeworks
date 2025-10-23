@@ -124,12 +124,27 @@ session    include      postlogin
 
 На этом настройка завершена, нужно только проверить, что скрипт отрабатывает корректно. 
 
-Если Вы выполняете данную работу в выходные, то можно сразу попробовать подключиться к нашей ВМ. Если нет, тогда можно руками поменять время в нашей ОС, например установить 27 августа 2022 года (Суббота): 
-sudo date 082712302022.00 и попробовать подключиться. 
-
 Если настройки выполнены правильно, то при логине пользователя otus у Вас должна появиться ошибка. Пользователь otusadm должен подключаться без проблем: 
 
+```console
+root@pam:~# date --set "25 Oct 2025 12:00:00"
+Sat Oct 25 12:00:00 UTC 2025
 
+PS C:\Users\funt1k> ssh otus@192.168.57.10
+otus@192.168.57.10's password:
+Permission denied, please try again.
+otus@192.168.57.10's password:
+
+PS C:\Users\funt1k> ssh otusadm@192.168.57.10
+otusadm@192.168.57.10's password:
+Last login: Sat Oct 25 12:00:26 2025 from 192.168.57.1
+To run a command as administrator (user "root"), use "sudo <command>".
+See "man sudo_root" for details.
+
+otusadm@pam:~$ exit
+logout
+Connection to 192.168.57.10 closed.
+```
 
 
 **Домашнее задание выполнено**.
