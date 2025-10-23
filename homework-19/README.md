@@ -1,12 +1,15 @@
 ## Домашнее задание № 19 — «Docker: основы работы с контейнеризацией»
 
+
+**ЧТИВО:** [DigitalOcean - Tutorials - Docker - How To Remove Docker Images, Containers, and Volumes](https://www.digitalocean.com/community/tutorials/how-to-remove-docker-images-containers-and-volumes)
+
+
 **Цель домашнего задания**:  
 1 изучить основные понятия контейнеризации;  
 2 написать Dockerfile;  
 3 запустить контейнер;  
 4 запустить docker-compose.  
 
-**ЧТИВО:** [DigitalOcean - Tutorials - Docker - How To Remove Docker Images, Containers, and Volumes](https://www.digitalocean.com/community/tutorials/how-to-remove-docker-images-containers-and-volumes)
 
 **Выполнение домашнего задания**:
 
