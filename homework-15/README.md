@@ -584,31 +584,33 @@ www.ddns.lab.           60      IN      A       192.168.50.15
 Важно, что мы не добавили новые правила в политику для назначения этого контекста в каталоге. Значит, что при перемаркировке файлов контекст вернётся на тот, который прописан в файле политики.
 Для того, чтобы вернуть правила обратно, можно ввести команду: restorecon -v -R /etc/named
 ```console
-
+[root@ns01 ~]# restorecon -v -R /etc/named
+Relabeled /etc/named from system_u:object_r:named_zone_t:s0 to system_u:object_r:named_conf_t:s0
+Relabeled /etc/named/named.dns.lab.view1 from system_u:object_r:named_zone_t:s0 to system_u:object_r:named_conf_t:s0
+Relabeled /etc/named/named.dns.lab from system_u:object_r:named_zone_t:s0 to system_u:object_r:named_conf_t:s0
+Relabeled /etc/named/dynamic from unconfined_u:object_r:named_zone_t:s0 to unconfined_u:object_r:named_conf_t:s0
+Relabeled /etc/named/dynamic/named.ddns.lab from system_u:object_r:named_zone_t:s0 to system_u:object_r:named_conf_t:s0
+Relabeled /etc/named/dynamic/named.ddns.lab.view1 from system_u:object_r:named_zone_t:s0 to system_u:object_r:named_conf_t:s0
+Relabeled /etc/named/dynamic/named.ddns.lab.view1.jnl from system_u:object_r:named_zone_t:s0 to system_u:object_r:named_conf_t:s0
+Relabeled /etc/named/named.newdns.lab from system_u:object_r:named_zone_t:s0 to system_u:object_r:named_conf_t:s0
+Relabeled /etc/named/named.50.168.192.rev from system_u:object_r:named_zone_t:s0 to system_u:object_r:named_conf_t:s0
 ```
+Работает!  
 
+Q: **выяснить причину неработоспособности механизма обновления зоны** 
+A: При попытке обновить DNS-запись через nsupdate, SELinux заблокировал операцию из-за несоответствия контекстов безопасности.  
+Лог сообщает, что процесс, который запускает isc-net-0001 (это процесс сервера BIND/DNS), не имеет нужных прав на запись в файл с типом контекста named_conf_t.  
+Согласно логам SELinux, процесс с типом named_t пытается записать данные в файл с контекстом named_conf_t, что и вызывает ошибку доступа.
 
+Решение: 
+1) проверить контексты файлов с помощью команды ls -laZ
+2) использовать команду chcon -R -t named_zone_t /etc/named для исправления типов контекста на нужные
+3) при повторной попытке внести изменения с помощью nsupdate, все прошло успешно, так как теперь контексты безопасности файлов и процессов совпали.
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+Пояснение:
+SELinux требует, чтобы файлы и процессы имели согласованные контексты безопасности.  
+Например, процесс named_t (служба DNS) может взаимодействовать только с файлами, имеющими тип контекста named_zone_t или другой соответствующий тип.
+Если контекст объекта (например, файл зоны DNS) не совпадает с тем, что ожидает процесс, SELinux блокирует доступ, даже если это выглядит как ошибка конфигурации (не ошибка приложения).
 
 
 **Домашнее задание выполнено**.
