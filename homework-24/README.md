@@ -144,6 +144,18 @@ See "man sudo_root" for details.
 otusadm@pam:~$ exit
 logout
 Connection to 192.168.57.10 closed.
+
+root@pam:~# tail -f /var/log/auth.log
+Oct 25 12:00:13 pam sshd[3160]: pam_exec(sshd:auth): Calling /usr/local/bin/login.sh ...
+Oct 25 12:00:13 pam sshd[3158]: Accepted password for otusadm from 192.168.57.1 port 61682 ssh2
+Oct 25 12:00:13 pam sshd[3158]: pam_unix(sshd:session): session opened for user otusadm(uid=1002) by (uid=0)
+Oct 25 12:00:13 pam systemd-logind[713]: New session c18 of user otusadm.
+Oct 25 12:00:13 pam systemd: pam_unix(systemd-user:session): session opened for user otusadm(uid=1002) by (uid=0)
+Oct 25 12:00:15 pam sshd[3172]: Received disconnect from 192.168.57.1 port 61682:11: disconnected by user
+Oct 25 12:00:15 pam sshd[3172]: Disconnected from user otusadm 192.168.57.1 port 61682
+Oct 25 12:00:15 pam sshd[3158]: pam_unix(sshd:session): session closed for user otusadm
+Oct 25 12:00:15 pam systemd-logind[713]: Session c18 logged out. Waiting for processes to exit.
+Oct 25 12:00:15 pam systemd-logind[713]: Removed session c18.
 ```
 
 
