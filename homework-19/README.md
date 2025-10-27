@@ -280,8 +280,56 @@ total 12
 drwxr-xr-x 3 root root 4096 Oct 28 00:53 ./
 drwxr-xr-x 6 root root 4096 Oct 28 00:20 ../
 drwxr-xr-x 9 root root 4096 Oct 28 00:53 redmine_theme_farend_bleuclair/
+
+root@test:~/otus/hw19# docker compose up -d
+[+] Running 29/29
+ ✔ postgres Pulled                                                                                                                                                                                            8.7s
+   ✔ bff3e048017e Pull complete                                                                                                                                                                               2.7s
+   ✔ e3e180bf7c2b Pull complete                                                                                                                                                                               2.8s
+   ✔ 62eff3cc0cff Pull complete                                                                                                                                                                               2.8s
+   ✔ 3d90a128d4ff Pull complete                                                                                                                                                                               3.1s
+   ✔ ba4ce0c5ab29 Pull complete                                                                                                                                                                               3.3s
+   ✔ a8f4b87076a9 Pull complete                                                                                                                                                                               3.3s
+   ✔ 4b437d281a7e Pull complete                                                                                                                                                                               4.5s
+   ✔ f1841d9dcb17 Pull complete                                                                                                                                                                               4.5s
+   ✔ b05674a6c170 Pull complete                                                                                                                                                                               6.4s
+   ✔ d59b5be914c6 Pull complete                                                                                                                                                                               6.4s
+   ✔ 901d5d9b0beb Pull complete                                                                                                                                                                               6.5s
+   ✔ 4a7aa9546b2c Pull complete                                                                                                                                                                               6.5s
+   ✔ 0a0d389be22f Pull complete                                                                                                                                                                               6.5s
+   ✔ fb7bd7cfbcd2 Pull complete                                                                                                                                                                               6.5s
+ ✔ redmine Pulled                                                                                                                                                                                            22.7s
+   ✔ 38513bd72563 Pull complete                                                                                                                                                                               8.6s
+   ✔ 0d20d0d16a44 Pull complete                                                                                                                                                                               8.7s
+   ✔ 1e3adf046075 Pull complete                                                                                                                                                                               8.7s
+   ✔ 2b081c9f8f24 Pull complete                                                                                                                                                                              10.5s
+   ✔ 2d825b8e4939 Pull complete                                                                                                                                                                              10.5s
+   ✔ 6307e1b53a2c Pull complete                                                                                                                                                                              10.5s
+   ✔ 8b4a339d6a12 Pull complete                                                                                                                                                                              18.2s
+   ✔ ef41a70d31fc Pull complete                                                                                                                                                                              18.2s
+   ✔ 171cfa4d9038 Pull complete                                                                                                                                                                              18.2s
+   ✔ a06c24d89389 Pull complete                                                                                                                                                                              18.2s
+   ✔ fb5a406b5e6a Pull complete                                                                                                                                                                              18.7s
+   ✔ d46c50292da3 Pull complete                                                                                                                                                                              20.5s
+   ✔ 0c2ea1e6376e Pull complete                                                                                                                                                                              20.6s
+[+] Running 2/2
+ ✔ Container hw19-redmine-1   Started                                                                                                                                                                         0.3s
+ ✔ Container hw19-postgres-1  Started                                                                                                                                                                         0.3s
+
+root@test:~/otus/hw19# docker ps
+CONTAINER ID   IMAGE            COMMAND                  CREATED         STATUS         PORTS                                         NAMES
+9a3a76afc77d   redmine:latest   "/docker-entrypoint.…"   4 seconds ago   Up 4 seconds   0.0.0.0:8080->3000/tcp, [::]:8080->3000/tcp   hw19-redmine-1
+4980645b41f4   postgres:10      "docker-entrypoint.s…"   4 seconds ago   Up 4 seconds   5432/tcp                                      hw19-postgres-1
+
+root@test:~/otus/hw19# ss -ntlp | grep 8080
+LISTEN 0      4096         0.0.0.0:8080       0.0.0.0:*    users:(("docker-proxy",pid=10503,fd=7))
+LISTEN 0      4096            [::]:8080          [::]:*    users:(("docker-proxy",pid=10510,fd=7))
 ```
-Домашнее задание выполнено.
+
+<img width="1920" height="1040" alt="изображение" src="https://github.com/user-attachments/assets/49935a8a-df34-4f98-bd9a-878572037bfd" />
+
+
+**Домашнее задание выполнено**.
 
 <br/>
 
