@@ -216,8 +216,7 @@ A: Собрать ядро в контейнере возможно, испол�
 4. Настроить вольюмы, для сохранения всей необходимой информации
 
 ```console
-root@ubuntu24043:~/otus/hw19/redmine# cat docker-compose.yml
-version: '3.3'
+root@test:~/otus/hw19/redmine# cat docker-compose.yml
 services:
    postgres:
      image: postgres:10
@@ -237,7 +236,7 @@ services:
        - 8080:3000
      volumes:
        - ./storage/docker_redmine-plugins:/usr/src/redmine/plugins
-       - ./storage/docker_redmine-themes:/usr/src/redmine/public/themes
+       - ./storage/docker_redmine-themes:/usr/src/redmine/themes
        - ./storage/docker_redmine-data:/usr/src/redmine/files
      environment:
        REDMINE_DB_POSTGRES: "postgres"
@@ -247,7 +246,7 @@ services:
        REDMINE_SECRET_KEY_BASE: "…"
      restart: always
 
-root@ubuntu24043:~/otus/hw19/redmine# tree -d
+root@test:~/otus/hw19/redmine# tree -d
 .
 └── storage
     ├── docker_redmine-data
