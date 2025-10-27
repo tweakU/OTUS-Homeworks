@@ -231,7 +231,7 @@ services:
    redmine:
      build:
        context: .
-     image: redmine:custom
+     image: redmine:latest
      ports:
        - 8080:3000
      volumes:
