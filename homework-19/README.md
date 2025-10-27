@@ -208,6 +208,67 @@ Q: **Ответьте на вопрос: Можно ли в контейнере
 A: Собрать ядро в контейнере возможно, использовать нет, т.к. контейнер не имеет собственного ядра, а использует ядро хостовой ОС. 
 
 
+**Задание со звездочкой**: 
+
+1. Написать Docker-compose для приложения Redmine, с использованием опции build.
+2. Добавить в базовый образ redmine любую кастомную тему оформления.
+3. Убедиться что после сборки новая тема доступна в настройках.
+4. Настроить вольюмы, для сохранения всей необходимой информации
+
+```console
+root@ubuntu24043:~/otus/hw19/redmine# cat docker-compose.yml
+version: '3.3'
+services:
+   postgres:
+     image: postgres:10
+     volumes:
+       - ./storage/postgresql-data:/var/lib/postgresql/data
+     environment:
+       POSTGRES_PASSWORD: "PASSWORD"
+       POSTGRES_DB: "redmine"
+       PGDATA: "/var/lib/postgresql/data"
+     restart: always
+
+   redmine:
+     build:
+       context: .
+     image: redmine:custom
+     ports:
+       - 8080:3000
+     volumes:
+       - ./storage/docker_redmine-plugins:/usr/src/redmine/plugins
+       - ./storage/docker_redmine-themes:/usr/src/redmine/public/themes
+       - ./storage/docker_redmine-data:/usr/src/redmine/files
+     environment:
+       REDMINE_DB_POSTGRES: "postgres"
+       REDMINE_DB_USERNAME: "postgres"
+       REDMINE_DB_PASSWORD: "PASSWORD"
+       REDMINE_DB_DATABASE: "redmine"
+       REDMINE_SECRET_KEY_BASE: "…"
+     restart: always
+
+root@ubuntu24043:~/otus/hw19/redmine# tree -d
+.
+└── storage
+    ├── docker_redmine-data
+    ├── docker_redmine-plugins
+    ├── docker_redmine-themes
+    │   └── farend_bleuclair
+    │       ├── javascripts
+    │       ├── src
+    │       │   ├── images
+    │       │   ├── scripts
+    │       │   └── styles
+    │       │       ├── components
+    │       │       └── foundation
+    │       ├── storybook
+    │       └── stylesheets
+    └── postgresql-data
+
+16 directories
+
+
+```
 Домашнее задание выполнено.
 
 <br/>
