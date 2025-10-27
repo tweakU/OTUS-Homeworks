@@ -266,7 +266,20 @@ root@test:~/otus/hw19/redmine# tree -d
 
 16 directories
 
-
+root@test:~/otus/hw19# cd ./storage/docker_redmine-themes/
+root@test:~/otus/hw19/storage/docker_redmine-themes# git clone https://github.com/farend/redmine_theme_farend_bleuclair.git
+Cloning into 'redmine_theme_farend_bleuclair'...
+remote: Enumerating objects: 2289, done.
+remote: Counting objects: 100% (902/902), done.
+remote: Compressing objects: 100% (262/262), done.
+remote: Total 2289 (delta 764), reused 648 (delta 640), pack-reused 1387 (from 2)
+Receiving objects: 100% (2289/2289), 7.84 MiB | 16.06 MiB/s, done.
+Resolving deltas: 100% (1421/1421), done.
+root@test:~/otus/hw19/storage/docker_redmine-themes# ll
+total 12
+drwxr-xr-x 3 root root 4096 Oct 28 00:53 ./
+drwxr-xr-x 6 root root 4096 Oct 28 00:20 ../
+drwxr-xr-x 9 root root 4096 Oct 28 00:53 redmine_theme_farend_bleuclair/
 ```
 Домашнее задание выполнено.
 
