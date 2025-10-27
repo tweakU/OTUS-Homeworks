@@ -329,7 +329,7 @@ root@test:~/otus/hw19# ip a | grep 192
     inet 192.168.1.14/24 metric 100 brd 192.168.1.255 scope global dynamic enp0s3
 ```
 
-<img width="1920" height="1040" alt="изображение" src="https://github.com/user-attachments/assets/49935a8a-df34-4f98-bd9a-878572037bfd" />
+<img width="1920" height="1040" alt="изображение" src="https://github.com/user-attachments/assets/49935a8a-df34-4f98-bd9a-878572037bfd" />  
 
 
 **Домашнее задание выполнено**.
