@@ -324,6 +324,9 @@ CONTAINER ID   IMAGE            COMMAND                  CREATED         STATUS 
 root@test:~/otus/hw19# ss -ntlp | grep 8080
 LISTEN 0      4096         0.0.0.0:8080       0.0.0.0:*    users:(("docker-proxy",pid=10503,fd=7))
 LISTEN 0      4096            [::]:8080          [::]:*    users:(("docker-proxy",pid=10510,fd=7))
+
+root@test:~/otus/hw19# ip a | grep 192
+    inet 192.168.1.14/24 metric 100 brd 192.168.1.255 scope global dynamic enp0s3
 ```
 
 <img width="1920" height="1040" alt="изображение" src="https://github.com/user-attachments/assets/49935a8a-df34-4f98-bd9a-878572037bfd" />
