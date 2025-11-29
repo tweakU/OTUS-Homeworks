@@ -26,7 +26,8 @@ root@test:~/otus/hw-16/Ansible# apt install pipx
 
 root@test:~/otus/hw-16/Ansible# pipx install --include-deps ansible
 ...
-⚠️ Note: '/root/.local/bin' is not on your PATH environment variable. These apps will not be globally accessible until your PATH is updated. Run `pipx ensurepath` to automatically add it, or manually modify your PATH in your shell's config file (i.e. ~/.bashrc).
+⚠️ Note: '/root/.local/bin' is not on your PATH environment variable. These apps will not be globally accessible until your PATH is
+updated. Run `pipx ensurepath` to automatically add it, or manually modify your PATH in your shell's config file (i.e. ~/.bashrc).
 
 root@test:~/otus/hw-16/Ansible# ansible --version
 ansible [core 2.17.13]
